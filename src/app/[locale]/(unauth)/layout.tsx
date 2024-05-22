@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 
@@ -29,27 +31,22 @@ export default function Layout(props: { children: React.ReactNode }) {
           </li>
           <li>
             <Link
-              href="/guestbook/"
-              className="border-none text-gray-700 hover:text-gray-900"
-            >
-              {t('guestbook_link')}
-            </Link>
-          </li>
-          <li>
-            <Link
               href="/portfolio/"
               className="border-none text-gray-700 hover:text-gray-900"
             >
               {t('portfolio_link')}
             </Link>
-          </li>
-          <li>
-            <a
-              className="border-none text-gray-700 hover:text-gray-900"
-              href="https://github.com/ixartz/Next-js-Boilerplate"
-            >
-              GitHub
-            </a>
+
+            <li>
+              <button
+                type="button"
+                onClick={() => {
+                  throw new Error('Sentry Frontend Error');
+                }}
+              >
+                Throw error to test Sentry
+              </button>
+            </li>
           </li>
         </>
       }

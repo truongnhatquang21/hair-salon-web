@@ -43,8 +43,8 @@ export default withSentryConfig(
     // Suppresses source map uploading logs during build
     silent: true,
     // FIXME: Add your Sentry organization and project names
-    org: 'nextjs-boilerplate-org',
-    project: 'nextjs-boilerplate',
+    org: 'EDULIGHT',
+    project: 'javascript-nextjs',
   },
   {
     // For all available options, see:
@@ -57,7 +57,7 @@ export default withSentryConfig(
     transpileClientSDK: true,
 
     // Routes browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers (increases server load)
-    tunnelRoute: '/monitoring',
+    tunnelRoute: '/monitoring-tunnel',
 
     // Hides source maps from generated client bundles
     hideSourceMaps: true,
