@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button';
 import { getTranslations } from 'next-intl/server';
 
 export async function generateMetadata(props: { params: { locale: string } }) {
@@ -13,5 +14,7 @@ export async function generateMetadata(props: { params: { locale: string } }) {
 }
 
 export default function Index() {
-  return <div>Hello from page unAuth</div>;
+  return <div>
+    <Button  variant={"destructive"}>hjdsfh</Button>
+     </div>;
 }

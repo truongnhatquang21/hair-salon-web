@@ -35,6 +35,7 @@
         "project": "./tsconfig.json"
       },
       "rules": {
+        "node/global-require": "off",
         "prettier/prettier": [
           "error",
           {
@@ -42,6 +43,10 @@
             "endOfLine": "auto"
           }
         ], // Avoid conflict rule between Prettier and Airbnb Eslint
+        "import/no-extraneous-dependencies": [
+          "error",
+          { "devDependencies": true }
+        ],
         "import/extensions": "off", // Avoid missing file extension errors, TypeScript already provides a similar feature
         "react/function-component-definition": "off", // Disable Airbnb's specific function type
         "react/destructuring-assignment": "off", // Vscode doesn't support automatically destructuring, it's a pain to add a new variable
