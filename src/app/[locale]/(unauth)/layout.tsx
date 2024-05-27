@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 
 import LocaleSwitcher from '@/components/LocaleSwitcher';
+import { Button } from '@/components/ui/button';
 import { BaseTemplate } from '@/templates/BaseTemplate';
 
 export default function Layout(props: { children: React.ReactNode }) {
@@ -38,14 +39,7 @@ export default function Layout(props: { children: React.ReactNode }) {
             </Link>
 
             <li>
-              <button
-                type="button"
-                onClick={() => {
-                  throw new Error('Sentry Frontend Error');
-                }}
-              >
-                Throw error to test Sentry
-              </button>
+              <Button variant="destructive">hjdsfh</Button>
             </li>
           </li>
         </>
