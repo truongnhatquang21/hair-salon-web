@@ -1,10 +1,9 @@
-import { SignUp } from '@clerk/nextjs';
 import { getTranslations } from 'next-intl/server';
 
 export async function generateMetadata(props: { params: { locale: string } }) {
   const t = await getTranslations({
     locale: props.params.locale,
-    namespace: 'SignUp',
+    namespace: 'SignIn',
   });
 
   return {
@@ -13,6 +12,6 @@ export async function generateMetadata(props: { params: { locale: string } }) {
   };
 }
 
-const SignUpPage = () => <SignUp />;
+const SignInPage = () => <div>SignIn page</div>;
 
-export default SignUpPage;
+export default SignInPage;
