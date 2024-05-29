@@ -1,9 +1,22 @@
 'use client';
 
+// eslint-disable-next-line
+import { Copy } from 'lucide-react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 
 import LocaleSwitcher from '@/components/LocaleSwitcher';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { BaseTemplate } from '@/templates/BaseTemplate';
 
 export default function Layout(props: { children: React.ReactNode }) {
@@ -38,14 +51,33 @@ export default function Layout(props: { children: React.ReactNode }) {
             </Link>
 
             <li>
-              <button
-                type="button"
-                onClick={() => {
-                  throw new Error('Sentry Frontend Error');
-                }}
-              >
-                Throw error to test Sentry
-              </button>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="outline">Share</Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>Share link</DialogTitle>
+                    <DialogDescription>
+                      Anyone who has this link will be able to view this.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="flex items-center space-x-2">
+                    <div className="grid flex-1 gap-2">test</div>
+                    <Button type="submit" size="sm" className="px-3">
+                      <span className="sr-only">Copy</span>
+                      <Copy className="size-4" />
+                    </Button>
+                  </div>
+                  <DialogFooter className="sm:justify-start">
+                    <DialogClose asChild>
+                      <Button type="button" variant="secondary">
+                        Close
+                      </Button>
+                    </DialogClose>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             </li>
           </li>
         </>
