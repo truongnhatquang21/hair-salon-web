@@ -1,84 +1,199 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import * as React from "react";
+import { type SubmitHandler, useForm } from "react-hook-form";
+import { z } from "zod";
 
-import { cn } from "@/libs/utils";
 import { Icons } from "@/components/icons";
-import { Label } from "./ui/label";
-import { Input } from "./ui/input";
+import { cn } from "@/libs/utils";
+
 import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
 
-interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
+interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {
+  type: "sign-in" | "sign-up";
+}
 
-export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
-  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+const SignUpSchema = z
+  .object({
+    email: z.string().email(),
+    password: z.string().min(3).max(20),
+    username: z.string().min(0).max(10).optional(),
+    passwordConfirm: z.string().min(3).max(20),
+  })
+  .refine((data) => data.password === data.passwordConfirm, {
+    message: "Passwords do not match",
+    path: ["passwordConfirm"],
+  });
+const SignInSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(3).max(20),
+});
 
-  async function onSubmit(event: React.SyntheticEvent) {
-    event.preventDefault();
-    setIsLoading(true);
+type SignUpSchemaType = z.infer<typeof SignUpSchema>;
+type SignInSchemaType = z.infer<typeof SignInSchema>;
+export function UserAuthForm({
+  className,
+  type = "sign-up",
+  ...props
+}: UserAuthFormProps) {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<SignUpSchemaType | SignInSchemaType>({
+    resolver: zodResolver(type === "sign-up" ? SignUpSchema : SignInSchema),
+    defaultValues: {},
+  });
+  console.log(isSubmitting);
 
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 3000);
-  }
+  const onSubmit: SubmitHandler<SignUpSchemaType | SignInSchemaType> = async (
+    data
+  ) => {
+    console.log(data);
+    // await new Promise((resolve) =>
+    //   setTimeout(() => {
+    //     resolve("aaa");
+    //   }, 3000)
+    // );
+    console.log("lll");
+  };
 
   return (
     <div className={cn("grid gap-6", className)} {...props}>
-      <form onSubmit={onSubmit}>
-        <div className="grid gap-2">
-          <div className="grid gap-1">
-            <Label className="sr-only" htmlFor="email">
-              Email
+      <form onSubmit={handleSubmit(onSubmit)} noValidate>
+        <div className="grid gap-3">
+          <div className="grid gap-2">
+            <Label
+              className={cn(
+                "flex items-center justify-start gap-1",
+                errors.email && "text-destructive"
+              )}
+              htmlFor="email"
+            >
+              <span>Email</span>
+              <span className="font-medium text-destructive">*</span>
             </Label>
             <Input
+              {...register("email")}
               id="email"
+              className={cn(
+                errors.email &&
+                  "ring-offset-destructive  focus-visible:ring-0 border-destructive  text-destructive"
+              )}
               placeholder="name@example.com"
               type="email"
               autoCapitalize="none"
               autoComplete="email"
               autoCorrect="off"
-              disabled={isLoading}
+              disabled={isSubmitting}
             />
+            {errors.email && (
+              <span className="text-xs capitalize text-destructive">
+                {errors.email?.message}
+              </span>
+            )}
           </div>
-          <div className="grid gap-1">
-            <Label className="sr-only" htmlFor="username">
-              Username
+          {type === "sign-up" && (
+            <div className="grid gap-2">
+              <Label
+                className={cn(
+                  "flex items-center justify-start gap-1",
+                  errors?.username && "text-destructive"
+                )}
+                htmlFor="username"
+              >
+                <span>Username</span>
+                <span className="font-medium ">(Optional)</span>
+              </Label>
+              <Input
+                {...register("username")}
+                id="username"
+                placeholder="username"
+                type="text"
+                disabled={isSubmitting}
+                className={cn(
+                  errors.username &&
+                    "ring-offset-destructive  focus-visible:ring-0 border-destructive  text-destructive"
+                )}
+              />
+              {errors.username && (
+                <span className="text-xs capitalize text-destructive">
+                  {errors.username?.message}
+                </span>
+              )}
+            </div>
+          )}
+          <div className="grid gap-2">
+            <Label
+              className={cn(
+                "flex items-center justify-start gap-1",
+                errors.password && "text-destructive"
+              )}
+              htmlFor="password"
+            >
+              <span>Password</span>
+              <span className="font-medium text-red-500">*</span>
             </Label>
             <Input
-              id="username"
-              placeholder="username"
-              type="text"
-              disabled={isLoading}
-            />
-          </div>
-          <div className="grid gap-1">
-            <Label className="sr-only" htmlFor="password">
-              password
-            </Label>
-            <Input
+              {...register("password")}
               id="password"
               placeholder="Password"
+              className={cn(
+                errors.password &&
+                  "ring-offset-destructive  focus-visible:ring-0 border-destructive  text-destructive"
+              )}
               type="password"
-              disabled={isLoading}
+              disabled={isSubmitting}
             />
-          </div>
-          <div className="grid gap-1">
-            <Label className="sr-only" htmlFor="passwordConfirm">
-              passwordConfirm
-            </Label>
-            <Input
-              id="passwordConfirm"
-              placeholder="Confirm your password"
-              type="password"
-              disabled={isLoading}
-            />
-          </div>
-
-          <Button variant={"default"} className="bg-black" type="submit">
-            {isLoading && (
-              <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+            {errors.password && (
+              <span className="text-xs capitalize text-destructive">
+                {errors.password?.message}
+              </span>
             )}
-            Create your account
+          </div>
+          {type === "sign-up" && (
+            <div className="grid gap-2">
+              <Label
+                className={cn(
+                  "flex items-center justify-start gap-1",
+                  errors.passwordConfirm && "text-destructive"
+                )}
+                htmlFor="passwordConfirm"
+              >
+                <span>Password Confirmation</span>
+                <span className="font-medium text-red-500">*</span>
+              </Label>
+              <Input
+                {...register("passwordConfirm")}
+                className={cn(
+                  errors.passwordConfirm &&
+                    "ring-offset-destructive  focus-visible:ring-0 border-destructive  text-destructive"
+                )}
+                id="passwordConfirm"
+                placeholder="Confirm your password"
+                type="password"
+              />
+              {errors.passwordConfirm && (
+                <span className="text-xs capitalize text-destructive">
+                  {errors.passwordConfirm?.message}
+                </span>
+              )}
+            </div>
+          )}
+
+          <Button
+            variant="default"
+            className="mt-2 "
+            type="submit"
+            disabled={isSubmitting}
+          >
+            {isSubmitting && (
+              <Icons.spinner className="mr-2 size-4 animate-spin" />
+            )}
+            {type === "sign-up" ? "Create your account" : "Sign in"}
           </Button>
         </div>
       </form>
@@ -92,11 +207,11 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
           </span>
         </div>
       </div>
-      <Button variant="outline" type="button" disabled={isLoading}>
-        {isLoading ? (
-          <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+      <Button variant="outline" type="button">
+        {isSubmitting ? (
+          <Icons.spinner className="mr-2 size-4 animate-spin" />
         ) : (
-          <Icons.gitHub className="mr-2 h-4 w-4" />
+          <Icons.gitHub className="mr-2 size-4" />
         )}{" "}
         GitHub
       </Button>

@@ -23,8 +23,7 @@
     "prepare": "husky"
   },
   "dependencies": {
-
-    "@hookform/resolvers": "^3.3.4",
+    "@hookform/resolvers": "^3.4.2",
     "@logtail/pino": "^0.4.21",
     "@radix-ui/react-dialog": "^1.0.5",
     "@radix-ui/react-label": "^2.0.2",
@@ -45,11 +44,11 @@
     "pino-pretty": "^11.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-hook-form": "^7.51.2",
+    "react-hook-form": "^7.51.5",
     "sharp": "^0.33.3",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
-    "zod": "^3.22.4"
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.2.1",
