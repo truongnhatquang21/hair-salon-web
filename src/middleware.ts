@@ -1,12 +1,11 @@
+/* eslint-disable consistent-return */
 // import { defaultLocale, localePrefix, locales } from "./messages/config";
 import type { NextRequest } from "next/server";
-import createIntlMiddleware from "next-intl/middleware";
+import createMiddleware from "next-intl/middleware";
 
 import { auth } from "@/auth";
-import createMiddleware from "next-intl/middleware";
+
 import { AppConfig } from "./utils/AppConfig";
-import NextAuth from "next-auth";
-import { authConfig } from "./auth.config";
 
 const intlMiddleware = createMiddleware({
   locales: AppConfig.locales,
@@ -54,9 +53,8 @@ export default function middleware(req: NextRequest) {
 
   if (isPublicPage) {
     return intlMiddleware(req);
-  } else {
-    return (authMiddleware as any)(req);
   }
+  return (authMiddleware as any)(req);
 }
 
 export const config = {

@@ -1,8 +1,10 @@
-import { signIn } from "@/auth";
 import { AuthError } from "next-auth";
+
+import { signIn } from "@/auth";
 
 // ...
 
+// eslint-disable-next-line consistent-return
 export async function authenticate(formData: FormData) {
   try {
     await signIn("credentials", formData);

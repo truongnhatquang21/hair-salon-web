@@ -39,8 +39,9 @@
         "prettier/prettier": [
           "error",
           {
-            "singleQuote": true,
-            "endOfLine": "auto"
+            "singleQuote": false,
+            "endOfLine": "auto",
+            "trailingComma": "es5"
           }
         ], // Avoid conflict rule between Prettier and Airbnb Eslint
         "import/no-extraneous-dependencies": [

@@ -1,9 +1,12 @@
 import { Env } from "@/libs/Env.mjs";
+
 class ApiClient<T> {
   private baseUrl: string;
+
   constructor(baseUrl: string) {
     this.baseUrl = baseUrl;
   }
+
   async fetch<U>(url: string, method: string, data?: T): Promise<U> {
     const response = await fetch(`${this.baseUrl}${url}`, {
       method,
@@ -33,7 +36,7 @@ class ApiClient<T> {
     return this.fetch<U>(url, "PUT", data);
   }
 
-  async delete<U>(url: string): Promise<void> {
+  async delete(url: string): Promise<void> {
     return this.fetch<void>(url, "DELETE");
   }
 }

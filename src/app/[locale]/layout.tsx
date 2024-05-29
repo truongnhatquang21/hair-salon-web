@@ -1,12 +1,13 @@
 import "@/styles/global.css";
 
+import { GeistMono } from "geist/font/mono";
+import { GeistSans } from "geist/font/sans";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider, useMessages } from "next-intl";
-import { Inter as FontSans } from "next/font/google";
+
 import { AppConfig } from "@/utils/AppConfig";
-import { GeistSans } from "geist/font/sans";
-import { GeistMono } from "geist/font/mono";
+
 export const metadata: Metadata = {
   icons: [
     {
