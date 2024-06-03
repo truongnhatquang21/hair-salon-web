@@ -6,6 +6,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider, useMessages } from "next-intl";
 
+import AuthProvider from "@/Contexts/NextAuthProvider";
+import Providers from "@/Contexts/TanstackProvider";
 import { AppConfig } from "@/utils/AppConfig";
 
 export const metadata: Metadata = {
@@ -41,6 +43,7 @@ export default function RootLayout(props: {
 
   // Using internationalization in Client Components
   const messages = useMessages();
+  // const session = getServerSession(authConfig);
 
   return (
     <html
@@ -52,7 +55,13 @@ export default function RootLayout(props: {
           locale={props.params.locale}
           messages={messages}
         >
-          {props.children}
+          <Providers>
+            <AuthProvider>
+              <div className="mx-auto max-w-7xl border-x border-dashed  ">
+                {props.children}
+              </div>
+            </AuthProvider>
+          </Providers>
         </NextIntlClientProvider>
       </body>
     </html>

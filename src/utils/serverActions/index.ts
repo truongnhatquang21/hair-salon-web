@@ -1,13 +1,18 @@
+"use server";
+
 import { AuthError } from "next-auth";
 
-import { signIn } from "@/auth";
-
+import { signIn, signOut } from "@/auth";
 // ...
 
 // eslint-disable-next-line consistent-return
-export async function authenticate(formData: FormData) {
+export async function authenticate(formData: FormData | any) {
   try {
-    await signIn("credentials", formData);
+    const res = await signIn("Credentials", {
+      ...formData,
+      redirectTo: "/",
+    });
+    return res;
   } catch (error) {
     if (error instanceof AuthError) {
       switch (error.type) {
@@ -19,4 +24,7 @@ export async function authenticate(formData: FormData) {
     }
     throw error;
   }
+}
+export async function signOutFn() {
+  await signOut();
 }

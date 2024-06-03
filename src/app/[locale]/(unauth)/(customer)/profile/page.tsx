@@ -1,11 +1,11 @@
 import { getTranslations } from "next-intl/server";
+import React from "react";
 
-import { Button } from "@/components/ui/button";
-
+type Props = {};
 export async function generateMetadata(props: { params: { locale: string } }) {
   const t = await getTranslations({
     locale: props.params.locale,
-    namespace: "Index",
+    namespace: "profile",
   });
 
   return {
@@ -14,10 +14,8 @@ export async function generateMetadata(props: { params: { locale: string } }) {
   };
 }
 
-export default function Index() {
-  return (
-    <div>
-      <Button variant="destructive">hjdsfh</Button>
-    </div>
-  );
-}
+const Profile = (props: Props) => {
+  return <div>Profile</div>;
+};
+
+export default Profile;

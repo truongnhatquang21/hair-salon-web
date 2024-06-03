@@ -1,10 +1,10 @@
 /* eslint-disable consistent-return */
 // import { defaultLocale, localePrefix, locales } from "./messages/config";
 import type { NextRequest } from "next/server";
+import NextAuth from "next-auth";
 import createMiddleware from "next-intl/middleware";
 
-import { auth } from "@/auth";
-
+import { authOptions } from "./app/api/auth/[...nextAuth]/route";
 import { AppConfig } from "./utils/AppConfig";
 
 const intlMiddleware = createMiddleware({
@@ -34,12 +34,12 @@ const publicPages = [
   "/terms-of-service",
   "/cookie-policy",
   "/end-user-license-agreement",
+  // "/profile",
 ];
 
-const authMiddleware = auth((req) => {
-  // private routes here
+const authMiddleware = NextAuth(authOptions).auth((req) => {
   const session = req.auth;
-
+  console.log("found session", session);
   if (session) {
     return intlMiddleware(req);
   }
