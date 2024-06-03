@@ -1,14 +1,13 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
-import { signIn } from "next-auth/react";
 import * as React from "react";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { Icons } from "@/components/icons";
 import { cn } from "@/libs/utils";
+import { signInServer } from "@/utils/serverActions";
 
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -49,23 +48,18 @@ export function UserAuthForm({
     resolver: zodResolver(type === "sign-up" ? SignUpSchema : SignInSchema),
     defaultValues: {},
   });
-  const router = useRouter();
 
   const onSubmit: SubmitHandler<SignUpSchemaType | SignInSchemaType> = async (
     data
   ) => {
-    try {
-      console.log(data);
+    const res = await signInServer(data);
 
-      const data1 = await signIn("credentials", {
-        ...data,
-        redirect: false,
-      });
-      console.log(data1, "kkk");
-      // router.replace("/");
-    } catch (error) {
-      console.log(error);
-    }
+    // const data1 = await signIn("credentials", {
+    //   ...data,
+    //   redirect: true,
+    // });
+    // console.log(data1, "kkk");
+    // router.replace("/");
   };
 
   return (

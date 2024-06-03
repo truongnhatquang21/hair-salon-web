@@ -1,12 +1,13 @@
-"use client";
-
+// eslint-disable-next-line
+import { auth } from "@/auth";
 import Footer from "@/components/Footer";
 import { MainNav } from "@/components/MainNav";
 import type { NavItem } from "@/types/nav";
 
-// eslint-disable-next-line
+export default async function Layout(props: { children: React.ReactNode }) {
+  const session = await auth();
+  console.log("session", session);
 
-export default function Layout(props: { children: React.ReactNode }) {
   // const t = useTranslations("RootLayout");
   const NavItems: NavItem[] = [
     {
@@ -28,7 +29,7 @@ export default function Layout(props: { children: React.ReactNode }) {
   ];
   return (
     <div className="flex min-h-screen w-full flex-col">
-      <MainNav items={NavItems} />
+      <MainNav items={NavItems} session={session} />
       <div className="flex-1">{props.children}</div>
       <Footer />
     </div>

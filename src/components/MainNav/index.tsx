@@ -1,12 +1,15 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { signOut, useSession } from "next-auth/react";
+import type { Session } from "next-auth";
 import * as React from "react";
 
 import { cn } from "@/libs/utils";
 import logo from "@/public/assets/images/logo.png";
 import type { NavItem } from "@/types/nav";
+import { signOutServer } from "@/utils/serverActions";
 
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
@@ -21,10 +24,10 @@ import {
 
 interface MainNavProps {
   items?: NavItem[];
+  session: Session;
 }
-export function MainNav({ items }: MainNavProps) {
+export function MainNav({ items, session }: MainNavProps) {
   const pathname = usePathname();
-  const { data: session } = useSession();
 
   return (
     <div className=" flex items-center gap-6 rounded-md  border-b  px-4 shadow-sm backdrop-blur-md md:gap-10">
@@ -32,6 +35,7 @@ export function MainNav({ items }: MainNavProps) {
         href="/"
         className="flex items-center gap-0  border-r-2 border-foreground font-sans text-xl font-extrabold  "
       >
+        {session?.user?.email}
         <span className="relative -right-4 inline-block  uppercase ">Batm</span>
         <Image
           src={logo}
@@ -101,7 +105,7 @@ export function MainNav({ items }: MainNavProps) {
                   variant="destructive"
                   className="w-full"
                   onClick={() => {
-                    signOut();
+                    signOutServer();
                   }}
                 >
                   Sign Out

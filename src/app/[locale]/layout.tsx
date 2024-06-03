@@ -6,7 +6,6 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider, useMessages } from "next-intl";
 
-import AuthProvider from "@/Contexts/NextAuthProvider";
 import Providers from "@/Contexts/TanstackProvider";
 import { AppConfig } from "@/utils/AppConfig";
 
@@ -56,11 +55,9 @@ export default function RootLayout(props: {
           messages={messages}
         >
           <Providers>
-            <AuthProvider>
-              <div className="mx-auto max-w-7xl border-x border-dashed  ">
-                {props.children}
-              </div>
-            </AuthProvider>
+            <div className="mx-auto max-w-7xl border-x border-dashed  ">
+              {props.children}
+            </div>
           </Providers>
         </NextIntlClientProvider>
       </body>

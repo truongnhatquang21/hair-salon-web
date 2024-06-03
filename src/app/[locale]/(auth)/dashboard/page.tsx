@@ -1,6 +1,5 @@
 "use client ";
 
-import { useSession } from "next-auth/react";
 import { getTranslations } from "next-intl/server";
 
 import { Hello } from "@/components/Hello";
@@ -17,8 +16,6 @@ export async function generateMetadata(props: { params: { locale: string } }) {
 }
 
 const Dashboard = () => {
-  const session = useSession;
-  console.log(session, "KOOO");
   return (
     <div className="[&_p]:my-6">
       <Hello />

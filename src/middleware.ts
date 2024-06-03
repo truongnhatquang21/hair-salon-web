@@ -1,10 +1,10 @@
 /* eslint-disable consistent-return */
 // import { defaultLocale, localePrefix, locales } from "./messages/config";
-import type { NextRequest } from "next/server";
-import NextAuth from "next-auth";
+import { type NextRequest, NextResponse } from "next/server";
 import createMiddleware from "next-intl/middleware";
 
-import { authOptions } from "./app/api/auth/[...nextAuth]/route";
+import { auth } from "./auth";
+// import { authOptions } from "./app/api/auth/[...nextauth]/route";
 import { AppConfig } from "./utils/AppConfig";
 
 const intlMiddleware = createMiddleware({
@@ -37,13 +37,16 @@ const publicPages = [
   // "/profile",
 ];
 
-const authMiddleware = NextAuth(authOptions).auth((req) => {
+const authMiddleware = auth((req) => {
   const session = req.auth;
   console.log("found session", session);
   if (session) {
     return intlMiddleware(req);
   }
+  console.log("redirecting to");
+  return NextResponse.redirect(new URL("/", req.nextUrl));
 });
+
 export default function middleware(req: NextRequest) {
   const publicPathnameRegex = RegExp(
     `^(/(${["en", "fr"].join("|")}))?(${publicPages.flatMap((p) => (p === "/" ? ["", "/"] : p)).join("|")})/?$`,
