@@ -39,12 +39,12 @@ const publicPages = [
 
 const authMiddleware = auth((req) => {
   const session = req.auth;
-  console.log("found session", session);
+
   if (session) {
     return intlMiddleware(req);
   }
-  console.log("redirecting to");
-  return NextResponse.redirect(new URL("/", req.nextUrl));
+
+  return NextResponse.redirect(new URL("/sign-in", req.nextUrl));
 });
 
 export default function middleware(req: NextRequest) {

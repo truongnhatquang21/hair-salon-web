@@ -52,14 +52,10 @@ export function UserAuthForm({
   const onSubmit: SubmitHandler<SignUpSchemaType | SignInSchemaType> = async (
     data
   ) => {
-    const res = await signInServer(data);
-
-    // const data1 = await signIn("credentials", {
-    //   ...data,
-    //   redirect: true,
-    // });
-    // console.log(data1, "kkk");
-    // router.replace("/");
+    await signInServer({
+      ...data,
+      redirectTo: "/me",
+    });
   };
 
   return (

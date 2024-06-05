@@ -15,7 +15,7 @@ export async function generateMetadata(props: { params: { locale: string } }) {
 }
 
 const Profile = (props: Props) => {
-  return <div>Profile</div>;
+  return <div>emty page</div>;
 };
 
 export default Profile;

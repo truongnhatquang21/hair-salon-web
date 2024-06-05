@@ -24,7 +24,7 @@ import {
 
 interface MainNavProps {
   items?: NavItem[];
-  session: Session;
+  session?: Session;
 }
 export function MainNav({ items, session }: MainNavProps) {
   const pathname = usePathname();
@@ -35,7 +35,6 @@ export function MainNav({ items, session }: MainNavProps) {
         href="/"
         className="flex items-center gap-0  border-r-2 border-foreground font-sans text-xl font-extrabold  "
       >
-        {session?.user?.email}
         <span className="relative -right-4 inline-block  uppercase ">Batm</span>
         <Image
           src={logo}
@@ -97,7 +96,7 @@ export function MainNav({ items, session }: MainNavProps) {
               <DropdownMenuSeparator />
               <DropdownMenuItem>
                 <Button variant="outline" asChild>
-                  <Link href="/profile">Profile and settings</Link>
+                  <Link href="/me/account">Profile and settings</Link>
                 </Button>
               </DropdownMenuItem>
               <DropdownMenuItem>
