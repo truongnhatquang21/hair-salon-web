@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import type { Session } from "next-auth";
 import * as React from "react";
 
-import { cn } from "@/libs/utils";
+import { cn } from "@/lib/utils";
 import logo from "@/public/assets/images/logo.png";
 import type { NavItem } from "@/types/nav";
 import { signOutServer } from "@/utils/serverActions";
@@ -35,13 +35,15 @@ export function MainNav({ items, session }: MainNavProps) {
         href="/"
         className="flex items-center gap-0  border-r-2 border-foreground font-sans text-xl font-extrabold  "
       >
-        <span className="relative -right-4 inline-block  uppercase ">Batm</span>
+        <span className="relative -right-4 inline-block  uppercase ">
+          Bookm
+        </span>
         <Image
           src={logo}
           alt="logo"
           className="h-14 w-auto  rotate-180 object-contain "
         />
-        <span className="relative -left-4 inline-block  uppercase ">nton</span>
+        <span className="relative -left-4 inline-block  uppercase ">nton </span>
       </Link>
       {items?.length ? (
         <nav className="flex gap-4 py-6 md:gap-10">
@@ -55,6 +57,9 @@ export function MainNav({ items, session }: MainNavProps) {
                     "border-b-2 bod border-transparent  p-1 flex items-center text-sm transition-all ease-in-out duration-200 font-light ",
                     item.disabled && "cursor-not-allowed opacity-80",
                     item.href === pathname &&
+                      "font-bold  scale-125 border-popover-foreground",
+                    pathname.includes(item.href) &&
+                      item.href !== "/" &&
                       "font-bold  scale-125 border-popover-foreground"
                   )}
                 >
@@ -91,15 +96,15 @@ export function MainNav({ items, session }: MainNavProps) {
                 <AvatarFallback>CN</AvatarFallback>
               </Avatar>
             </DropdownMenuTrigger>
-            <DropdownMenuContent>
+            <DropdownMenuContent className="flex flex-col gap-2 px-2">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
+              <DropdownMenuItem asChild>
                 <Button variant="outline" asChild>
                   <Link href="/me/account">Profile and settings</Link>
                 </Button>
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem asChild>
                 <Button
                   variant="destructive"
                   className="w-full"

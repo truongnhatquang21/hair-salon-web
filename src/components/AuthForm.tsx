@@ -6,7 +6,7 @@ import { type SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { Icons } from "@/components/icons";
-import { cn } from "@/libs/utils";
+import { cn } from "@/lib/utils";
 import { signInServer } from "@/utils/serverActions";
 
 import { Button } from "./ui/button";
