@@ -65,7 +65,7 @@ const CheckItem = ({ text }: { text: string }) => (
     <p className="pt-0.5 text-sm text-zinc-700 dark:text-zinc-300">{text}</p>
   </div>
 );
-const PricingCard = ({
+export const PricingCard = ({
   isYearly,
   title,
   monthlyPrice,

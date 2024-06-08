@@ -34,6 +34,7 @@ const publicPages = [
   "/terms-of-service",
   "/cookie-policy",
   "/end-user-license-agreement",
+  "/subscriptions",
   // "/profile",
 ];
 

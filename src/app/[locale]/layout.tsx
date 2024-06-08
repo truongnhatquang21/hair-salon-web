@@ -7,6 +7,7 @@ import { notFound } from "next/navigation";
 import { NextIntlClientProvider, useMessages } from "next-intl";
 
 import Providers from "@/Contexts/TanstackProvider";
+import { ThemeProvider } from "@/Contexts/theme-provider";
 import { AppConfig } from "@/utils/AppConfig";
 
 export const metadata: Metadata = {
@@ -54,11 +55,13 @@ export default function RootLayout(props: {
           locale={props.params.locale}
           messages={messages}
         >
-          <Providers>
-            <div className="mx-auto max-w-7xl border-x border-dashed  ">
-              {props.children}
-            </div>
-          </Providers>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            <Providers>
+              <div className="mx-auto max-w-7xl border-x border-dashed  ">
+                {props.children}
+              </div>
+            </Providers>
+          </ThemeProvider>
         </NextIntlClientProvider>
       </body>
     </html>
