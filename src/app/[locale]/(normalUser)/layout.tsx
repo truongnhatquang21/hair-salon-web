@@ -31,9 +31,9 @@ export default async function Layout(props: { children: React.ReactNode }) {
     },
   ];
   return (
-    <div className="flex min-h-screen w-full flex-col">
+    <div className="mx-auto flex min-h-screen w-full max-w-7xl flex-col border-x border-dashed ">
       <MainNav items={NavItems} session={session as Session} />
-      <div className="flex-1 p-2 ">{props.children}</div>
+      <div className="p-2 py-4">{props.children}</div>
       <Footer />
     </div>
   );

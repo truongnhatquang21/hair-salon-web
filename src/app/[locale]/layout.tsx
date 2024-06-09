@@ -57,9 +57,7 @@ export default function RootLayout(props: {
         >
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <Providers>
-              <div className="mx-auto max-w-7xl border-x border-dashed  ">
-                {props.children}
-              </div>
+              <div className="mx-auto  ">{props.children}</div>
             </Providers>
           </ThemeProvider>
         </NextIntlClientProvider>

@@ -37,11 +37,11 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
         </p>
       </div>
       {/* <Separator className="my-2" /> */}
-      <div className="flex w-full flex-col gap-4 rounded-md border border-dashed  p-4 shadow-sm lg:flex-row">
+      <div className="flex w-full flex-col gap-4  rounded-md border border-dashed  p-4 shadow-sm lg:flex-row">
         <aside className=" rounded-md border-r pr-3 lg:w-1/5  ">
           <SidebarNav items={sidebarNavItems} />
         </aside>
-        <div className="max-w-xl flex-1">{children}</div>
+        <div className="max-w-xl flex-1 ">{children}</div>
       </div>
     </div>
   );

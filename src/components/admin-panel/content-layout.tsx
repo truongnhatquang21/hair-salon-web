@@ -7,9 +7,11 @@ interface ContentLayoutProps {
 
 export function ContentLayout({ title, children }: ContentLayoutProps) {
   return (
-    <div>
+    <div className="relative w-full">
       <Navbar title={title} />
-      <div className="container px-4 py-8 sm:px-8">{children}</div>
+      <div className="container  size-full overflow-auto px-4 py-8 sm:px-8">
+        {children}
+      </div>
     </div>
   );
 }

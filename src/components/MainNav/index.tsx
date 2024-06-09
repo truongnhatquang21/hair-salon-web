@@ -8,6 +8,7 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 import logo from "@/public/assets/images/logo.png";
+import { RoleEnum } from "@/types";
 import type { NavItem } from "@/types/nav";
 import { signOutServer } from "@/utils/serverActions";
 
@@ -99,11 +100,19 @@ export function MainNav({ items, session }: MainNavProps) {
             <DropdownMenuContent className="flex flex-col gap-2 px-2">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuSeparator />
+
               <DropdownMenuItem asChild>
                 <Button variant="outline" asChild>
                   <Link href="/me/account">Profile and settings</Link>
                 </Button>
               </DropdownMenuItem>
+              {session.user.role !== RoleEnum.CUSTOMER && (
+                <DropdownMenuItem asChild>
+                  <Button variant="default" asChild>
+                    <Link href="/dashboard">Dashboard</Link>
+                  </Button>
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem asChild>
                 <Button
                   variant="destructive"

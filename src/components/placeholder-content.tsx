@@ -1,33 +1,31 @@
 import Image from "next/image";
-import Link from "next/link";
 
 import { Card, CardContent } from "@/components/ui/card";
+import placeholderImg from "@/public/assets/images/placeholder.png";
 
-export default function PlaceholderContent() {
+export default function PlaceholderContent({
+  children = null,
+}: {
+  children?: React.ReactNode;
+}) {
   return (
-    <Card className="mt-6 rounded-lg border-none">
-      <CardContent className="p-6">
-        <div className="flex min-h-[calc(100vh-56px-64px-20px-24px-56px-48px)] items-center justify-center">
-          <div className="relative flex flex-col">
+    <Card className="mt-6 h-full overflow-auto rounded-lg border-none">
+      <CardContent className="h-full overflow-auto p-6">
+        {!children ? (
+          <div className="flex min-h-[calc(100vh-56px-64px-20px-24px-56px-48px)] items-center justify-center">
             <Image
-              src="/placeholder.png"
+              src={placeholderImg}
               alt="Placeholder Image"
               width={500}
               height={500}
               priority
             />
-            <div className="absolute -bottom-8 right-0">
-              <Link
-                href="https://www.freepik.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xs text-muted-foreground"
-              >
-                Designed by Freepik
-              </Link>
-            </div>
           </div>
-        </div>
+        ) : (
+          <div className="min-h-[calc(100vh-56px-64px-20px-24px-56px-48px)] ">
+            {children}
+          </div>
+        )}
       </CardContent>
     </Card>
   );

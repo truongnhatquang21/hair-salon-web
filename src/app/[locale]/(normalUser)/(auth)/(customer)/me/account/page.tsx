@@ -3,7 +3,7 @@ import { Separator } from "@/components/ui/separator";
 
 export default function SettingsAccountPage() {
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 ">
       <div>
         <h3 className="text-lg font-medium">Account</h3>
         <p className="text-sm text-muted-foreground">
@@ -12,7 +12,9 @@ export default function SettingsAccountPage() {
         </p>
       </div>
       <Separator />
-      <AccountAutoForm />
+      <div className="flex-1 ">
+        <AccountAutoForm />
+      </div>
     </div>
   );
 }
