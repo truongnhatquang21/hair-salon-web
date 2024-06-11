@@ -1,4 +1,5 @@
 import { z } from "zod";
+
 import AutoForm from "../index";
 
 describe("<AutoForm />", () => {
@@ -51,7 +52,7 @@ describe("<AutoForm />", () => {
           },
         }}
         formSchema={formSchema}
-      />,
+      />
     );
 
     cy.get("label").contains("My field name");
@@ -72,13 +73,13 @@ describe("<AutoForm />", () => {
             },
           },
         }}
-      />,
+      />
     );
 
     cy.get("input[name=username]").should(
       "have.attr",
       "placeholder",
-      "Enter your username",
+      "Enter your username"
     );
   });
 
@@ -95,7 +96,7 @@ describe("<AutoForm />", () => {
             fieldType: "number",
           },
         }}
-      />,
+      />
     );
 
     cy.get("input").should("have.attr", "type", "number");
@@ -116,7 +117,7 @@ describe("<AutoForm />", () => {
         }}
       >
         <button type="submit">Submit</button>
-      </AutoForm>,
+      </AutoForm>
     );
 
     cy.get("input[name=username]").type("john");
@@ -136,7 +137,7 @@ describe("<AutoForm />", () => {
         }}
       >
         <button type="submit">Submit</button>
-      </AutoForm>,
+      </AutoForm>
     );
 
     cy.get("button[type=submit]").click();
@@ -167,7 +168,7 @@ describe("<AutoForm />", () => {
         }}
       >
         <button type="submit">Submit</button>
-      </AutoForm>,
+      </AutoForm>
     );
 
     cy.get("button[type=submit]").click();
@@ -188,7 +189,7 @@ describe("<AutoForm />", () => {
         }}
       >
         <button type="submit">Submit</button>
-      </AutoForm>,
+      </AutoForm>
     );
 
     cy.get("input[name=username]").should("have.value", "");
@@ -208,7 +209,7 @@ describe("<AutoForm />", () => {
             description: "Your username here",
           },
         }}
-      />,
+      />
     );
 
     cy.get("p").contains("Your username here");
@@ -224,7 +225,7 @@ describe("<AutoForm />", () => {
 
     cy.mount(<AutoForm formSchema={formSchema} />);
 
-    //get button with text Arr
+    // get button with text Arr
     cy.get("button").contains("Arr").click();
     cy.get("input[name='arr.0.name']").should("have.value", "Haykal");
     cy.get("input[name='arr.0.age']").should("have.value", "21");

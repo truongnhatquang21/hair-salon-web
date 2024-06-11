@@ -35,6 +35,7 @@ const publicPages = [
   "/cookie-policy",
   "/end-user-license-agreement",
   "/subscriptions",
+  "/search-all-branch",
   // "/profile",
 ];
 

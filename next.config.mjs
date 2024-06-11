@@ -19,6 +19,9 @@ export default withSentryConfig(
       },
       poweredByHeader: false,
       reactStrictMode: true,
+      images: {
+        domains: ['cloudflare-ipfs.com', 'i.pinimg.com', 'babolat.com.vn'],
+      },
       experimental: {
         // Related to Pino error with RSC: https://github.com/orgs/vercel/discussions/3150
         serverComponentsExternalPackages: ['pino'],

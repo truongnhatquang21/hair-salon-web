@@ -70,5 +70,51 @@
     "dashboard_link": "Dashboard",
     "user_profile_link": "Manage your account",
     "sign_out": "Sign out"
+  },
+  "NewsLetterSignUp": {
+    "sign_up_form": "Stay up to date",
+    "sign_up_form_description": "Get updates on all of our events and be the first to get notified when System got new feature.",
+    "sign_up_form_placeholder": "Email Address",
+    "sign_up_form_button": "Sign up today",
+    "sign_up_form_title": "Sign up to our newsletter"
+  },
+  "PopularBadminton": {
+    "title": "Popular Badminton Places",
+    "description": "Get updates on all of our events and be the first to get notified when System got new feature.",
+    "loading": "Loading...",
+    "error": "Error: {error}"
+  },
+  "TopArticles": {
+    "title": "Get inspiration for your next trip",
+    "description": "Get updates on all of our events and be the first to get notified when System got new feature.",
+    "loading": "Loading...",
+    "error": "Error: {error}"
+  },
+  "HeroSection": {
+    "title": "Sharpen your reflexes, play badminton.",
+    "description": " Become a badminton beast! Transform your game with personalized coaching, drills, and top-notch gear.",
+    "loading": "Loading...",
+    "error": "Error: {error}",
+    "search_button": "Search"
+  },
+  "SearchAllBranch": {
+    "title": "Sharpen your reflexes, play badminton.",
+    "description": " Become a badminton beast! Transform your game with personalized coaching, drills, and top-notch gear.",
+    "loading": "Loading...",
+    "error": "Error: {error}",
+    "search_button": "Search",
+    "type": "Type",
+    "option_1": "2 players",
+    "option_2": "4 players",
+    "filter": "Filter",
+    "filter_label": "Appearance",
+    "filter_value_1": "Value 1",
+    "filter_value_2": "Value 2",
+    "filter_value_3": "Value 3",
+    "switch_label": "Map",
+    "where": "Where",
+    "date": "Date",
+    "time": "Time",
+    "type_placeholder": "Select a type"
   }
 }

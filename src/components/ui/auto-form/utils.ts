@@ -1,7 +1,8 @@
-import React from "react";
-import { DefaultValues } from "react-hook-form";
-import { z } from "zod";
-import { FieldConfig } from "./types";
+import type React from "react";
+import type { DefaultValues } from "react-hook-form";
+import type { z } from "zod";
+
+import type { FieldConfig } from "./types";
 
 // TODO: This should support recursive ZodEffects but TypeScript doesn't allow circular type definitions.
 export type ZodObjectOrWrapped =
@@ -60,12 +61,12 @@ export function getDefaultValueInZodStack(schema: z.ZodAny): any {
 
   if ("innerType" in typedSchema._def) {
     return getDefaultValueInZodStack(
-      typedSchema._def.innerType as unknown as z.ZodAny,
+      typedSchema._def.innerType as unknown as z.ZodAny
     );
   }
   if ("schema" in typedSchema._def) {
     return getDefaultValueInZodStack(
-      (typedSchema._def as any).schema as z.ZodAny,
+      (typedSchema._def as any).schema as z.ZodAny
     );
   }
 
@@ -77,7 +78,7 @@ export function getDefaultValueInZodStack(schema: z.ZodAny): any {
  */
 export function getDefaultValues<Schema extends z.ZodObject<any, any>>(
   schema: Schema,
-  fieldConfig?: FieldConfig<z.infer<Schema>>,
+  fieldConfig?: FieldConfig<z.infer<Schema>>
 ) {
   if (!schema) return null;
   const { shape } = schema;
@@ -91,7 +92,7 @@ export function getDefaultValues<Schema extends z.ZodObject<any, any>>(
     if (getBaseType(item) === "ZodObject") {
       const defaultItems = getDefaultValues(
         getBaseSchema(item) as unknown as z.ZodObject<any, any>,
-        fieldConfig?.[key] as FieldConfig<z.infer<Schema>>,
+        fieldConfig?.[key] as FieldConfig<z.infer<Schema>>
       );
 
       if (defaultItems !== null) {
@@ -119,7 +120,7 @@ export function getDefaultValues<Schema extends z.ZodObject<any, any>>(
 }
 
 export function getObjectFormSchema(
-  schema: ZodObjectOrWrapped,
+  schema: ZodObjectOrWrapped
 ): z.ZodObject<any, any> {
   if (schema?._def.typeName === "ZodEffects") {
     const typedSchema = schema as z.ZodEffects<z.ZodObject<any, any>>;
@@ -137,7 +138,7 @@ export function zodToHtmlInputProps(
     | z.ZodNumber
     | z.ZodString
     | z.ZodOptional<z.ZodNumber | z.ZodString>
-    | any,
+    | any
 ): React.InputHTMLAttributes<HTMLInputElement> {
   if (["ZodOptional", "ZodNullable"].includes(schema._def.typeName)) {
     const typedSchema = schema as z.ZodOptional<z.ZodNumber | z.ZodString>;
