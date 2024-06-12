@@ -54,7 +54,6 @@ export default function CalendarDaily() {
               <span>{day.getDate()}</span>
               <span className="text-xs text-gray-500 dark:text-gray-400">
                 {day.toLocaleString("default", { month: "short" })}
-                {day.getFullYear()}
               </span>
             </div>
           </Button>

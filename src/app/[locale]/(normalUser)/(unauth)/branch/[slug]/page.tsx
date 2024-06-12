@@ -2,6 +2,7 @@ import Image from "next/image";
 
 import BranchDetailOverview from "@/components/branchs/BranchDetailOverview";
 import CalendarDaily from "@/components/Custom/DailyCalendar";
+import { TimeSlot } from "@/components/TimeSlot";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Page = () => {
@@ -55,6 +56,7 @@ const Page = () => {
             <p>This is the details tab content.</p>
             <div>
               <CalendarDaily />
+              <TimeSlot />
             </div>
           </TabsContent>
           <TabsContent value="map" className="py-4">
