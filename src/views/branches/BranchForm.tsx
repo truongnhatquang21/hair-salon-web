@@ -84,7 +84,9 @@ const formSchema = z.object({
   images: z.any({
     message: "At least one image is required",
   }),
-  license: z.array(z.string()).nonempty("At least one license is required"),
+  license: z.any({
+    message: "At least one file is required",
+  }),
   courts: z.array(courtSchema).nonempty("At least one court is required"),
   slots: z.array(SlotSchema).nonempty("At least one slot is required"),
 });
@@ -139,6 +141,22 @@ export function BranchAutoForm() {
         },
         images: {
           fieldType: FieldType,
+        },
+        license: {
+          fieldType: "file",
+          inputProps: {
+            multiple: true,
+          },
+        },
+        courts: {
+          renderParent: ({ children }) => (
+            <div className="flex items-end gap-3">
+              <div className="flex-1">{children}</div>
+              <div>
+                <Button type="button">Check</Button>
+              </div>
+            </div>
+          ),
         },
       }}
       // Optionally, define dependencies between fields

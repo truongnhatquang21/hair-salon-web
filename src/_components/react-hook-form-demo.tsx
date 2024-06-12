@@ -6,7 +6,6 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
-import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -26,8 +25,14 @@ const schema = z.object({
 });
 
 type Schema = z.infer<typeof schema>;
-
-export function ReactHookFormDemo() {
+type Props = {
+  label: string;
+  isRequired: boolean;
+  field: any;
+  fieldConfigItem: any;
+  fieldProps: any;
+};
+export function ReactHookFormDemo({ field, isRequired, label }: Props) {
   const [loading, setLoading] = React.useState(false);
   const { uploadFiles, progresses, uploadedFiles, isUploading } = useUploadFile(
     "imageUploader",
@@ -66,10 +71,13 @@ export function ReactHookFormDemo() {
         <FormField
           control={form.control}
           name="images"
-          render={({ field }) => (
+          render={() => (
             <div className="space-y-6">
               <FormItem className="w-full">
-                <FormLabel>Images</FormLabel>
+                <FormLabel>
+                  {label}{" "}
+                  {isRequired && <span className="text-destructive">*</span>}
+                </FormLabel>
                 <FormControl>
                   <FileUploader
                     value={field.value}
@@ -90,9 +98,9 @@ export function ReactHookFormDemo() {
             </div>
           )}
         />
-        <Button className="w-fit" disabled={loading}>
+        {/* <Button className="w-fit" disabled={loading}>
           Save
-        </Button>
+        </Button> */}
       </form>
     </Form>
   );

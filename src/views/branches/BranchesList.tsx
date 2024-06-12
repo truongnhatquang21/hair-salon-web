@@ -5,7 +5,7 @@ import { columns, sampleData } from "./helper";
 
 export default async function BranchesList() {
   return (
-    <div className=" size-full overflow-auto">
+    <div className=" relative size-full overflow-auto">
       <DataTable columns={columns} data={sampleData as IBranch[]} />
     </div>
   );
