@@ -1,3 +1,5 @@
+import { type ClientUploadedFileData } from "uploadthing/types";
+
 export type CreateUSerType = {
   email: string;
   password: string;
@@ -72,3 +74,5 @@ export enum PackageCourtTypeEnum {
   CUSTOM = "Custom",
   STANDARD = "Standard",
 }
+
+export interface UploadedFile<T = unknown> extends ClientUploadedFileData<T> {}

@@ -33,6 +33,18 @@ export function getMenuList(pathname: string): Group[] {
         },
       ],
     },
+    {
+      groupLabel: "Branches",
+      menus: [
+        {
+          href: "/dashboard/branches",
+          label: "Branches",
+          active: pathname.includes("/dashboard/branches"),
+          icon: LayoutGrid,
+          submenus: [],
+        },
+      ],
+    },
 
     {
       groupLabel: "Settings",
