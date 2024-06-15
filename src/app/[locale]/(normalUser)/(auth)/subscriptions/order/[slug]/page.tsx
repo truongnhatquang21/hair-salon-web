@@ -4,7 +4,7 @@ import { SubscriptionAutoForm } from "@/components/Subscription/SubcriptionForm"
 
 import { PricingCard } from "../../page";
 
-const plan = {
+export const plan = {
   title: "Enterprise",
   price: "Custom",
   description: "Dedicated support and infrastructure to fit your needs",

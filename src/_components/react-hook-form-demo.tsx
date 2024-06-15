@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as React from "react";
+import type { Accept } from "react-dropzone";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -29,10 +30,9 @@ type Props = {
   label: string;
   isRequired: boolean;
   field: any;
-  fieldConfigItem: any;
-  fieldProps: any;
+  accetp?: Accept;
 };
-export function ReactHookFormDemo({ field, isRequired, label }: Props) {
+export function ReactHookFormDemo({ field, isRequired, label, accetp }: Props) {
   const [loading, setLoading] = React.useState(false);
   const { uploadFiles, progresses, uploadedFiles, isUploading } = useUploadFile(
     "imageUploader",
@@ -80,6 +80,7 @@ export function ReactHookFormDemo({ field, isRequired, label }: Props) {
                 </FormLabel>
                 <FormControl>
                   <FileUploader
+                    accept={accetp}
                     value={field.value}
                     onValueChange={field.onChange}
                     maxFiles={4}

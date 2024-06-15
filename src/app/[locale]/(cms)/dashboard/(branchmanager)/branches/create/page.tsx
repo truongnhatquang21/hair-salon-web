@@ -1,6 +1,6 @@
 import React from "react";
 
-import { CreateView } from "@/views/branches/CreateView";
+import { CreateView } from "@/views/branches/create/CreateView";
 
 type Props = {};
 

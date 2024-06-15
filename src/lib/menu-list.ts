@@ -33,8 +33,22 @@ export function getMenuList(pathname: string): Group[] {
         },
       ],
     },
+    // admin
     {
-      groupLabel: "Branches",
+      groupLabel: "Requested branches",
+      menus: [
+        {
+          href: "/dashboard/requestedBranch",
+          label: "Requested branches",
+          active: pathname.includes("/dashboard/requestedBranch"),
+          icon: LayoutGrid,
+          submenus: [],
+        },
+      ],
+    },
+    // manager
+    {
+      groupLabel: "Branches management",
       menus: [
         {
           href: "/dashboard/branches",

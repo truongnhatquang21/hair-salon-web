@@ -1,10 +1,10 @@
 import React from "react";
 
-import BranchDetail from "@/views/branches/BranchtDetail";
+import RequestDetail from "@/views/requestedBranches/RequestDetail";
 
 const page = ({ params }: { params: { branchId: String } }) => {
   const { branchId } = params;
-  return <BranchDetail branchId={branchId} />;
+  return <RequestDetail branchId={branchId} />;
 };
 
 export default page;

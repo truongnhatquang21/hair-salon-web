@@ -6,9 +6,9 @@ type Props = {};
 
 const Account = (props: Props) => {
   return (
-    <div className="relative flex h-full max-w-xl flex-col gap-4 overflow-auto ">
+    <div className="relative flex h-full  flex-col gap-4 ">
       <h1 className="text-2xl font-semibold">Setting account</h1>
-      <div className="relative flex-1 overflow-auto p-4">
+      <div className="relative mx-auto w-[600px] flex-1  p-4">
         <AccountAutoForm />
       </div>
     </div>

@@ -14,6 +14,7 @@ import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useControllableState } from "@/hooks/use-controllable-state";
 import { cn, formatBytes } from "@/lib/utils";
+import FileIcon from "@/public/assets/images/fileIcon.png";
 
 interface FileUploaderProps extends React.HTMLAttributes<HTMLDivElement> {
   /**
@@ -267,14 +268,14 @@ interface FileCardProps {
   onRemove: () => void;
   progress?: number;
 }
-
 function FileCard({ file, progress, onRemove }: FileCardProps) {
+  console.log(file);
   return (
     <div className="relative flex items-center space-x-4">
       <div className="flex flex-1 space-x-4">
         {isFileWithPreview(file) ? (
           <Image
-            src={file.preview}
+            src={file.type.includes("image") ? file.preview : FileIcon}
             alt={file.name}
             width={48}
             height={48}

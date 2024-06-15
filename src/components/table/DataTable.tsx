@@ -37,12 +37,14 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   navigation?: boolean;
+  canCreate?: boolean;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   navigation = true,
   data,
+  canCreate = true,
 }: DataTableProps<TData, TValue>) {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -86,15 +88,17 @@ export function DataTable<TData, TValue>({
           className="max-w-xs "
         />
         <DataTableViewOptions table={table} />
-        <Button
-          className="ml-auto flex items-center gap-2"
-          onClick={() => {
-            router.push(`${path}/create`);
-          }}
-        >
-          <PlusCircleIcon />
-          Add new
-        </Button>
+        {canCreate && (
+          <Button
+            className="ml-auto flex items-center gap-2"
+            onClick={() => {
+              router.push(`${path}/create`);
+            }}
+          >
+            <PlusCircleIcon />
+            Add new
+          </Button>
+        )}
       </div>
       <div className="rounded-md border">
         <Table>
@@ -123,7 +127,7 @@ export function DataTable<TData, TValue>({
                   className={cn(navigation && "cursor-pointer")}
                   onClick={() => {
                     if (navigation) {
-                      router.push(`/dashboard/branches/${row.getValue("_id")}`);
+                      router.push(`${path}/${row.getValue("_id")}`);
                     }
                   }}
                   key={row.id}
