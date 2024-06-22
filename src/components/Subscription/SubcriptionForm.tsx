@@ -1,13 +1,14 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import * as z from "zod";
 
-import AutoForm, { AutoFormSubmit } from "@/components/ui/auto-form";
+import AutoForm from "@/components/ui/auto-form";
 
 import { Button } from "../ui/button";
 
 // Define your form schema using zod
-const formSchema = z.object({
+export const subscriptionFormSchema = z.object({
   totalCourt: z
     .number()
     .min(1, {
@@ -24,13 +25,14 @@ const formSchema = z.object({
 });
 
 export function SubscriptionAutoForm() {
+  const router = useRouter();
   return (
     <AutoForm
       onSubmit={(value) => {
         console.log(value);
       }}
       // Pass the schema to the form
-      formSchema={formSchema}
+      formSchema={subscriptionFormSchema}
       // You can add additional config for each field
       // to customize the UI
       fieldConfig={{
@@ -53,18 +55,16 @@ export function SubscriptionAutoForm() {
       Alternatively, you can not pass a submit button
       to create auto-saving forms etc.
       */}
-      <AutoFormSubmit>Send now</AutoFormSubmit>
+      <p className="text-2xl underline underline-offset-2">
+        <strong>Total price:</strong> $10
+      </p>
+      <Button className="w-full" onClick={() => router.push("checkout")}>
+        Go to checkout
+      </Button>
 
       {/*
       All children passed to the form will be rendered below the form.
       */}
-      <p className="flex items-center gap-1 text-sm text-gray-500">
-        By submitting this form, you agree to our
-        <Button variant="link" className="-px-[2px] text-primary underline">
-          terms and conditions
-        </Button>
-        .
-      </p>
     </AutoForm>
   );
 }
