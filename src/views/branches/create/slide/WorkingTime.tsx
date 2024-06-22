@@ -31,7 +31,7 @@ const WorkingTime = (props: Props) => {
       <ShoppingBagIcon /> Extend your subscriptions
     </Button> */}
       </div>
-      <div className="flex  items-center overflow-auto p-2">
+      <div className="flex  items-center border-t p-2">
         <AutoForm
           formSchema={workingTimeFormSchema}
           fieldConfig={{

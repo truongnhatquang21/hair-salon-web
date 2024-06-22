@@ -35,12 +35,44 @@ export function getMenuList(pathname: string): Group[] {
     },
     // admin
     {
+      groupLabel: "Account management",
+      menus: [
+        {
+          href: "/dashboard/operators",
+          label: "Operators",
+          active: pathname.includes("/dashboard/operators"),
+          icon: LayoutGrid,
+          submenus: [],
+        },
+        {
+          href: "/dashboard/managers",
+          label: "Managers",
+          active: pathname.includes("/dashboard/managers"),
+          icon: LayoutGrid,
+          submenus: [],
+        },
+      ],
+    },
+
+    {
       groupLabel: "Requested branches",
       menus: [
         {
           href: "/dashboard/requestedBranch",
           label: "Requested branches",
           active: pathname.includes("/dashboard/requestedBranch"),
+          icon: LayoutGrid,
+          submenus: [],
+        },
+      ],
+    },
+    {
+      groupLabel: "Subscriptions Management",
+      menus: [
+        {
+          href: "/dashboard/subscriptions",
+          label: "Subscriptions",
+          active: pathname.includes("/dashboard/subscriptions"),
           icon: LayoutGrid,
           submenus: [],
         },
@@ -59,7 +91,27 @@ export function getMenuList(pathname: string): Group[] {
         },
       ],
     },
-
+    // court manager
+    {
+      groupLabel: "Branch management",
+      menus: [
+        {
+          href: "/dashboard/courts",
+          label: "Courts",
+          active: pathname.includes("/dashboard/courts"),
+          icon: LayoutGrid,
+          submenus: [],
+        },
+        {
+          href: "/dashboard/staffs",
+          label: "Staffs",
+          active: pathname.includes("/dashboard/staffs"),
+          icon: LayoutGrid,
+          submenus: [],
+        },
+      ],
+    },
+    // general
     {
       groupLabel: "Settings",
       menus: [

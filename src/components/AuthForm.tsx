@@ -54,7 +54,7 @@ export function UserAuthForm({
   ) => {
     await signInServer({
       ...data,
-      redirectTo: "/me",
+      redirectTo: "/",
     });
   };
 

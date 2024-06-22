@@ -31,7 +31,7 @@ const LisenseDetails = (props: Props) => {
           <ShoppingBagIcon /> Extend your subscriptions
         </Button> */}
       </div>
-      <div className="relative flex items-center overflow-hidden p-2">
+      <div className="relative flex items-center border-t p-2">
         <FormField
           name="lisenses"
           control={form.control}

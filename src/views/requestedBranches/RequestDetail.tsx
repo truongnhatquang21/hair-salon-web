@@ -42,7 +42,7 @@ const RequestDetail = ({ branchId }: Props) => {
         </Button>
       </div>
       <div className="w-full flex-1 ">
-        <div className=" relative  mx-auto  w-[600px] ">
+        <div className=" relative  mx-auto  w-[600px] lg:w-[800px]">
           <div className="relative flex w-full items-center pr-2">
             <div className="mt-10 flex w-full flex-col gap-4">
               <div className="flex w-full flex-col gap-2 rounded-md border-2 border-dashed p-2">

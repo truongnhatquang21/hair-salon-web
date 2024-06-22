@@ -95,7 +95,7 @@ const AvailableSlot = (props: Props) => {
           </Button>
         </div>
       </div>
-      <div className="flex w-full flex-col gap-2 overflow-auto border-t p-2">
+      <div className="flex w-full flex-col gap-2  border-t p-2">
         <div className="flex w-full flex-col gap-2">
           <span className="font-semibold">Monday</span>
           <div className="grid  grid-cols-12 gap-2">

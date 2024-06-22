@@ -100,7 +100,7 @@ export const CreateView = () => {
   return (
     <div className="relative flex size-full flex-col  gap-2  overflow-auto">
       <Stepper steppers={steppers} activeStep={activeStep} />
-      <div className="relative w-[600px]  flex-1 self-center overflow-auto rounded-lg  ">
+      <div className="relative w-[600px] flex-1  self-center overflow-auto rounded-lg xl:w-[800px]  ">
         {Silde}
       </div>
       <div className="flex items-center justify-center gap-20 ">

@@ -1,6 +1,6 @@
 "use client";
 
-import { Eye, Plus } from "lucide-react";
+import { BanknoteIcon, Eye, Plus } from "lucide-react";
 import Image from "next/image";
 import React, { useState } from "react";
 import * as z from "zod";
@@ -8,6 +8,17 @@ import * as z from "zod";
 import { plan } from "@/app/[locale]/(normalUser)/(auth)/subscriptions/order/[slug]/page";
 import { PricingCard } from "@/app/[locale]/(normalUser)/(auth)/subscriptions/page";
 import { subscriptionFormSchema } from "@/components/Subscription/SubcriptionForm";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import AutoForm from "@/components/ui/auto-form";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,6 +30,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Select,
   SelectContent,
@@ -147,57 +160,159 @@ const CheckoutSubcription = (props: Props) => {
 
           {payment === "bank" ? (
             <div className="flex w-full flex-col gap-2">
-              <div className="flex w-full items-center gap-2  rounded-md border-2 p-2">
-                <Image
-                  src={cardimg}
-                  alt="img"
-                  className="size-20 rounded-md border object-contain p-1 shadow-md"
-                />
-                <div className="flex flex-col">
-                  <span className="text-xl font-semibold">
-                    VCB - Vietcombank
-                  </span>
-                  <span className="text-sm">Trương Nhật Quang</span>
-                </div>
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Eye className="ml-auto cursor-pointer" />
-                  </DialogTrigger>
-                  <DialogContent className="flex max-h-[50%] flex-col overflow-auto sm:max-w-xl">
-                    <DialogHeader>
-                      <DialogTitle>Add new card</DialogTitle>
-                      <DialogDescription>
-                        Fill out the form below to add a new court
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="relative flex-1 gap-4 overflow-auto p-2">
-                      <AutoForm formSchema={cardSchema} />
+              <RadioGroup defaultValue="option-one">
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="option-two" id="option-two" />
+                  <Label
+                    htmlFor="option-two"
+                    className="flex w-full items-center gap-2"
+                  >
+                    <div className="flex w-full items-center gap-2  rounded-md border-2 p-2">
+                      <Image
+                        src={cardimg}
+                        alt="img"
+                        className="size-20 rounded-md border object-contain p-1 shadow-md"
+                      />
+                      <div className="flex flex-col">
+                        <span className="text-xl font-semibold">
+                          VCB - Vietcombank
+                        </span>
+                        <span className="text-sm">Trương Nhật Quang</span>
+                      </div>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Eye className="ml-auto cursor-pointer" />
+                        </DialogTrigger>
+                        <DialogContent className="flex max-h-[50%] flex-col overflow-auto sm:max-w-xl">
+                          <DialogHeader>
+                            <DialogTitle>Add new card</DialogTitle>
+                            <DialogDescription>
+                              Fill out the form below to add a new court
+                            </DialogDescription>
+                          </DialogHeader>
+                          <div className="relative flex-1 gap-4 overflow-auto p-2">
+                            <AutoForm formSchema={cardSchema} />
+                          </div>
+                          <DialogFooter className="w-full">
+                            <Button className="w-full" type="submit">
+                              Save changes
+                            </Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
                     </div>
-                    <DialogFooter className="w-full">
-                      <Button className="w-full" type="submit">
-                        Save changes
-                      </Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
-              </div>
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="option-one" id="option-one" />
+                  <Label
+                    htmlFor="option-one"
+                    className="flex w-full items-center gap-2"
+                  >
+                    <div className="flex w-full items-center gap-2  rounded-md border-2 p-2">
+                      <Image
+                        src={cardimg}
+                        alt="img"
+                        className="size-20 rounded-md border object-contain p-1 shadow-md"
+                      />
+                      <div className="flex flex-col">
+                        <span className="text-xl font-semibold">
+                          VCB - Vietcombank
+                        </span>
+                        <span className="text-sm">Trương Nhật Quang</span>
+                      </div>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Eye className="ml-auto cursor-pointer" />
+                        </DialogTrigger>
+                        <DialogContent className="flex max-h-[50%] flex-col overflow-auto sm:max-w-xl">
+                          <DialogHeader>
+                            <DialogTitle>Add new card</DialogTitle>
+                            <DialogDescription>
+                              Fill out the form below to add a new court
+                            </DialogDescription>
+                          </DialogHeader>
+                          <div className="relative flex-1 gap-4 overflow-auto p-2">
+                            <AutoForm formSchema={cardSchema} />
+                          </div>
+                          <DialogFooter className="w-full">
+                            <Button className="w-full" type="submit">
+                              Save changes
+                            </Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
+                    </div>
+                  </Label>
+                </div>
+              </RadioGroup>
             </div>
           ) : (
             <div className="flex w-full flex-col gap-2">
-              <div className="flex w-full items-center gap-2  rounded-md border-2 p-2">
-                <Image
-                  src={vnpay}
-                  alt="img"
-                  className="size-20 rounded-md border object-contain p-1 shadow-md"
-                />
-                <div className="flex flex-col">
-                  <span className="text-xl font-semibold">VNPay</span>
-                  <span className="text-sm">Payment online</span>
+              <RadioGroup defaultValue="option-one">
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="option-two" id="option-two" />
+                  <Label
+                    htmlFor="option-two"
+                    className="flex w-full items-center gap-2"
+                  >
+                    <div className="flex w-full items-center gap-2  rounded-md border-2 p-2">
+                      <Image
+                        src={vnpay}
+                        alt="img"
+                        className="size-20 rounded-md border object-contain p-1 shadow-md"
+                      />
+                      <div className="flex flex-col">
+                        <span className="text-xl font-semibold">VNPay</span>
+                        <span className="text-sm">Bookminton</span>
+                      </div>
+                    </div>
+                  </Label>
                 </div>
-              </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="option-one" id="option-one" />
+                  <Label
+                    htmlFor="option-one"
+                    className="flex w-full items-center gap-2"
+                  >
+                    <div className="flex w-full items-center gap-2  rounded-md border-2 p-2">
+                      <Image
+                        src={vnpay}
+                        alt="img"
+                        className="size-20 rounded-md border object-contain p-1 shadow-md"
+                      />
+                      <div className="flex flex-col">
+                        <span className="text-xl font-semibold">VNpay</span>
+                        <span className="text-sm">Bookminton</span>
+                      </div>
+                    </div>
+                  </Label>
+                </div>
+              </RadioGroup>
             </div>
           )}
         </div>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button className="flex w-full items-center gap-2" type="button">
+              <BanknoteIcon />
+              Checkout
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Please review your subscription details before proceeding to
+                checkout.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction>Continue</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>
   );

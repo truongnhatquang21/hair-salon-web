@@ -27,7 +27,7 @@ const CourAvailability = (props: Props) => {
           <ShoppingBagIcon /> Extend your subscriptions
         </Button>
       </div>
-      <div className="flex items-center p-2">
+      <div className="flex items-center border-t p-2">
         <AutoForm
           formSchema={amountFormSchema}
           fieldConfig={{

@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { BadgePlus, ZapIcon } from "lucide-react";
+import { BadgePlus, Trash, ZapIcon } from "lucide-react";
+import Image from "next/image";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -15,6 +16,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import defaultBadminton from "@/public/assets/images/defaultBadminton.jpeg";
 import { CourtStatusEnum } from "@/types";
 
 import { FieldType } from "../../ImagesUpload";
@@ -103,6 +105,52 @@ const CourRegistration = (props: Props) => {
           <Button variant="outline" className="flex items-center gap-2">
             <ZapIcon /> Fast generate courts
           </Button>
+        </div>
+      </div>
+      <div className="grid w-full grid-cols-4 gap-10 border-t py-2">
+        <div className="relative z-10 col-span-2 flex cursor-pointer items-center gap-4 rounded-md border-2 border-dashed p-3 shadow-sm hover:bg-accent">
+          <Trash className="absolute bottom-1 right-1 z-30 rounded-full bg-red-200 p-2 text-red-700 opacity-40 shadow-md transition-all duration-300 ease-in hover:scale-125 hover:opacity-100" />
+
+          <Image
+            alt="defaultBadminton"
+            src={defaultBadminton}
+            className="size-20 rounded-md object-cover shadow-md"
+          />
+          <div className="flex flex-1 flex-col gap-1 ">
+            <span className="text-lg font-semibold">Badminton court</span>
+            <span className="text-sm text-gray-700 underline underline-offset-2">
+              50000 VND
+            </span>
+            <span className="text-xs text-gray-500">Pending</span>
+          </div>
+        </div>
+        <div className="col-span-2 flex cursor-pointer items-center gap-4 rounded-md border-2 border-dashed p-3 shadow-sm hover:bg-accent">
+          <Image
+            alt="defaultBadminton"
+            src={defaultBadminton}
+            className="size-20 rounded-md object-cover shadow-md"
+          />
+          <div className="flex flex-1 flex-col gap-1 ">
+            <span className="text-lg font-semibold">Badminton court</span>
+            <span className="text-sm text-gray-700 underline underline-offset-2">
+              50000 VND
+            </span>
+            <span className="text-xs text-gray-500">Pending</span>
+          </div>
+        </div>
+        <div className="col-span-2 flex cursor-pointer items-center gap-4 rounded-md border-2 border-dashed p-3 shadow-sm hover:bg-accent">
+          <Image
+            alt="defaultBadminton"
+            src={defaultBadminton}
+            className="size-20 rounded-md object-cover shadow-md"
+          />
+          <div className="flex flex-1 flex-col gap-1 ">
+            <span className="text-lg font-semibold">Badminton court</span>
+            <span className="text-sm text-gray-700 underline underline-offset-2">
+              50000 VND
+            </span>
+            <span className="text-xs text-gray-500">Pending</span>
+          </div>
         </div>
       </div>
     </div>
