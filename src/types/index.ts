@@ -1,3 +1,5 @@
+import { type ClientUploadedFileData } from "uploadthing/types";
+
 export type CreateUSerType = {
   email: string;
   password: string;
@@ -72,3 +74,14 @@ export enum PackageCourtTypeEnum {
   CUSTOM = "Custom",
   STANDARD = "Standard",
 }
+export enum WeekDayEnum {
+  Monday = "Monday",
+  Tuesday = "Tuesday",
+  Wednesday = "Wednesday",
+  Thursday = "Thursday",
+  Friday = "Friday",
+  Saturday = "Saturday",
+  Sunday = "Sunday",
+}
+
+export interface UploadedFile<T = unknown> extends ClientUploadedFileData<T> {}

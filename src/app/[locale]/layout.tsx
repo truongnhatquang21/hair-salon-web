@@ -6,6 +6,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider, useMessages } from "next-intl";
 
+import { Toaster } from "@/components/ui/toaster";
 import Providers from "@/Contexts/TanstackProvider";
 import { ThemeProvider } from "@/Contexts/theme-provider";
 import { AppConfig } from "@/utils/AppConfig";
@@ -61,6 +62,7 @@ export default function RootLayout(props: {
             </Providers>
           </ThemeProvider>
         </NextIntlClientProvider>
+        <Toaster />
       </body>
     </html>
   );

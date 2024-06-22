@@ -141,7 +141,7 @@ export const PricingCard = ({
       <CardFooter className="mt-2">
         <Button
           onClick={() => {
-            router.push(`/subscriptions/checkout/${slug || 1}`);
+            router.push(`/subscriptions/order/${slug || 1}`);
           }}
           className="relative inline-flex w-full items-center justify-center rounded-md bg-black px-6 font-medium text-white transition-colors  focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50 dark:bg-white dark:text-black"
         >

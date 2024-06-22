@@ -38,6 +38,7 @@ export function AccountAutoForm() {
           inputProps: {
             readOnly: true,
             disabled: true,
+            className: "col-span-1",
           },
         },
         status: {
