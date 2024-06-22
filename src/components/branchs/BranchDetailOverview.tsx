@@ -1,18 +1,15 @@
 /* eslint-disable react/jsx-pascal-case */
 
 import {
-  CalendarDaysIcon,
   Clock,
   ClockIcon,
   DollarSignIcon,
-  FilterIcon,
   MapPin,
   UsersIcon,
 } from "lucide-react";
 
 import { Icons } from "../icons";
 import { Button } from "../ui/button";
-import { Calendar } from "../ui/calendar";
 import {
   Card,
   CardContent,
@@ -21,23 +18,6 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
 import { Separator } from "../ui/separator";
 
 // interface BranchDetailOverviewProps {}
@@ -202,7 +182,7 @@ const BranchDetailOverview = () => {
       </div>
       <Separator className="my-4" />
       <div className="grid gap-8">
-        <div className="space-y-2 text-center">
+        {/* <div className="space-y-2 text-center">
           <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
             Find Your Perfect Court
           </h1>
@@ -277,11 +257,11 @@ const BranchDetailOverview = () => {
               </Button>
             </div>
           </form>
-        </div>
+        </div> */}
         <div className="grid gap-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold">Search Results</h2>
-            <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
+            <h2 className="text-2xl font-bold">Our Court </h2>
+            {/* <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
               <span>Showing 1-10 of 50</span>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -307,9 +287,207 @@ const BranchDetailOverview = () => {
                   </DropdownMenuRadioGroup>
                 </DropdownMenuContent>
               </DropdownMenu>
-            </div>
+            </div> */}
           </div>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <Card>
+              <CardContent className="grid gap-4 overflow-hidden p-5">
+                <div className="flex items-center gap-4">
+                  <Icons.badminton_court className="rounded-lg object-cover" />
+                  {/* <Image src={} alt="Court Image" width={80} height={80} /> */}
+                  <div>
+                    <h3 className="font-semibold">Central Park Court</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      New York, NY
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                    <ClockIcon className="size-4" />
+                    <span>9:00 AM - 5:00 PM</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                    <UsersIcon className="size-4" />
+                    <span>2-6 players</span>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                    <DollarSignIcon className="size-4" />
+                    <span>50/hr</span>
+                  </div>
+                  <Button variant="outline" size="sm">
+                    Book Now
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="grid gap-4 overflow-hidden p-5">
+                <div className="flex items-center gap-4">
+                  <Icons.badminton_court className="rounded-lg object-cover" />
+                  {/* <Image src={} alt="Court Image" width={80} height={80} /> */}
+                  <div>
+                    <h3 className="font-semibold">Central Park Court</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      New York, NY
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                    <ClockIcon className="size-4" />
+                    <span>9:00 AM - 5:00 PM</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                    <UsersIcon className="size-4" />
+                    <span>2-6 players</span>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                    <DollarSignIcon className="size-4" />
+                    <span>50/hr</span>
+                  </div>
+                  <Button variant="outline" size="sm">
+                    Book Now
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>{" "}
+            <Card>
+              <CardContent className="grid gap-4 overflow-hidden p-5">
+                <div className="flex items-center gap-4">
+                  <Icons.badminton_court className="rounded-lg object-cover" />
+                  {/* <Image src={} alt="Court Image" width={80} height={80} /> */}
+                  <div>
+                    <h3 className="font-semibold">Central Park Court</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      New York, NY
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                    <ClockIcon className="size-4" />
+                    <span>9:00 AM - 5:00 PM</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                    <UsersIcon className="size-4" />
+                    <span>2-6 players</span>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                    <DollarSignIcon className="size-4" />
+                    <span>50/hr</span>
+                  </div>
+                  <Button variant="outline" size="sm">
+                    Book Now
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="grid gap-4 overflow-hidden p-5">
+                <div className="flex items-center gap-4">
+                  <Icons.badminton_court className="rounded-lg object-cover" />
+                  {/* <Image src={} alt="Court Image" width={80} height={80} /> */}
+                  <div>
+                    <h3 className="font-semibold">Central Park Court</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      New York, NY
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                    <ClockIcon className="size-4" />
+                    <span>9:00 AM - 5:00 PM</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                    <UsersIcon className="size-4" />
+                    <span>2-6 players</span>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                    <DollarSignIcon className="size-4" />
+                    <span>50/hr</span>
+                  </div>
+                  <Button variant="outline" size="sm">
+                    Book Now
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>{" "}
+            <Card>
+              <CardContent className="grid gap-4 overflow-hidden p-5">
+                <div className="flex items-center gap-4">
+                  <Icons.badminton_court className="rounded-lg object-cover" />
+                  {/* <Image src={} alt="Court Image" width={80} height={80} /> */}
+                  <div>
+                    <h3 className="font-semibold">Central Park Court</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      New York, NY
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                    <ClockIcon className="size-4" />
+                    <span>9:00 AM - 5:00 PM</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                    <UsersIcon className="size-4" />
+                    <span>2-6 players</span>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                    <DollarSignIcon className="size-4" />
+                    <span>50/hr</span>
+                  </div>
+                  <Button variant="outline" size="sm">
+                    Book Now
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>{" "}
+            <Card>
+              <CardContent className="grid gap-4 overflow-hidden p-5">
+                <div className="flex items-center gap-4">
+                  <Icons.badminton_court className="rounded-lg object-cover" />
+                  {/* <Image src={} alt="Court Image" width={80} height={80} /> */}
+                  <div>
+                    <h3 className="font-semibold">Central Park Court</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      New York, NY
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                    <ClockIcon className="size-4" />
+                    <span>9:00 AM - 5:00 PM</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                    <UsersIcon className="size-4" />
+                    <span>2-6 players</span>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                    <DollarSignIcon className="size-4" />
+                    <span>50/hr</span>
+                  </div>
+                  <Button variant="outline" size="sm">
+                    Book Now
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>{" "}
             <Card>
               <CardContent className="grid gap-4 overflow-hidden p-5">
                 <div className="flex items-center gap-4">
