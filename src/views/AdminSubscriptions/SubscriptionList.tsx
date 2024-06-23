@@ -2,20 +2,28 @@
 
 import { useQuery } from "@tanstack/react-query";
 
-type Props = {};
+import { getSubscriptionListAPI } from "@/apiCallers/adminSubcription";
+import { DataTable } from "@/components/table/DataTable";
 
-const SubscriptionList = (props: Props) => {
-  const { isLoading, error, data } = useQuery({
-    queryKey: ["repoData"],
-    queryFn: () =>
-      fetch("https://api.github.com/repos/TanStack/query").then((res) =>
-        res.json()
-      ),
+import CreateSubscriptionButton from "./CreateSubscriptionButton";
+import { columns, type PackageCourtSchemaType, sampleData } from "./helper";
+
+const SubscriptionList = () => {
+  const { data, isLoading } = useQuery({
+    queryKey: ["subscriptions"],
+    queryFn: () => getSubscriptionListAPI(sampleData),
   });
-
-  console.log(data, "kkk");
-
-  return <div>SubscriptionList</div>;
+  return (
+    <div className=" relative size-full overflow-auto">
+      <DataTable
+        navigation={false}
+        CreateButton={<CreateSubscriptionButton />}
+        columns={columns}
+        data={data?.data || ([] as PackageCourtSchemaType[])}
+        isLoading={isLoading}
+      />
+    </div>
+  );
 };
 
 export default SubscriptionList;

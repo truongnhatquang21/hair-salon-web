@@ -1,3 +1,5 @@
+import { auth } from "@/auth";
+import { responseMapping } from "@/lib/error";
 import { Env } from "@/libs/Env.mjs";
 
 class ApiClient<T> {
@@ -40,4 +42,24 @@ class ApiClient<T> {
     return this.fetch<void>(url, "DELETE");
   }
 }
+
+export const fetcher = async (url: string, options?: RequestInit) => {
+  const session = await auth();
+  const accessToken = session?.user.accessToken;
+
+  const res = await fetch(process.env.SERVER_URL + url, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    cache: "no-cache",
+    ...options,
+  });
+  const result = await res.json();
+  const transformedResult = responseMapping(result);
+  transformedResult.status = res.status;
+  transformedResult.ok = res.ok;
+  return transformedResult;
+};
+
 export default new ApiClient(Env.SERVER_URL as string);

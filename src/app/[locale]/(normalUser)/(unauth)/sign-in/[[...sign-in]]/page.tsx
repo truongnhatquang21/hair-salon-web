@@ -4,7 +4,6 @@ import { getTranslations } from "next-intl/server";
 
 import { UserAuthForm } from "@/components/AuthForm";
 import banner from "@/public/assets/images/banner.jpeg";
-import logo from "@/public/assets/images/logo.png";
 
 export const dynamic = "force-dynamic";
 export async function generateMetadata(props: { params: { locale: string } }) {
@@ -22,7 +21,7 @@ export async function generateMetadata(props: { params: { locale: string } }) {
 export default function AuthenticationPage() {
   return (
     <div className="container relative grid h-full  min-h-screen flex-col items-center justify-center lg:max-w-none lg:grid-cols-2 lg:px-0">
-      <div className="relative hidden h-full flex-col rounded-md  bg-zinc-950 p-4   font-bold text-white dark:border-r lg:flex">
+      <div className="relative hidden h-full flex-col rounded-md  p-4   font-bold text-white dark:border-r lg:flex">
         <div className="absolute inset-0  flex size-full items-center justify-center rounded-md ">
           <Image
             className=" h-full object-contain "
@@ -30,10 +29,10 @@ export default function AuthenticationPage() {
             src={banner}
           />
         </div>
-        <div className="relative z-20 flex items-center text-lg font-medium">
+        {/* <div className="relative z-20 flex items-center text-lg font-medium">
           <Image src={logo} alt="Bookminton" width={40} />
           Bookminton
-        </div>
+        </div> */}
         <div className="relative z-20 mt-auto">
           <blockquote className="space-y-2">
             <p className="text-lg">
