@@ -7,7 +7,7 @@ import { z } from "zod";
 
 import { Icons } from "@/components/icons";
 import { cn } from "@/lib/utils";
-import { signInServer } from "@/utils/serverActions";
+import { SignInServer } from "@/utils/serverActions/index";
 
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -44,6 +44,7 @@ export function UserAuthForm({
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
+    reset,
   } = useForm<SignUpSchemaType | SignInSchemaType>({
     resolver: zodResolver(type === "sign-up" ? SignUpSchema : SignInSchema),
     defaultValues: {},
@@ -52,10 +53,23 @@ export function UserAuthForm({
   const onSubmit: SubmitHandler<SignUpSchemaType | SignInSchemaType> = async (
     data
   ) => {
-    await signInServer({
-      ...data,
-      redirectTo: "/",
-    });
+    await SignInServer(data).then(
+      (
+        res:
+          | { error: string; success?: undefined }
+          | { success: string; error?: undefined }
+      ) => {
+        if (res?.error) {
+          reset();
+          // setError(data?.error);
+        }
+
+        if (res?.success) {
+          reset();
+          // setSuccess(data?.success);
+        }
+      }
+    );
   };
 
   return (
