@@ -4,6 +4,7 @@ import React from "react";
 
 import AutoForm from "@/components/ui/auto-form";
 import { Badge } from "@/components/ui/badge";
+import type { Steppers } from "@/hooks/useStepper";
 import defaultBadminton from "@/public/assets/images/defaultBadminton.jpeg";
 import defaultFile from "@/public/assets/images/fileIcon.png";
 import defaultImage from "@/public/assets/images/loginBanner.jpeg";
@@ -14,9 +15,14 @@ import { amountFormSchema } from "./CourAvailability";
 import { PeriodTimeFieldType } from "./PeriodTimeField";
 import { workingTimeFormSchema } from "./WorkingTime";
 
-type Props = {};
+type Props = {
+  stepIndex: number;
+  goNextFn: (number?: number) => void;
+  goBackfn: (number?: number) => void;
+  steppers: Steppers[];
+};
 
-const Confirmation = (props: Props) => {
+const Confirmation = ({ goBackfn, goNextFn, steppers, stepIndex }: Props) => {
   return (
     <div className="flex size-full flex-col gap-4">
       <h1 className="text-center text-2xl font-bold uppercase">Confirmation</h1>

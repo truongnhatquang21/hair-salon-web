@@ -2,8 +2,6 @@
 
 import {
   BadgePlus,
-  ChevronLeft,
-  ChevronRight,
   Clock,
   ContactRoundIcon,
   Images,
@@ -15,7 +13,6 @@ import {
 import React, { useMemo } from "react";
 
 import Stepper from "@/components/stepper";
-import { Button } from "@/components/ui/button";
 import type { Steppers } from "@/hooks/useStepper";
 import useStepper from "@/hooks/useStepper";
 
@@ -78,23 +75,86 @@ export const CreateView = () => {
   const Silde = useMemo(() => {
     switch (steppers[activeStep]?.key) {
       case "branch-creation":
-        return <BranchCreation />;
+        return (
+          <BranchCreation
+            stepIndex={activeStep}
+            goNextFn={goNext}
+            goBackfn={goBack}
+            steppers={steppers}
+          />
+        );
       case "court-availability":
-        return <CourAvailability />;
+        return (
+          <CourAvailability
+            stepIndex={activeStep}
+            goNextFn={goNext}
+            goBackfn={goBack}
+            steppers={steppers}
+          />
+        );
       case "branch-details":
-        return <BranchDetails />;
+        return (
+          <BranchDetails
+            stepIndex={activeStep}
+            goNextFn={goNext}
+            goBackfn={goBack}
+            steppers={steppers}
+          />
+        );
       case "images":
-        return <UplImagesUploader />;
+        return (
+          <UplImagesUploader
+            stepIndex={activeStep}
+            goNextFn={goNext}
+            goBackfn={goBack}
+            steppers={steppers}
+          />
+        );
       case "lisense-details":
-        return <LisenseDetails />;
+        return (
+          <LisenseDetails
+            stepIndex={activeStep}
+            goNextFn={goNext}
+            goBackfn={goBack}
+            steppers={steppers}
+          />
+        );
       case "court-registration":
-        return <CourtRegistration />;
+        return (
+          <CourtRegistration
+            stepIndex={activeStep}
+            goNextFn={goNext}
+            goBackfn={goBack}
+            steppers={steppers}
+          />
+        );
       case "available-slots":
-        return <AvailableSlot />;
+        return (
+          <AvailableSlot
+            stepIndex={activeStep}
+            goNextFn={goNext}
+            goBackfn={goBack}
+            steppers={steppers}
+          />
+        );
       case "working-period":
-        return <WorkingTime />;
+        return (
+          <WorkingTime
+            stepIndex={activeStep}
+            goNextFn={goNext}
+            goBackfn={goBack}
+            steppers={steppers}
+          />
+        );
       default:
-        return <Confirmation />;
+        return (
+          <Confirmation
+            stepIndex={activeStep}
+            goNextFn={goNext}
+            goBackfn={goBack}
+            steppers={steppers}
+          />
+        );
     }
   }, [activeStep]);
   return (
@@ -102,27 +162,6 @@ export const CreateView = () => {
       <Stepper steppers={steppers} activeStep={activeStep} />
       <div className="relative w-[600px] flex-1  self-center overflow-auto rounded-lg xl:w-[800px]  ">
         {Silde}
-      </div>
-      <div className="flex items-center justify-center gap-20 ">
-        <Button
-          className="flex select-none items-center justify-center gap-2 px-4"
-          disabled={activeStep === 0}
-          onClick={() => {
-            goBack();
-          }}
-        >
-          <ChevronLeft />
-          Back
-        </Button>
-        <Button
-          className="flex select-none items-center justify-center gap-2 px-4"
-          disabled={activeStep === steppers.length}
-          onClick={() => {
-            goNext();
-          }}
-        >
-          Next <ChevronRight />
-        </Button>
       </div>
     </div>
   );

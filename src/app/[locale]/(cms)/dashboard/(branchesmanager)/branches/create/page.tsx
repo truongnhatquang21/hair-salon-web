@@ -1,13 +1,14 @@
 import React from "react";
 
+import { BranchStepStoreProvider } from "@/stores/createBranchStore";
 import { CreateView } from "@/views/branches/create/CreateView";
 
-type Props = {};
-
-const page = (props: Props) => {
+const page = () => {
   return (
     <div className="size-full overflow-auto">
-      <CreateView />
+      <BranchStepStoreProvider>
+        <CreateView />
+      </BranchStepStoreProvider>
     </div>
   );
 };

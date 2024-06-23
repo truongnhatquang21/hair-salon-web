@@ -16,8 +16,20 @@ const useStepper = ({ steppers }: Props) => {
     activeStep,
     setActiveStep,
     steppers,
-    goBack: () => setActiveStep((prev) => prev - 1),
-    goNext: () => setActiveStep((prev) => prev + 1),
+    goBack: (number?: number) => {
+      if (number) {
+        setActiveStep(number);
+      } else {
+        setActiveStep((prev) => prev - 1);
+      }
+    },
+    goNext: (number?: number) => {
+      if (number) {
+        setActiveStep(number);
+      } else {
+        setActiveStep((prev) => prev + 1);
+      }
+    },
   };
 };
 
