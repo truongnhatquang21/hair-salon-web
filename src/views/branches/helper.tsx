@@ -4,10 +4,10 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
 import type { StaticImport } from "next/dist/shared/lib/get-img-props";
 import Image from "next/image";
+import { z } from "zod";
 
 import { DataTableColumnHeader } from "@/components/table/ColumnHeader";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,32 +16,68 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { regexPhoneNumber, timeFormat } from "@/lib/regex";
 import image from "@/public/assets/images/banner.jpeg";
-import type { IBranch } from "@/public/interfaces/branch.interface";
+import { WeekDayEnum } from "@/types";
 
-export const columns: ColumnDef<IBranch>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
+import { createCourtObject } from "../courts/helper";
+
+export const createSlotObject = z.object({
+  name: z.string().optional().nullable(),
+  weekDay: z.nativeEnum(WeekDayEnum, {
+    errorMap: () => ({
+      message: "Invalid week day! Must be a valid day of the week.",
+    }),
+  }),
+  startTime: z
+    .string()
+    .regex(timeFormat, { message: "Invalid time format! Use HH:MM." }),
+  endTime: z
+    .string()
+    .regex(timeFormat, { message: "Invalid time format! Use HH:MM." }),
+  surcharge: z.number().gte(-1),
+});
+
+export const createBranchSchema = z.object({
+  name: z
+    .string()
+    .min(1, { message: "Username must be greater than 1 characters!" }),
+  address: z.string(),
+  license: z.array(z.string()).min(1, "License must have at least 1"),
+  description: z.string().optional().nullable(),
+  availableTime: z.string(),
+  phone: z
+    .string()
+    .min(1, { message: "Phone must be greater than 1 number!" })
+    .max(10, { message: "Phone must be less than 10 number!" })
+    .regex(regexPhoneNumber, { message: "Phone must be a valid phone" }),
+  courts: z.array(createCourtObject).min(1, "Courts must have at least 1"),
+  slots: z.array(createSlotObject).min(1, "Slots must have at least 1"),
+});
+export type BranchSchemaType = z.infer<typeof createBranchSchema>;
+export const columns: ColumnDef<BranchSchemaType>[] = [
+  // {
+  // id: "select",
+  // header: ({ table }) => (
+  //   <Checkbox
+  //     checked={
+  //       table.getIsAllPageRowsSelected() ||
+  //       (table.getIsSomePageRowsSelected() && "indeterminate")
+  //     }
+  //     onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+  //     aria-label="Select all"
+  //   />
+  // ),
+  //   cell: ({ row }) => (
+  //     <Checkbox
+  //       checked={row.getIsSelected()}
+  //       onCheckedChange={(value) => row.toggleSelected(!!value)}
+  //       aria-label="Select row"
+  //     />
+  //   ),
+  //   enableSorting: false,
+  //   enableHiding: false,
+  // },
   {
     accessorKey: "images",
     header: "Image",

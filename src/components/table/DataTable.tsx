@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 
+import { Loading } from "../loading";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { DataTableViewOptions } from "./DataTableViewsOptions";
@@ -38,13 +39,17 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
   navigation?: boolean;
   canCreate?: boolean;
+  isLoading?: boolean;
+  CreateButton?: React.ReactNode;
 }
 
 export function DataTable<TData, TValue>({
+  CreateButton,
   columns,
   navigation = true,
   data,
   canCreate = true,
+  isLoading,
 }: DataTableProps<TData, TValue>) {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -77,7 +82,12 @@ export function DataTable<TData, TValue>({
   const path = usePathname();
 
   return (
-    <div className="flex w-full flex-col gap-4 p-2">
+    <div className="relative flex w-full flex-col gap-4 p-2">
+      {isLoading && (
+        <div className="absolute inset-0 z-10 flex items-center justify-center">
+          <Loading />
+        </div>
+      )}
       <div className="flex items-center gap-4 ">
         <Input
           placeholder="Search by name . . ."
@@ -88,17 +98,18 @@ export function DataTable<TData, TValue>({
           className="max-w-xs "
         />
         <DataTableViewOptions table={table} />
-        {canCreate && (
-          <Button
-            className="ml-auto flex items-center gap-2"
-            onClick={() => {
-              router.push(`${path}/create`);
-            }}
-          >
-            <PlusCircleIcon />
-            Add new
-          </Button>
-        )}
+        {canCreate &&
+          (CreateButton || (
+            <Button
+              className="ml-auto flex items-center gap-2"
+              onClick={() => {
+                router.push(`${path}/create`);
+              }}
+            >
+              <PlusCircleIcon />
+              Add new
+            </Button>
+          ))}
       </div>
       <div className="rounded-md border">
         <Table>
