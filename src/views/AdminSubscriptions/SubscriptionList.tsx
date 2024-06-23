@@ -19,7 +19,9 @@ const SubscriptionList = () => {
         navigation={false}
         CreateButton={<CreateSubscriptionButton />}
         columns={columns}
-        data={data?.data || ([] as PackageCourtSchemaType[])}
+        data={
+          data?.data || ([] as (PackageCourtSchemaType & { _id: string })[])
+        }
         isLoading={isLoading}
       />
     </div>

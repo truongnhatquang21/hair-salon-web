@@ -137,8 +137,10 @@ export function DataTable<TData, TValue>({
                 <TableRow
                   className={cn(navigation && "cursor-pointer")}
                   onClick={() => {
-                    if (navigation) {
-                      router.push(`${path}/${row.getValue("_id")}`);
+                    if (row.original._id) {
+                      if (navigation) {
+                        router.push(`${path}/${row.original._id}`);
+                      }
                     }
                   }}
                   key={row.id}

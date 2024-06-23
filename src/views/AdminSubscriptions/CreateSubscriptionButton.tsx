@@ -236,7 +236,7 @@ const CreateSubscriptionButton = ({
             <DialogFooter className="w-full">
               <AutoFormSubmit
                 className="w-full"
-                disabled={createMutating || editMutating || !isDirty}
+                disabled={createMutating || editMutating}
               >
                 <Button
                   type="submit"

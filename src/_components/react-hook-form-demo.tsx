@@ -33,6 +33,8 @@ type Props = {
   accetp?: Accept;
 };
 export function ReactHookFormDemo({ field, isRequired, label, accetp }: Props) {
+  console.log("reack hook form demo", field.value);
+
   const [loading, setLoading] = React.useState(false);
   const { uploadFiles, progresses, uploadedFiles, isUploading } = useUploadFile(
     "imageUploader",
@@ -40,12 +42,13 @@ export function ReactHookFormDemo({ field, isRequired, label, accetp }: Props) {
   );
   const form = useForm<Schema>({
     resolver: zodResolver(schema),
-    defaultValues: {
-      images: [],
-    },
+    defaultValues: { images: field.value },
+    mode: "onChange",
   });
 
   function onSubmit(input: Schema) {
+    console.log(input, "images data rhf");
+
     setLoading(true);
 
     toast.promise(uploadFiles(input.images), {
@@ -61,6 +64,9 @@ export function ReactHookFormDemo({ field, isRequired, label, accetp }: Props) {
       },
     });
   }
+  React.useEffect(() => {
+    field.onChange(form.watch("images"));
+  }, [form.watch("images")]);
 
   return (
     <Form {...form}>
@@ -71,7 +77,7 @@ export function ReactHookFormDemo({ field, isRequired, label, accetp }: Props) {
         <FormField
           control={form.control}
           name="images"
-          render={() => (
+          render={({ field: fieldForm }) => (
             <div className="space-y-6">
               <FormItem className="w-full">
                 <FormLabel>
@@ -81,8 +87,8 @@ export function ReactHookFormDemo({ field, isRequired, label, accetp }: Props) {
                 <FormControl>
                   <FileUploader
                     accept={accetp}
-                    value={field.value}
-                    onValueChange={field.onChange}
+                    value={fieldForm.value}
+                    onValueChange={fieldForm.onChange}
                     maxFiles={4}
                     maxSize={4 * 1024 * 1024}
                     progresses={progresses}
