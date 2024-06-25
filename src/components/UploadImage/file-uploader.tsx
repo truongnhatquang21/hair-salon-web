@@ -132,7 +132,7 @@ export function FileUploader(props: FileUploaderProps) {
       );
 
       const updatedFiles = files ? [...files, ...newFiles] : newFiles;
-
+      onValueChange?.(updatedFiles);
       setFiles(updatedFiles);
 
       if (rejectedFiles.length > 0) {
@@ -269,7 +269,7 @@ interface FileCardProps {
   progress?: number;
 }
 function FileCard({ file, progress, onRemove }: FileCardProps) {
-  console.log(file);
+  // console.log(file);
   return (
     <div className="relative flex items-center space-x-4">
       <div className="flex flex-1 space-x-4">

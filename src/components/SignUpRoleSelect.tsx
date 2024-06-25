@@ -11,10 +11,11 @@ import {
 } from "@/components/ui/select";
 import { RoleEnum } from "@/types";
 
-const SignUpRoleSelect = () => {
-  const [role, setRole] = React.useState<RoleEnum.CUSTOMER | RoleEnum.MANAGER>(
-    RoleEnum.CUSTOMER
-  );
+type Props = {
+  role: RoleEnum.CUSTOMER | RoleEnum.MANAGER;
+  setRole: (role: RoleEnum.CUSTOMER | RoleEnum.MANAGER) => void;
+};
+const SignUpRoleSelect = ({ role, setRole }: Props) => {
   return (
     <div>
       <Select

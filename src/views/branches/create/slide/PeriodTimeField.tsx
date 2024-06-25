@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { TimePickerDemo } from "@/components/time-picker/TimePicker";
 import type { AutoFormInputComponentProps } from "@/components/ui/auto-form/types";
@@ -10,7 +10,15 @@ export const PeriodTimeFieldType = ({
   fieldConfigItem,
   fieldProps,
 }: AutoFormInputComponentProps) => {
-  const [date, setDate] = useState<Date | undefined>(new Date());
+  const [startDate, setStartDate] = useState<Date | undefined>(new Date());
+  const [endDate, setEndDate] = useState<Date | undefined>(new Date());
+  useEffect(() => {
+    if (startDate && endDate) {
+      field.onChange(
+        `${startDate.getHours()}:${startDate.getMinutes()}-${endDate.getHours()}:${endDate.getMinutes()}`
+      );
+    }
+  }, [startDate, endDate]);
   return (
     <div className="flex w-full flex-col gap-2 ">
       <span className="flex items-center gap-1 text-sm font-medium">
@@ -24,8 +32,8 @@ export const PeriodTimeFieldType = ({
           </span>
           <TimePickerDemo
             disabled={fieldConfigItem.inputProps?.disabled}
-            date={date}
-            setDate={setDate}
+            date={startDate}
+            setDate={setStartDate}
           />
         </div>
         <div className="flex flex-1 items-center gap-2 rounded-md border-2 border-dashed p-2">
@@ -34,11 +42,12 @@ export const PeriodTimeFieldType = ({
           </span>
           <TimePickerDemo
             disabled={fieldConfigItem.inputProps?.disabled}
-            date={date}
-            setDate={setDate}
+            date={endDate}
+            setDate={setEndDate}
           />
         </div>
       </div>
+
       <span className="text-sm text-gray-500">
         {fieldConfigItem.description}
       </span>

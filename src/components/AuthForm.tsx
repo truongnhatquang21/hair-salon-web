@@ -1,20 +1,32 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import * as React from "react";
-import { type SubmitHandler, useForm } from "react-hook-form";
+import type { SubmitHandler } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import {
+  type AuthType,
+  signUpCustomerAPI,
+  signUpManagerAPI,
+} from "@/apiCallers/auth";
 import { Icons } from "@/components/icons";
+import type { ResponseType } from "@/lib/error";
 import { cn } from "@/lib/utils";
-import { signInServer } from "@/utils/serverActions";
+import { RoleEnum } from "@/types";
+import { SignInServer } from "@/utils/serverActions";
 
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
+import { useToast } from "./ui/use-toast";
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {
   type: "sign-in" | "sign-up";
+  role?: RoleEnum.CUSTOMER | RoleEnum.MANAGER;
 }
 
 const SignUpSchema = z
@@ -38,24 +50,139 @@ type SignInSchemaType = z.infer<typeof SignInSchema>;
 export function UserAuthForm({
   className,
   type = "sign-up",
+  role,
   ...props
 }: UserAuthFormProps) {
+  const { toast } = useToast();
+  const router = useRouter();
   const {
+    setError,
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<SignUpSchemaType | SignInSchemaType>({
+    reset,
+  } = useForm<SignUpSchemaType & SignInSchemaType>({
     resolver: zodResolver(type === "sign-up" ? SignUpSchema : SignInSchema),
     defaultValues: {},
   });
 
-  const onSubmit: SubmitHandler<SignUpSchemaType | SignInSchemaType> = async (
+  const { mutateAsync: signUpCustomerMutate } = useMutation({
+    mutationFn: async (data: AuthType) => {
+      return signUpCustomerAPI(data);
+    },
+    onSuccess: (data: ResponseType) => {
+      if (!data.ok) {
+        if (data.error) {
+          const errs = data.error as { [key: string]: { message: string } };
+          Object.entries(errs).forEach(([key, value]) => {
+            setError(key as keyof SignUpSchemaType, {
+              type: "manual",
+              message: value.message,
+            });
+          });
+        }
+        toast({
+          variant: "destructive",
+          title: "Uh oh! Something went wrong.",
+          description: data.message || data.statusText,
+        });
+        throw new Error(data.message || data.statusText);
+      }
+      if (data.message) {
+        return toast({
+          variant: "default",
+          className: "bg-green-600 text-white",
+          title: "Message from system",
+          description: data.message,
+        });
+      }
+      return toast({
+        variant: "default",
+        title: "Submitted successfully",
+        description: "You can do something else now",
+      });
+    },
+  });
+
+  const { mutateAsync: signUpManagerMutate } = useMutation({
+    mutationFn: async (data: AuthType) => {
+      return signUpManagerAPI(data);
+    },
+    onSuccess: (data: ResponseType) => {
+      if (!data.ok) {
+        if (data.error) {
+          const errs = data.error as { [key: string]: { message: string } };
+          Object.entries(errs).forEach(([key, value]) => {
+            setError(key as keyof SignUpSchemaType, {
+              type: "manual",
+              message: value.message,
+            });
+          });
+        }
+        toast({
+          variant: "destructive",
+          title: "Uh oh! Something went wrong.",
+          description: data.message || data.statusText,
+        });
+        throw new Error(data.message || data.statusText);
+      }
+      if (data.message) {
+        return toast({
+          variant: "default",
+          className: "bg-green-600 text-white",
+          title: "Message from system",
+          description: data.message,
+        });
+      }
+      return toast({
+        variant: "default",
+        title: "Submitted successfully",
+        description: "You can do something else now",
+      });
+    },
+  });
+  const onSubmit: SubmitHandler<SignUpSchemaType & SignInSchemaType> = async (
     data
   ) => {
-    await signInServer({
-      ...data,
-      redirectTo: "/",
-    });
+    try {
+      if (type === "sign-up") {
+        if (role === RoleEnum.CUSTOMER) {
+          await signUpCustomerMutate({
+            email: data.email,
+            password: data.password,
+            username: data?.username as string,
+          });
+        } else {
+          await signUpManagerMutate({
+            email: data.email,
+            password: data.password,
+            username: data?.username as string,
+          });
+        }
+        router.push("auth/sign-in");
+      }
+      if (type === "sign-in") {
+        await SignInServer(data).then(
+          (
+            res:
+              | { error: string; success?: undefined }
+              | { success: string; error?: undefined }
+          ) => {
+            if (res?.error) {
+              reset();
+              // setError(data?.error);
+            }
+
+            if (res?.success) {
+              reset();
+              // setSuccess(data?.success);
+            }
+          }
+        );
+      }
+    } catch (err) {
+      console.log(err, "cath error");
+    }
   };
 
   return (

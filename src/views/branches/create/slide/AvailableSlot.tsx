@@ -14,11 +14,17 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import type { Steppers } from "@/hooks/useStepper";
 import { WeekDayEnum } from "@/types";
 
 import { PeriodTimeFieldType } from "./PeriodTimeField";
 
-type Props = {};
+type Props = {
+  stepIndex: number;
+  goNextFn: (number?: number) => void;
+  goBackfn: (number?: number) => void;
+  steppers: Steppers[];
+};
 const SlotSchema = z.object({
   weekDay: z.nativeEnum(WeekDayEnum, {
     message: "Week day is required",
@@ -30,7 +36,7 @@ const SlotSchema = z.object({
   surcharge: z.coerce.number().positive("Surcharge must be a positive number"),
 });
 
-const AvailableSlot = (props: Props) => {
+const AvailableSlot = ({ steppers, goBackfn, goNextFn, stepIndex }: Props) => {
   return (
     <div className="flex size-full flex-col gap-2 overflow-auto">
       <h1 className="text-center text-2xl font-bold uppercase">
