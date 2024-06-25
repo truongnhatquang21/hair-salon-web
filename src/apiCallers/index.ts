@@ -1,8 +1,7 @@
 import { auth } from "@/auth";
 import { responseMapping } from "@/lib/error";
-import { Env } from "@/libs/Env.mjs";
 
-class ApiClient<T> {
+export default class ApiClient<T> {
   private baseUrl: string;
 
   constructor(baseUrl: string) {
@@ -34,7 +33,6 @@ class ApiClient<T> {
 
   // CRUD methods with basic type annotations
   async get<U>(url: string, headers?: { [key: string]: string }): Promise<U> {
-    console.log(headers);
     return this.fetch<U>(url, "GET", undefined, headers);
   }
 
@@ -80,5 +78,3 @@ export const fetcher = async (url: string, options?: RequestInit) => {
   transformedResult.ok = res.ok;
   return transformedResult;
 };
-
-export default new ApiClient(Env.SERVER_URL as string);
