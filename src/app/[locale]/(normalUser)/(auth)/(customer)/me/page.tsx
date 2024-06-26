@@ -1,7 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import React from "react";
 
-type Props = {};
 export async function generateMetadata(props: { params: { locale: string } }) {
   const t = await getTranslations({
     locale: props.params.locale,
@@ -14,7 +13,7 @@ export async function generateMetadata(props: { params: { locale: string } }) {
   };
 }
 
-const Profile = (props: Props) => {
+const Profile = () => {
   return <div>emty page</div>;
 };
 
