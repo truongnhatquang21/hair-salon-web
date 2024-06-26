@@ -39,6 +39,7 @@ export const SignInServer = async (
   }
 
   const { email, password } = validatedFields.data;
+  console.log("email", email, "password", password, "callbackUrl", callbackUrl);
 
   try {
     await signIn("credentials", {

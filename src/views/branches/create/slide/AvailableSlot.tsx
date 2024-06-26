@@ -14,7 +14,6 @@ import { z } from "zod";
 
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -40,6 +39,7 @@ import type { Steppers } from "@/hooks/useStepper";
 import { useBranchStepStore } from "@/stores/createBranchStore";
 import { WeekDayEnum } from "@/types";
 
+import SlotDialog from "../../SlotDialog";
 import { TimeFieldType } from "./PeriodTimeField";
 
 type Props = {
@@ -48,7 +48,7 @@ type Props = {
   goBackfn: (number?: number) => void;
   steppers: Steppers[];
 };
-const SlotSchema = z.object({
+export const SlotSchema = z.object({
   weekDay: z.nativeEnum(WeekDayEnum, {
     message: "Week day is required",
   }),
@@ -75,9 +75,11 @@ const formSchema = z.object({
     .nonempty("At least one court is required"),
 });
 
-type SlotSchemaType = z.infer<typeof SlotSchema>;
+export type SlotSchemaType = z.infer<typeof SlotSchema>;
 type FormSchemaType = z.infer<typeof formSchema>;
 const AvailableSlot = ({ steppers, goBackfn, goNextFn, stepIndex }: Props) => {
+  const [isGenerateSlotDialogOpen, setIsGenerateSlotDialogOpen] =
+    useState(false);
   const { toast } = useToast();
   const { branchStep, setBranchStep } = useBranchStepStore((state) => {
     return {
@@ -127,6 +129,8 @@ const AvailableSlot = ({ steppers, goBackfn, goNextFn, stepIndex }: Props) => {
     }
   };
   const slotCreate = (data: SlotSchemaType) => {
+    console.log(data, "oasdjfo");
+
     const slots = form.getValues("slots");
 
     if (slots && slots?.length > 0) {
@@ -198,8 +202,6 @@ const AvailableSlot = ({ steppers, goBackfn, goNextFn, stepIndex }: Props) => {
     return sortedObject;
   }, [form.watch("slots")]);
 
-  console.log(slotMaping, "slotMaping");
-
   const deleleteSlot = (
     weekDay: string,
     startTime: string,
@@ -212,12 +214,10 @@ const AvailableSlot = ({ steppers, goBackfn, goNextFn, stepIndex }: Props) => {
         slot.startTime !== startTime ||
         slot.endTime !== endTime
     );
-    console.log(newSlots, "newSlots");
-
     form.setValue("slots", newSlots);
   };
 
-  function generateAvailableTimeSlots(): SlotSchemaType[] {
+  const generateAvailableTimeSlots = (): SlotSchemaType[] => {
     const { availableTime } = branchStep[6]?.data as { availableTime: string };
     const { SlotPeriod } = branchStep[6]?.data as { SlotPeriod: number };
 
@@ -227,12 +227,8 @@ const AvailableSlot = ({ steppers, goBackfn, goNextFn, stepIndex }: Props) => {
     const startMinute = Number(startTime?.split(":")[1]);
     const endHour = Number(endTime?.split(":")[0]);
     const endMinute = Number(endTime?.split(":")[1]);
-
-    for (
-      let weekDay = WeekDayEnum.Monday;
-      weekDay <= WeekDayEnum.Sunday;
-      weekDay++
-    ) {
+    const arrayWeekDay = Object.values(WeekDayEnum);
+    for (const weekDay of arrayWeekDay as WeekDayEnum[]) {
       const currentTime = new Date();
       currentTime.setHours(startHour, startMinute, 0, 0);
 
@@ -250,11 +246,33 @@ const AvailableSlot = ({ steppers, goBackfn, goNextFn, stepIndex }: Props) => {
         currentTime.setMinutes(currentTime.getMinutes() + SlotPeriod);
       }
     }
+    form.setValue("slots", slots);
+    console.log(slots, "slots");
 
+    setIsGenerateSlotDialogOpen(false);
     return slots;
-  }
-  console.log(generateAvailableTimeSlots(), "generateAvailableTimeSlots");
+  };
 
+  const editSlot = (slot: SlotSchemaType, payload: SlotSchemaType) => {
+    const slots = form.getValues("slots");
+    const newSlots = slots.map((item) => {
+      if (
+        item.weekDay === slot.weekDay &&
+        item.startTime === slot.startTime &&
+        item.endTime === slot.endTime
+      ) {
+        return payload;
+      }
+      return item;
+    });
+    form.setValue("slots", newSlots);
+    toast({
+      title: "Success",
+      description: "Slot has been updated",
+      className: "bg-green-600 text-white",
+    });
+    return true;
+  };
   return (
     <div className="flex size-full flex-col gap-2 overflow-auto">
       <div className="flex w-full items-center gap-4">
@@ -338,7 +356,10 @@ const AvailableSlot = ({ steppers, goBackfn, goNextFn, stepIndex }: Props) => {
               </div>
             </DialogContent>
           </Dialog>
-          <AlertDialog>
+          <AlertDialog
+            open={isGenerateSlotDialogOpen}
+            onOpenChange={setIsGenerateSlotDialogOpen}
+          >
             <AlertDialogTrigger>
               <Button variant="outline" className="flex items-center gap-2">
                 <ZapIcon /> Fast generate slots
@@ -356,9 +377,14 @@ const AvailableSlot = ({ steppers, goBackfn, goNextFn, stepIndex }: Props) => {
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                 {form.watch("slots")?.length && (
-                  <AlertDialogAction onClick={generateSlot}>
-                    Generate
-                  </AlertDialogAction>
+                  <Button
+                    onClick={() => {
+                      generateAvailableTimeSlots();
+                    }}
+                    className="flex items-center gap-2"
+                  >
+                    <ZapIcon /> Generate slots
+                  </Button>
                 )}
               </AlertDialogFooter>
             </AlertDialogContent>
@@ -372,23 +398,41 @@ const AvailableSlot = ({ steppers, goBackfn, goNextFn, stepIndex }: Props) => {
               return (
                 <div key={key} className="flex w-full flex-col gap-2">
                   <span className="font-semibold">{key}</span>
-                  <div className="grid  grid-cols-12 gap-2">
+                  <div className="grid grid-cols-12 gap-2">
                     {slotMaping[key]?.map((slot) => {
                       return (
-                        <Badge
-                          key={slot.availableTime}
-                          variant="secondary"
-                          className="col-span-4 flex cursor-pointer items-center gap-1 py-2 transition-all duration-300 ease-in  hover:bg-gray-400"
-                        >
-                          <Hourglass className="text-sm" />
-                          <span className="text-xs">{slot.availableTime}</span>
-                          <Trash
-                            onClick={() => {
-                              deleleteSlot(key, slot.availableTime);
-                            }}
-                            className="bottom-1 right-1 z-30 ml-auto rounded-full bg-red-200 p-2 text-red-700 opacity-40 shadow-md transition-all duration-300 ease-in hover:scale-125 hover:opacity-100"
-                          />
-                        </Badge>
+                        <SlotDialog
+                          key={slot.startTime + slot.endTime + slot.weekDay}
+                          Trigger={
+                            <Badge
+                              key={slot.startTime + slot.endTime}
+                              variant="secondary"
+                              className="col-span-4 flex cursor-pointer items-center gap-1 py-2 transition-all duration-300 ease-in  hover:bg-gray-400"
+                            >
+                              <Hourglass className="text-sm" />
+                              <span className="text-xs">
+                                {`${slot.startTime}-${slot.endTime}`}
+                              </span>
+                              <Trash
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  deleleteSlot(
+                                    key,
+                                    slot.startTime,
+                                    slot.endTime
+                                  );
+                                }}
+                                className="bottom-1 right-1 z-30 ml-auto rounded-full bg-red-200 p-2 text-red-700 opacity-40 shadow-md transition-all duration-300 ease-in hover:scale-125 hover:opacity-100"
+                              />
+                            </Badge>
+                          }
+                          defaultValue={slot}
+                          onSubmit={(data) => {
+                            return editSlot(slot, data);
+                          }}
+                          title="Edit slot"
+                          description="Fill out the form below to edit the slot"
+                        />
                       );
                     })}
                   </div>

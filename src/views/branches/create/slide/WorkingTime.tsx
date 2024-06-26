@@ -115,6 +115,9 @@ const WorkingTime = ({ goBackfn, steppers, goNextFn, stepIndex }: Props) => {
           fieldConfig={{
             availableTime: {
               fieldType: PeriodTimeFieldType,
+              inputProps: {
+                value: form.getValues("availableTime"),
+              },
               // fieldType: TimePickerDemo,
             },
             SlotPeriod: {

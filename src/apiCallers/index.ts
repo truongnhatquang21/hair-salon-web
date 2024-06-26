@@ -62,8 +62,8 @@ export default class ApiClient<T> {
 
 export const fetcher = async (url: string, options?: RequestInit) => {
   const session = await auth();
-  const accessToken = session?.user.accessToken;
-
+  const accessToken = session?.accessToken;
+  console.log(accessToken, "dasjf");
   const res = await fetch(process.env.SERVER_URL + url, {
     headers: {
       "Content-Type": "application/json",

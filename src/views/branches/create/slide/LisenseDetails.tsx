@@ -13,7 +13,7 @@ import type { Steppers } from "@/hooks/useStepper";
 import { useBranchStepStore } from "@/stores/createBranchStore";
 
 const schema = z.object({
-  lisenses: z.array(z.instanceof(File)),
+  licenses: z.array(z.instanceof(File)),
 });
 
 type Props = {
@@ -51,13 +51,13 @@ const LisenseDetails = ({ goBackfn, goNextFn, steppers, stepIndex }: Props) => {
   };
   const onSubmit: SubmitHandler<Schema> = async (data) => {
     console.log(data, "images data");
-    if (!data.lisenses || data.lisenses.length === 0) {
+    if (!data.licenses || data.licenses.length === 0) {
       toast({
         title: "Error",
         variant: "destructive",
         description: "Please check your form again",
       });
-      return form.setError("lisenses", {
+      return form.setError("licenses", {
         message: "Please upload image",
       });
     }
@@ -108,13 +108,13 @@ const LisenseDetails = ({ goBackfn, goNextFn, steppers, stepIndex }: Props) => {
       </div>
       <div className="relative flex items-center border-t p-2">
         <FormField
-          defaultValue={form.getValues("lisenses")}
-          name="lisenses"
+          defaultValue={form.getValues("licenses")}
+          name="licenses"
           control={form.control}
           render={({ field }) => {
             return (
               <ReactHookFormDemo
-                label="Lisenses"
+                label="Licenses"
                 isRequired
                 field={field}
                 accetp={{
