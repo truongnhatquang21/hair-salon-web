@@ -7,11 +7,22 @@ import {
   Trash,
   ZapIcon,
 } from "lucide-react";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { IconRight } from "react-day-picker";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import AutoForm, { AutoFormSubmit } from "@/components/ui/auto-form";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -29,7 +40,7 @@ import type { Steppers } from "@/hooks/useStepper";
 import { useBranchStepStore } from "@/stores/createBranchStore";
 import { WeekDayEnum } from "@/types";
 
-import { PeriodTimeFieldType } from "./PeriodTimeField";
+import { TimeFieldType } from "./PeriodTimeField";
 
 type Props = {
   stepIndex: number;
@@ -41,11 +52,21 @@ const SlotSchema = z.object({
   weekDay: z.nativeEnum(WeekDayEnum, {
     message: "Week day is required",
   }),
-  availableTime: z.string({
+  startTime: z.string({
     // Add a validation message for the field
     message: "Available time is required",
   }),
-  surcharge: z.coerce.number().positive("Surcharge must be a positive number"),
+  endTime: z.string({
+    // Add a validation message for the field
+    message: "Available time is required",
+  }),
+  surcharge: z.coerce
+    .number({
+      // Add a validation message for the field
+      message: "Surcharge must be a >= 0 number",
+    })
+    .gte(0)
+    .default(0),
 });
 const formSchema = z.object({
   slots: z
@@ -137,6 +158,102 @@ const AvailableSlot = ({ steppers, goBackfn, goNextFn, stepIndex }: Props) => {
       });
     }
   };
+  const weekdays = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+  ];
+  const slotMaping = useMemo(() => {
+    const data = form.watch("slots");
+    const result: { [key: string]: SlotSchemaType[] } = {};
+    if (!data || data.length === 0) {
+      return null;
+    }
+    data.forEach((item) => {
+      if (!result[item.weekDay]) {
+        result[item.weekDay] = [item];
+      } else {
+        result[item.weekDay]?.push(item);
+        result[item.weekDay]?.sort((a, b) => {
+          const aTime = a.startTime.split(":");
+          const bTime = b.startTime.split(":");
+          const isHourCompare =
+            Number(aTime[0] as string) - Number(bTime[0] as string);
+          if (isHourCompare === 0) {
+            return Number(aTime[1] as string) - Number(bTime[1] as string);
+          }
+          return isHourCompare;
+        });
+      }
+    });
+    const sortedObject = Object.fromEntries(
+      Object.entries(result).sort(
+        ([a], [b]) => weekdays.indexOf(a) - weekdays.indexOf(b)
+      )
+    );
+    return sortedObject;
+  }, [form.watch("slots")]);
+
+  console.log(slotMaping, "slotMaping");
+
+  const deleleteSlot = (
+    weekDay: string,
+    startTime: string,
+    endTime: string
+  ) => {
+    const slots = form.getValues("slots");
+    const newSlots = slots.filter(
+      (slot) =>
+        slot.weekDay !== weekDay ||
+        slot.startTime !== startTime ||
+        slot.endTime !== endTime
+    );
+    console.log(newSlots, "newSlots");
+
+    form.setValue("slots", newSlots);
+  };
+
+  function generateAvailableTimeSlots(): SlotSchemaType[] {
+    const { availableTime } = branchStep[6]?.data as { availableTime: string };
+    const { SlotPeriod } = branchStep[6]?.data as { SlotPeriod: number };
+
+    const slots: SlotSchemaType[] = [];
+    const [startTime, endTime] = availableTime.split("-");
+    const startHour = Number(startTime?.split(":")[0]);
+    const startMinute = Number(startTime?.split(":")[1]);
+    const endHour = Number(endTime?.split(":")[0]);
+    const endMinute = Number(endTime?.split(":")[1]);
+
+    for (
+      let weekDay = WeekDayEnum.Monday;
+      weekDay <= WeekDayEnum.Sunday;
+      weekDay++
+    ) {
+      const currentTime = new Date();
+      currentTime.setHours(startHour, startMinute, 0, 0);
+
+      while (
+        currentTime.getHours() * 60 + currentTime.getMinutes() <=
+        endHour * 60 + endMinute
+      ) {
+        const slot: SlotSchemaType = {
+          weekDay,
+          startTime: `${currentTime.getHours().toString().padStart(2, "0")}:${currentTime.getMinutes().toString().padStart(2, "0")}`,
+          endTime: `${(currentTime.getHours() + Math.floor((currentTime.getMinutes() + SlotPeriod) / 60)).toString().padStart(2, "0")}:${((currentTime.getMinutes() + SlotPeriod) % 60).toString().padStart(2, "0")}`,
+          surcharge: 0, // You can set the surcharge value here
+        };
+        slots.push(slot);
+        currentTime.setMinutes(currentTime.getMinutes() + SlotPeriod);
+      }
+    }
+
+    return slots;
+  }
+  console.log(generateAvailableTimeSlots(), "generateAvailableTimeSlots");
 
   return (
     <div className="flex size-full flex-col gap-2 overflow-auto">
@@ -167,7 +284,7 @@ const AvailableSlot = ({ steppers, goBackfn, goNextFn, stepIndex }: Props) => {
         can auto generate the slot period for your branch based on your previous
         setup.
         <div className="flex  items-center justify-end gap-2">
-          <Dialog>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button className="ml-auto flex items-center gap-3">
                 <BadgePlus /> Add slot
@@ -185,11 +302,17 @@ const AvailableSlot = ({ steppers, goBackfn, goNextFn, stepIndex }: Props) => {
                   onSubmit={slotCreate}
                   formSchema={SlotSchema}
                   fieldConfig={{
-                    availableTime: {
-                      fieldType: PeriodTimeFieldType,
+                    startTime: {
+                      fieldType: TimeFieldType,
                       // fieldType: TimePickerDemo,
-                      description: "Available time must be a valid time",
+                      description: "Start time must be a valid time",
                     },
+                    endTime: {
+                      fieldType: TimeFieldType,
+                      // fieldType: TimePickerDemo,
+                      description: "End time must be a valid time",
+                    },
+
                     weekDay: {
                       inputProps: {
                         placeholder: "Week Day",
@@ -215,226 +338,66 @@ const AvailableSlot = ({ steppers, goBackfn, goNextFn, stepIndex }: Props) => {
               </div>
             </DialogContent>
           </Dialog>
-
-          <Button variant="outline" className="flex items-center gap-2">
-            <ZapIcon /> Fast generate slots
-          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger>
+              <Button variant="outline" className="flex items-center gap-2">
+                <ZapIcon /> Fast generate slots
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  {form.watch("slots")?.length
+                    ? "You can generate the slot based on your previous setup. This will override your current slots. Are you sure you want to continue?"
+                    : "This feature needs at least one slot to generate the slot period. Please add at least one slot to continue."}
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                {form.watch("slots")?.length && (
+                  <AlertDialogAction onClick={generateSlot}>
+                    Generate
+                  </AlertDialogAction>
+                )}
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </div>
       <div className="flex w-full flex-col gap-2  border-t p-2">
         <div className="flex w-full flex-col gap-2">
-          <span className="font-semibold">Monday</span>
-          <div className="grid  grid-cols-12 gap-2">
-            <Badge
-              variant="secondary"
-              className="col-span-4 flex cursor-pointer items-center gap-1 py-2 transition-all duration-300 ease-in  hover:bg-gray-400"
-            >
-              <Hourglass className="text-sm" />
-              <span className="text-xs">07:00-08:00</span>
-              <Trash className="bottom-1 right-1 z-30 ml-auto rounded-full bg-red-200 p-2 text-red-700 opacity-40 shadow-md transition-all duration-300 ease-in hover:scale-125 hover:opacity-100" />
-            </Badge>
-            <Badge
-              variant="secondary"
-              className="col-span-4 flex cursor-pointer items-center gap-1 py-2 transition-all duration-300 ease-in  hover:bg-gray-400"
-            >
-              <Hourglass className="text-sm" />
-              <span className="text-xs">07:00-08:00</span>
-              <Trash className="bottom-1 right-1 z-30 ml-auto rounded-full bg-red-200 p-2 text-red-700 opacity-40 shadow-md transition-all duration-300 ease-in hover:scale-125 hover:opacity-100" />
-            </Badge>
-            <Badge
-              variant="secondary"
-              className="col-span-4 flex cursor-pointer items-center gap-1 py-2 transition-all duration-300 ease-in  hover:bg-gray-400"
-            >
-              <Hourglass className="text-sm" />
-              <span className="text-xs">07:00-08:00</span>
-              <Trash className="bottom-1 right-1 z-30 ml-auto rounded-full bg-red-200 p-2 text-red-700 opacity-40 shadow-md transition-all duration-300 ease-in hover:scale-125 hover:opacity-100" />
-            </Badge>
-            <Badge
-              variant="secondary"
-              className="col-span-4 flex cursor-pointer items-center gap-1 py-2 transition-all duration-300 ease-in  hover:bg-gray-400"
-            >
-              <Hourglass className="text-sm" />
-              <span className="text-xs">07:00-08:00</span>
-              <Trash className="bottom-1 right-1 z-30 ml-auto rounded-full bg-red-200 p-2 text-red-700 opacity-40 shadow-md transition-all duration-300 ease-in hover:scale-125 hover:opacity-100" />
-            </Badge>
-            <Badge
-              variant="secondary"
-              className="col-span-4 flex cursor-pointer items-center gap-1 py-2 transition-all duration-300 ease-in  hover:bg-gray-400"
-            >
-              <Hourglass className="text-sm" />
-              <span className="text-xs">07:00-08:00</span>
-              <Trash className="bottom-1 right-1 z-30 ml-auto rounded-full bg-red-200 p-2 text-red-700 opacity-40 shadow-md transition-all duration-300 ease-in hover:scale-125 hover:opacity-100" />
-            </Badge>
-            <Badge
-              variant="secondary"
-              className="col-span-4 flex cursor-pointer items-center gap-1 py-2 transition-all duration-300 ease-in  hover:bg-gray-400"
-            >
-              <Hourglass className="text-sm" />
-              <span className="text-xs">07:00-08:00</span>
-              <Trash className="bottom-1 right-1 z-30 ml-auto rounded-full bg-red-200 p-2 text-red-700 opacity-40 shadow-md transition-all duration-300 ease-in hover:scale-125 hover:opacity-100" />
-            </Badge>
-          </div>
-        </div>
-        <div className="flex w-full flex-col gap-2">
-          <span className="font-semibold">Monday</span>
-          <div className="grid  grid-cols-12 gap-2">
-            <Badge
-              variant="secondary"
-              className="col-span-4 flex cursor-pointer items-center gap-1 py-2 transition-all duration-300 ease-in  hover:bg-gray-400"
-            >
-              <Hourglass className="text-sm" />
-              <span className="text-xs">07:00-08:00</span>
-              <Trash className="bottom-1 right-1 z-30 ml-auto rounded-full bg-red-200 p-2 text-red-700 opacity-40 shadow-md transition-all duration-300 ease-in hover:scale-125 hover:opacity-100" />
-            </Badge>
-            <Badge
-              variant="secondary"
-              className="col-span-4 flex cursor-pointer items-center gap-1 py-2 transition-all duration-300 ease-in  hover:bg-gray-400"
-            >
-              <Hourglass className="text-sm" />
-              <span className="text-xs">07:00-08:00</span>
-              <Trash className="bottom-1 right-1 z-30 ml-auto rounded-full bg-red-200 p-2 text-red-700 opacity-40 shadow-md transition-all duration-300 ease-in hover:scale-125 hover:opacity-100" />
-            </Badge>
-            <Badge
-              variant="secondary"
-              className="col-span-4 flex cursor-pointer items-center gap-1 py-2 transition-all duration-300 ease-in  hover:bg-gray-400"
-            >
-              <Hourglass className="text-sm" />
-              <span className="text-xs">07:00-08:00</span>
-              <Trash className="bottom-1 right-1 z-30 ml-auto rounded-full bg-red-200 p-2 text-red-700 opacity-40 shadow-md transition-all duration-300 ease-in hover:scale-125 hover:opacity-100" />
-            </Badge>
-            <Badge
-              variant="secondary"
-              className="col-span-4 flex cursor-pointer items-center gap-1 py-2 transition-all duration-300 ease-in  hover:bg-gray-400"
-            >
-              <Hourglass className="text-sm" />
-              <span className="text-xs">07:00-08:00</span>
-              <Trash className="bottom-1 right-1 z-30 ml-auto rounded-full bg-red-200 p-2 text-red-700 opacity-40 shadow-md transition-all duration-300 ease-in hover:scale-125 hover:opacity-100" />
-            </Badge>
-            <Badge
-              variant="secondary"
-              className="col-span-4 flex cursor-pointer items-center gap-1 py-2 transition-all duration-300 ease-in  hover:bg-gray-400"
-            >
-              <Hourglass className="text-sm" />
-              <span className="text-xs">07:00-08:00</span>
-              <Trash className="bottom-1 right-1 z-30 ml-auto rounded-full bg-red-200 p-2 text-red-700 opacity-40 shadow-md transition-all duration-300 ease-in hover:scale-125 hover:opacity-100" />
-            </Badge>
-            <Badge
-              variant="secondary"
-              className="col-span-4 flex cursor-pointer items-center gap-1 py-2 transition-all duration-300 ease-in  hover:bg-gray-400"
-            >
-              <Hourglass className="text-sm" />
-              <span className="text-xs">07:00-08:00</span>
-              <Trash className="bottom-1 right-1 z-30 ml-auto rounded-full bg-red-200 p-2 text-red-700 opacity-40 shadow-md transition-all duration-300 ease-in hover:scale-125 hover:opacity-100" />
-            </Badge>
-          </div>
-        </div>{" "}
-        <div className="flex w-full flex-col gap-2">
-          <span className="font-semibold">Monday</span>
-          <div className="grid  grid-cols-12 gap-2">
-            <Badge
-              variant="secondary"
-              className="col-span-4 flex cursor-pointer items-center gap-1 py-2 transition-all duration-300 ease-in  hover:bg-gray-400"
-            >
-              <Hourglass className="text-sm" />
-              <span className="text-xs">07:00-08:00</span>
-              <Trash className="bottom-1 right-1 z-30 ml-auto rounded-full bg-red-200 p-2 text-red-700 opacity-40 shadow-md transition-all duration-300 ease-in hover:scale-125 hover:opacity-100" />
-            </Badge>
-            <Badge
-              variant="secondary"
-              className="col-span-4 flex cursor-pointer items-center gap-1 py-2 transition-all duration-300 ease-in  hover:bg-gray-400"
-            >
-              <Hourglass className="text-sm" />
-              <span className="text-xs">07:00-08:00</span>
-              <Trash className="bottom-1 right-1 z-30 ml-auto rounded-full bg-red-200 p-2 text-red-700 opacity-40 shadow-md transition-all duration-300 ease-in hover:scale-125 hover:opacity-100" />
-            </Badge>
-            <Badge
-              variant="secondary"
-              className="col-span-4 flex cursor-pointer items-center gap-1 py-2 transition-all duration-300 ease-in  hover:bg-gray-400"
-            >
-              <Hourglass className="text-sm" />
-              <span className="text-xs">07:00-08:00</span>
-              <Trash className="bottom-1 right-1 z-30 ml-auto rounded-full bg-red-200 p-2 text-red-700 opacity-40 shadow-md transition-all duration-300 ease-in hover:scale-125 hover:opacity-100" />
-            </Badge>
-            <Badge
-              variant="secondary"
-              className="col-span-4 flex cursor-pointer items-center gap-1 py-2 transition-all duration-300 ease-in  hover:bg-gray-400"
-            >
-              <Hourglass className="text-sm" />
-              <span className="text-xs">07:00-08:00</span>
-              <Trash className="bottom-1 right-1 z-30 ml-auto rounded-full bg-red-200 p-2 text-red-700 opacity-40 shadow-md transition-all duration-300 ease-in hover:scale-125 hover:opacity-100" />
-            </Badge>
-            <Badge
-              variant="secondary"
-              className="col-span-4 flex cursor-pointer items-center gap-1 py-2 transition-all duration-300 ease-in  hover:bg-gray-400"
-            >
-              <Hourglass className="text-sm" />
-              <span className="text-xs">07:00-08:00</span>
-              <Trash className="bottom-1 right-1 z-30 ml-auto rounded-full bg-red-200 p-2 text-red-700 opacity-40 shadow-md transition-all duration-300 ease-in hover:scale-125 hover:opacity-100" />
-            </Badge>
-            <Badge
-              variant="secondary"
-              className="col-span-4 flex cursor-pointer items-center gap-1 py-2 transition-all duration-300 ease-in  hover:bg-gray-400"
-            >
-              <Hourglass className="text-sm" />
-              <span className="text-xs">07:00-08:00</span>
-              <Trash className="bottom-1 right-1 z-30 ml-auto rounded-full bg-red-200 p-2 text-red-700 opacity-40 shadow-md transition-all duration-300 ease-in hover:scale-125 hover:opacity-100" />
-            </Badge>
-          </div>
-        </div>{" "}
-        <div className="flex w-full flex-col gap-2">
-          <span className="font-semibold">Monday</span>
-          <div className="grid  grid-cols-12 gap-2">
-            <Badge
-              variant="secondary"
-              className="col-span-4 flex cursor-pointer items-center gap-1 py-2 transition-all duration-300 ease-in  hover:bg-gray-400"
-            >
-              <Hourglass className="text-sm" />
-              <span className="text-xs">07:00-08:00</span>
-              <Trash className="bottom-1 right-1 z-30 ml-auto rounded-full bg-red-200 p-2 text-red-700 opacity-40 shadow-md transition-all duration-300 ease-in hover:scale-125 hover:opacity-100" />
-            </Badge>
-            <Badge
-              variant="secondary"
-              className="col-span-4 flex cursor-pointer items-center gap-1 py-2 transition-all duration-300 ease-in  hover:bg-gray-400"
-            >
-              <Hourglass className="text-sm" />
-              <span className="text-xs">07:00-08:00</span>
-              <Trash className="bottom-1 right-1 z-30 ml-auto rounded-full bg-red-200 p-2 text-red-700 opacity-40 shadow-md transition-all duration-300 ease-in hover:scale-125 hover:opacity-100" />
-            </Badge>
-            <Badge
-              variant="secondary"
-              className="col-span-4 flex cursor-pointer items-center gap-1 py-2 transition-all duration-300 ease-in  hover:bg-gray-400"
-            >
-              <Hourglass className="text-sm" />
-              <span className="text-xs">07:00-08:00</span>
-              <Trash className="bottom-1 right-1 z-30 ml-auto rounded-full bg-red-200 p-2 text-red-700 opacity-40 shadow-md transition-all duration-300 ease-in hover:scale-125 hover:opacity-100" />
-            </Badge>
-            <Badge
-              variant="secondary"
-              className="col-span-4 flex cursor-pointer items-center gap-1 py-2 transition-all duration-300 ease-in  hover:bg-gray-400"
-            >
-              <Hourglass className="text-sm" />
-              <span className="text-xs">07:00-08:00</span>
-              <Trash className="bottom-1 right-1 z-30 ml-auto rounded-full bg-red-200 p-2 text-red-700 opacity-40 shadow-md transition-all duration-300 ease-in hover:scale-125 hover:opacity-100" />
-            </Badge>
-            <Badge
-              variant="secondary"
-              className="col-span-4 flex cursor-pointer items-center gap-1 py-2 transition-all duration-300 ease-in  hover:bg-gray-400"
-            >
-              <Hourglass className="text-sm" />
-              <span className="text-xs">07:00-08:00</span>
-              <Trash className="bottom-1 right-1 z-30 ml-auto rounded-full bg-red-200 p-2 text-red-700 opacity-40 shadow-md transition-all duration-300 ease-in hover:scale-125 hover:opacity-100" />
-            </Badge>
-            <Badge
-              variant="secondary"
-              className="col-span-4 flex cursor-pointer items-center gap-1 py-2 transition-all duration-300 ease-in  hover:bg-gray-400"
-            >
-              <Hourglass className="text-sm" />
-              <span className="text-xs">07:00-08:00</span>
-              <Trash className="bottom-1 right-1 z-30 ml-auto rounded-full bg-red-200 p-2 text-red-700 opacity-40 shadow-md transition-all duration-300 ease-in hover:scale-125 hover:opacity-100" />
-            </Badge>
-          </div>
+          {slotMaping &&
+            Object.keys(slotMaping).map((key) => {
+              return (
+                <div key={key} className="flex w-full flex-col gap-2">
+                  <span className="font-semibold">{key}</span>
+                  <div className="grid  grid-cols-12 gap-2">
+                    {slotMaping[key]?.map((slot) => {
+                      return (
+                        <Badge
+                          key={slot.availableTime}
+                          variant="secondary"
+                          className="col-span-4 flex cursor-pointer items-center gap-1 py-2 transition-all duration-300 ease-in  hover:bg-gray-400"
+                        >
+                          <Hourglass className="text-sm" />
+                          <span className="text-xs">{slot.availableTime}</span>
+                          <Trash
+                            onClick={() => {
+                              deleleteSlot(key, slot.availableTime);
+                            }}
+                            className="bottom-1 right-1 z-30 ml-auto rounded-full bg-red-200 p-2 text-red-700 opacity-40 shadow-md transition-all duration-300 ease-in hover:scale-125 hover:opacity-100"
+                          />
+                        </Badge>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
         </div>
       </div>
+
       <Button
         type="submit"
         className="flex w-full select-none items-center justify-center gap-2 px-4"
