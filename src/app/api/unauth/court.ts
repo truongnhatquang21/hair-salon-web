@@ -1,4 +1,4 @@
-import type ICourt from "@/types/court";
+import type ICourt from "@/types/Court";
 
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL_COURT;
 export const getAllSearchedCourt = async (): Promise<ICourt[]> => {

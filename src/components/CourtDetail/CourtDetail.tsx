@@ -8,7 +8,7 @@ import React, { useEffect, useState } from "react";
 import { getCourtById } from "@/app/api/unauth/court";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
-import type ICourt from "@/types/court";
+import type ICourt from "@/types/Court";
 
 import CustomTag from "../CustomTag";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
