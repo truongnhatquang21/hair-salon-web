@@ -11,12 +11,10 @@ function AutoFormLabel({
   className?: string;
 }) {
   return (
-    <>
-      <FormLabel className={cn(className)}>
-        {label}
-        {isRequired && <span className="text-destructive"> *</span>}
-      </FormLabel>
-    </>
+    <FormLabel className={cn(className)}>
+      {label}
+      {isRequired && <span className="text-destructive"> *</span>}
+    </FormLabel>
   );
 }
 

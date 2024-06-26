@@ -36,6 +36,7 @@ const publicPages = [
   "/end-user-license-agreement",
   "/subscriptions",
   "/tracking",
+  "/search-all-branch",
   // "/profile",
 ];
 
