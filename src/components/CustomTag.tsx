@@ -16,7 +16,11 @@ const CustomTag = ({ status }: CustomTagProps) => {
     case "Inactive":
     case "Unavailable":
     case "IN_USE":
+    case "single_schedule":
       colorClass = "bg-gray-500 text-white text-center";
+      break;
+    case "Pending":
+      colorClass = "bg-yellow-500 text-white text-center";
       break;
     default:
       colorClass = "bg-gray-400 text-white";
