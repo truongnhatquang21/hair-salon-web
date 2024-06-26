@@ -27,13 +27,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         try {
           const account = await signIngApi(credentials);
-          console.log("line 15: ", account); // Arr
-          const profile = await getProfileApi(account.accessToken);
-          console.log("line 31: ", profile); // Arr
-
+          console.log(account);
           if (account) {
+            const profile = await getProfileApi(account.accessToken);
             return {
-              name: profile.user.username,
+              name: profile.username,
               email: profile.user.email,
               accessToken: account.accessToken,
               refreshToken: account.refreshToken,

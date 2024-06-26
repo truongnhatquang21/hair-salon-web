@@ -1,5 +1,6 @@
 "use server";
 
+import { responseMapping } from "@/lib/error";
 import { Env } from "@/libs/Env.mjs";
 
 export interface IResponseToken {
@@ -11,7 +12,7 @@ export interface IResponseToken {
 type CredentialsArgument = Partial<Record<"email" | "password", unknown>>;
 export const signIngApi = async ({ email, password }: CredentialsArgument) => {
   const response = await fetch(`${Env.SERVER_URL}auth/login`, {
-    method: "GET",
+    method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
@@ -21,11 +22,11 @@ export const signIngApi = async ({ email, password }: CredentialsArgument) => {
     }),
   });
 
-  if (!response.ok) {
-    throw new Error(`API request failed with status ${response.status}`);
-  }
-
-  return response.json();
+  const result = await response.json();
+  // const transformedResult = responseMapping(result);
+  // transformedResult.status = response.status;
+  // transformedResult.ok = response.ok;
+  return result;
 };
 export const getProfileApi = async (accessToken: string) => {
   const response = await fetch(`${Env.SERVER_URL}auth/me`, {
@@ -35,10 +36,9 @@ export const getProfileApi = async (accessToken: string) => {
       Authorization: `Bearer ${accessToken}`,
     },
   });
-
-  if (!response.ok) {
-    throw new Error(`API request failed with status ${response.status}`);
-  }
-
-  return response.json();
+  const result = await response.json();
+  const transformedResult = responseMapping(result);
+  transformedResult.status = response.status;
+  transformedResult.ok = response.ok;
+  return result;
 };

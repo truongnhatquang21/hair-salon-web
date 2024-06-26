@@ -15,7 +15,7 @@ export default async function Layout(props: { children: React.ReactNode }) {
     },
     {
       title: "Activity",
-      href: "#activity",
+      href: "/activity",
     },
     {
       title: "About",
@@ -23,7 +23,11 @@ export default async function Layout(props: { children: React.ReactNode }) {
     },
     {
       title: "Contact",
-      href: "/#contact",
+      href: "/contact",
+    },
+    {
+      title: "Branch",
+      href: "/branch/1",
     },
     {
       title: "Subscriptions",
