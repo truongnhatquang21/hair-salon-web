@@ -1,5 +1,6 @@
 "use server";
 
+import { toast } from "@/components/ui/use-toast";
 import { responseMapping } from "@/lib/error";
 import { Env } from "@/libs/Env.mjs";
 
@@ -9,7 +10,9 @@ export interface IResponseToken {
   refreshToken: string;
 }
 
-type CredentialsArgument = Partial<Record<"email" | "password", unknown>>;
+export type CredentialsArgument = Partial<
+  Record<"email" | "password", unknown>
+>;
 export const signIngApi = async ({ email, password }: CredentialsArgument) => {
   const response = await fetch(`${Env.SERVER_URL}auth/login`, {
     method: "POST",
@@ -23,9 +26,27 @@ export const signIngApi = async ({ email, password }: CredentialsArgument) => {
   });
 
   const result = await response.json();
-  // const transformedResult = responseMapping(result);
-  // transformedResult.status = response.status;
-  // transformedResult.ok = response.ok;
+
+  const transformedResult = responseMapping(result);
+  transformedResult.status = response.status;
+  transformedResult.ok = response.ok;
+
+  if (!transformedResult.ok) {
+    toast({
+      variant: "destructive",
+      title: "Uh oh! Something went wrong.",
+      description: transformedResult.message || transformedResult.statusText,
+    });
+    // throw new Error(data.message || data.statusText);
+  }
+  if (transformedResult.message) {
+    return toast({
+      variant: "default",
+      className: "bg-green-600 text-white",
+      title: "Message from system",
+      description: transformedResult.message,
+    });
+  }
   return result;
 };
 export const getProfileApi = async (accessToken: string) => {
@@ -40,5 +61,6 @@ export const getProfileApi = async (accessToken: string) => {
   const transformedResult = responseMapping(result);
   transformedResult.status = response.status;
   transformedResult.ok = response.ok;
+
   return result;
 };
