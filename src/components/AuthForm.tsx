@@ -1,3 +1,5 @@
+/* eslint-disable react/jsx-pascal-case */
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -62,8 +64,6 @@ export function UserAuthForm({
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-    reset,
-    getValues,
   } = useForm<SignUpSchemaType & SignInSchemaType>({
     resolver: zodResolver(type === "sign-up" ? SignUpSchema : SignInSchema),
     defaultValues: {},

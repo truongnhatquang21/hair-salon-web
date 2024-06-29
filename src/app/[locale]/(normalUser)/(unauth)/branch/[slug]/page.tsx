@@ -5,7 +5,9 @@ import CalendarDaily from "@/components/Custom/DailyCalendar";
 import { TimeSlot } from "@/components/TimeSlot";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-const Page = () => {
+const Page = ({ params }: { params: { slug: string } }) => {
+  const { slug } = params;
+
   return (
     <div className="min-h-[calc(100vh_-_56px)] p-5">
       <div className=" rounded-xl bg-slate-400 p-5">
@@ -50,17 +52,17 @@ const Page = () => {
             <TabsTrigger value="map">Map</TabsTrigger>
           </TabsList>
           <TabsContent value="overview" className="py-4">
-            <BranchDetailOverview />
+            <BranchDetailOverview slug={slug} />
           </TabsContent>
           <TabsContent value="schedules" className="py-4">
-            <p>This is the details tab content.</p>
+            <div>This is the details tab content.</div>
             <div>
               <CalendarDaily />
               <TimeSlot />
             </div>
           </TabsContent>
           <TabsContent value="map" className="py-4">
-            <p>This is the reviews tab content.</p>
+            <div>This is the reviews tab content.</div>
           </TabsContent>
         </Tabs>
       </div>

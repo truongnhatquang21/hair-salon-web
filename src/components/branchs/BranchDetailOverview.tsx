@@ -1,5 +1,8 @@
 /* eslint-disable react/jsx-pascal-case */
 
+"use client";
+
+import { useQuery } from "@tanstack/react-query";
 import {
   Clock,
   ClockIcon,
@@ -7,6 +10,8 @@ import {
   MapPin,
   UsersIcon,
 } from "lucide-react";
+
+import { getBranchByIdAPI } from "@/apiCallers/Branches";
 
 import { Icons } from "../icons";
 import { Button } from "../ui/button";
@@ -19,17 +24,24 @@ import {
   CardTitle,
 } from "../ui/card";
 import { Separator } from "../ui/separator";
-
 // interface BranchDetailOverviewProps {}
 
-const BranchDetailOverview = () => {
+const BranchDetailOverview = ({ slug }: { slug: string }) => {
+  const { data, isLoading } = useQuery({
+    queryKey: ["brach"],
+    queryFn: async () => getBranchByIdAPI(slug),
+  });
+  console.log("line 18", data);
+  if (isLoading) {
+    return <div>Loading</div>;
+  }
   return (
     <div className="">
       <div className="grid grid-cols-1 gap-4  md:grid-cols-4">
         <div className="col-span-full md:col-span-3">
           <Card className="">
             <CardHeader>
-              <CardTitle>SÂN CẦU LÔNG NGUYỄN XÍ</CardTitle>
+              <CardTitle>{data.data.name}</CardTitle>
               <CardDescription>
                 <div className="flex flex-col">
                   <div className="flex gap-4">

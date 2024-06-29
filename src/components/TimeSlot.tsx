@@ -1,51 +1,154 @@
 "use client";
 
-import { useState } from "react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@radix-ui/react-popover";
+import { Calendar, CalendarDaysIcon } from "lucide-react";
+import { useMemo, useState } from "react";
 
 import { Button } from "./ui/button";
 
 export const TimeSlot = () => {
-  const [selectedSlots, setSelectedSlots] = useState([]);
+  const [selectedSlots, setSelectedSlots] = useState<string[]>([]);
   const [showSelectedSlots, setShowSelectedSlots] = useState(false);
-  const timeSlots = [
-    "6:00 AM - 7:00 AM",
-    "7:00 AM - 8:00 AM",
-    "8:00 AM - 9:00 AM",
-    "9:00 AM - 10:00 AM",
-    "10:00 AM - 11:00 AM",
-    "11:00 AM - 12:00 PM",
-    "12:00 PM - 1:00 PM",
-    "1:00 PM - 2:00 PM",
-    "2:00 PM - 3:00 PM",
-    "3:00 PM - 4:00 PM",
-    "4:00 PM - 5:00 PM",
-    "5:00 PM - 6:00 PM",
-    "6:00 PM - 7:00 PM",
-    "7:00 PM - 8:00 PM",
-    "8:00 PM - 9:00 PM",
-    "9:00 PM - 10:00 PM",
-  ];
-  const toggleSlot = (slot) => {
-    if (selectedSlots.includes(slot)) {
-      setSelectedSlots(selectedSlots.filter((s) => s !== slot));
-    } else {
-      setSelectedSlots([...selectedSlots, slot]);
-      setShowSelectedSlots(true);
+  const [date, setDate] = useState(new Date());
+  const [startSlot, setStartSlot] = useState(null);
+  const [endSlot, setEndSlot] = useState(null);
+  const timeSlots = useMemo(() => {
+    const slots = [];
+    const startHour = 6;
+    const endHour = 22;
+    for (let hour = startHour; hour < endHour; hour++) {
+      for (let minute = 0; minute < 60; minute += 60) {
+        const startTime = new Date(
+          date.getFullYear(),
+          date.getMonth(),
+          date.getDate(),
+          hour,
+          minute
+        );
+        const endTime = new Date(
+          date.getFullYear(),
+          date.getMonth(),
+          date.getDate(),
+          hour + 1,
+          minute
+        );
+        const startTimeString = startTime
+          .toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+          .replace(/^0/, "");
+        const endTimeString = endTime
+          .toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+          .replace(/^0/, "");
+        slots.push(`${startTimeString} - ${endTimeString}`);
+      }
     }
+    return slots;
+  }, [date]);
+  const toggleSlot = (slot) => {
+    const slotIndex = timeSlots.indexOf(slot);
+    if (!startSlot) {
+      setStartSlot(slot);
+      setSelectedSlots([slot]);
+      setShowSelectedSlots(true);
+    } else if (!endSlot) {
+      const startIndex = timeSlots.indexOf(startSlot);
+      const endIndex = slotIndex;
+      setEndSlot(slot);
+      setSelectedSlots(
+        timeSlots.slice(
+          startIndex <= endIndex ? startIndex : endIndex,
+          endIndex + 1
+        )
+      );
+    } else if (slot === startSlot) {
+      setStartSlot(null);
+      setEndSlot(null);
+      setSelectedSlots([]);
+      setShowSelectedSlots(false);
+    } else {
+      const startIndex = timeSlots.indexOf(startSlot);
+      const endIndex = timeSlots.indexOf(slot);
+      setEndSlot(slot);
+      setSelectedSlots(
+        timeSlots.slice(
+          startIndex <= endIndex ? startIndex : endIndex,
+          endIndex + 1
+        )
+      );
+    }
+  };
+  const handleDateChange = (newDate) => {
+    setDate(newDate);
+    setStartSlot(null);
+    setEndSlot(null);
+    setSelectedSlots([]);
+    setShowSelectedSlots(false);
   };
   return (
     <div className="p-6 sm:p-10">
       <div className="mx-auto max-w-2xl">
         <h2 className="mb-6 text-2xl font-bold">Book a Badminton Court</h2>
+        <div className="mb-6 flex items-center justify-between">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" className="flex items-center gap-2">
+                <CalendarDaysIcon className="size-4" />
+                <span>Select Date</span>
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                value={date}
+                onValueChange={handleDateChange}
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
         <div className="grid grid-cols-4 gap-4">
           {timeSlots.map((slot) => (
             <Button
               key={slot}
-              variant={selectedSlots.includes(slot) ? "default" : "outline"}
+              variant={
+                selectedSlots.includes(slot)
+                  ? "solid"
+                  : startSlot === slot ||
+                      (startSlot &&
+                        endSlot &&
+                        timeSlots.indexOf(slot) >=
+                          (timeSlots.indexOf(startSlot) <=
+                          timeSlots.indexOf(endSlot)
+                            ? timeSlots.indexOf(startSlot)
+                            : timeSlots.indexOf(endSlot)) &&
+                        timeSlots.indexOf(slot) <=
+                          (timeSlots.indexOf(startSlot) <=
+                          timeSlots.indexOf(endSlot)
+                            ? timeSlots.indexOf(endSlot)
+                            : timeSlots.indexOf(startSlot)))
+                    ? "outline"
+                    : "ghost"
+              }
               className={`h-12 rounded-md px-4 ${
                 selectedSlots.includes(slot)
-                  ? "bg-gray-900 text-white hover:bg-gray-800 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-200"
-                  : "hover:bg-gray-100 dark:hover:bg-gray-800"
+                  ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                  : startSlot === slot ||
+                      (startSlot &&
+                        endSlot &&
+                        timeSlots.indexOf(slot) >=
+                          (timeSlots.indexOf(startSlot) <=
+                          timeSlots.indexOf(endSlot)
+                            ? timeSlots.indexOf(startSlot)
+                            : timeSlots.indexOf(endSlot)) &&
+                        timeSlots.indexOf(slot) <=
+                          (timeSlots.indexOf(startSlot) <=
+                          timeSlots.indexOf(endSlot)
+                            ? timeSlots.indexOf(endSlot)
+                            : timeSlots.indexOf(startSlot)))
+                    ? "hover:bg-muted"
+                    : "text-muted-foreground"
               }`}
               onClick={() => toggleSlot(slot)}
             >
@@ -53,21 +156,21 @@ export const TimeSlot = () => {
             </Button>
           ))}
         </div>
-        {/* {showSelectedSlots && (
+        {showSelectedSlots && (
           <div className="mt-6">
             <h3 className="mb-2 text-lg font-bold">Selected Slots:</h3>
             <div className="grid grid-cols-4 gap-4">
               {selectedSlots.map((slot) => (
                 <div
                   key={slot}
-                  className="rounded-md bg-gray-900 px-4 py-2 text-white dark:bg-gray-50 dark:text-gray-900"
+                  className="rounded-md bg-primary px-4 py-2 text-primary-foreground"
                 >
                   {slot}
                 </div>
               ))}
             </div>
           </div>
-        )} */}
+        )}
         <div className="mt-6 flex justify-end">
           <Button variant="default" className="rounded-md px-6 py-2">
             Book Selected Slots

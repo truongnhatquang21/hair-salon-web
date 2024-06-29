@@ -62,7 +62,7 @@ export default class ApiClient<T> {
 
 export const fetcher = async (url: string, options?: RequestInit) => {
   const session = await auth();
-  const accessToken = session?.user.accessToken;
+  const accessToken = session?.accessToken;
 
   const res = await fetch(process.env.SERVER_URL + url, {
     headers: {
@@ -72,6 +72,7 @@ export const fetcher = async (url: string, options?: RequestInit) => {
     cache: "no-cache",
     ...options,
   });
+  console.log("line 75:", res);
   const result = await res.json();
   const transformedResult = responseMapping(result);
   transformedResult.status = res.status;
