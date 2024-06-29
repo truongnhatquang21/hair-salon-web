@@ -1,27 +1,36 @@
-import { mockRequest } from "@/lib/mockRequest";
+"use server";
+
 import {
   type PackageCourtSchemaType,
-  sampleData,
+  type PackageCourtSchemaTypeWithId,
 } from "@/views/AdminSubscriptions/helper";
 
-export const getSubscriptionListAPI = async (sampleData?: any) => {
-  // return fetcher("package-court")
-  return mockRequest(sampleData);
+import { fetcher } from "..";
+
+export const getSubscriptionListAPI = async () => {
+  return fetcher("package-court");
 };
 
 export const postSubscriptionListAPI = async (data: PackageCourtSchemaType) => {
-  // return fetcher("package-court", {
-  //   body: JSON.stringify(data),
-  //   method: "POST",
-  // });
-
-  return mockRequest(sampleData);
+  return fetcher("package-court", {
+    body: JSON.stringify(data),
+    method: "POST",
+  });
 };
-export const putSubscriptionListAPI = async (data: PackageCourtSchemaType) => {
-  // return fetcher("package-court", {
-  //   body: JSON.stringify(data),
-  //   method: "POST",
-  // });
+export const putSubscriptionListAPI = async (
+  data: PackageCourtSchemaTypeWithId
+) => {
+  console.log(data);
 
-  return mockRequest(sampleData);
+  return fetcher(`package-court/${data._id}`, {
+    body: JSON.stringify(data),
+    method: "PUT",
+  });
+};
+export const deleteSubscriptionListAPI = async (id: string) => {
+  console.log("deleteSubscriptionListAPI", id);
+
+  return fetcher(`package-court/${id}`, {
+    method: "DELETE",
+  });
 };

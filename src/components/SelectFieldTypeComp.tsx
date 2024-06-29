@@ -27,7 +27,6 @@ const SelectFieldTypeComp = ({
 }: AutoFormInputComponentProps & {
   enumOptions: string[];
 }) => {
-  console.log("field", field.value);
   useEffect(() => {
     field.onChange(
       field.value ? field.value : fieldConfigItem.inputProps?.value

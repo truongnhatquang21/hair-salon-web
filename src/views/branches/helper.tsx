@@ -87,9 +87,7 @@ export const columns: ColumnDef<BranchSchemaType>[] = [
   //   enableSorting: false,
   //   enableHiding: false,
   // },
-  {
-    accessorKey: "_id",
-  },
+
   {
     accessorKey: "images",
     header: "Image",

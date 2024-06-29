@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import CreateSubscriptionButton from "./CreateSubscriptionButton";
+import DeleteSubsBtn from "./DeleteSubsBtn";
 
 export enum PackageEnum {
   Custom = "Custom",
@@ -33,6 +34,9 @@ export const createPackageCourtSchema = z.object({
   description: z.string().optional(),
 });
 export type PackageCourtSchemaType = z.infer<typeof createPackageCourtSchema>;
+export type PackageCourtSchemaTypeWithId = PackageCourtSchemaType & {
+  _id: string;
+};
 export const columns: ColumnDef<PackageCourtSchemaType>[] = [
   // {
   //   id: "select",
@@ -64,7 +68,9 @@ export const columns: ColumnDef<PackageCourtSchemaType>[] = [
       return <span>{data}</span>;
     },
     header: ({ column }) => {
-      return <DataTableColumnHeader column={column} title="Branch name" />;
+      return (
+        <DataTableColumnHeader column={column} title="Subscription name" />
+      );
     },
   },
   {
@@ -134,7 +140,7 @@ export const columns: ColumnDef<PackageCourtSchemaType>[] = [
 
     cell: ({ row }) => {
       const [isMenuOpen, setIsMenuOpen] = useState(false);
-      const data = row.original as PackageCourtSchemaType;
+      const data = row.original as PackageCourtSchemaTypeWithId;
       return (
         <Dialog>
           <DropdownMenu
@@ -157,6 +163,18 @@ export const columns: ColumnDef<PackageCourtSchemaType>[] = [
                 ButtonTrigger={
                   <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                     View branch
+                  </DropdownMenuItem>
+                }
+              />
+
+              <DeleteSubsBtn
+                id={data._id}
+                Trigger={
+                  <DropdownMenuItem
+                    onSelect={(e) => e.preventDefault()}
+                    className="text-destructive"
+                  >
+                    Delete branch
                   </DropdownMenuItem>
                 }
               />

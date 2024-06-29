@@ -1,15 +1,13 @@
+"use server";
+
 import { mockRequest } from "@/lib/mockRequest";
-import type {
-  BranchSchemaType,
-  BranchSchemaType,
-} from "@/views/branches/helper";
+import type { BranchSchemaType } from "@/views/branches/helper";
 import { sampleData } from "@/views/requestedBranches/helper";
 
 import { fetcher } from "..";
 
-export const getBranchListAPI = async (sampleData?: any) => {
-  // return fetcher("package-court")
-  return mockRequest(sampleData);
+export const getBranchListAPI = async () => {
+  return fetcher("branch");
 };
 
 export const postBranchListAPI = async (data: BranchSchemaType) => {
