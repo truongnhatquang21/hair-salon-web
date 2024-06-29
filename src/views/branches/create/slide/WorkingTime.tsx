@@ -20,7 +20,7 @@ type Props = {
   steppers: Steppers[];
 };
 export const workingTimeFormSchema = z.object({
-  availableTime: z.string({
+  availableTime: z.coerce.string({
     // Add a validation message for the field
     message: "Available time is required",
   }),
@@ -58,21 +58,24 @@ const WorkingTime = ({ goBackfn, steppers, goNextFn, stepIndex }: Props) => {
     }
   };
   const onSubmit: SubmitHandler<WorkingTimeFormSchemaType> = async (data) => {
-    console.log(data, "data");
+    if (
+      !form.formState.errors.SlotPeriod &&
+      !form.formState.errors.availableTime
+    ) {
+      setBranchStep({
+        step: stepIndex,
+        data,
+      });
+      toast({
+        title: "Success",
+        description:
+          "Your data has been saved in draft, if you want to continue please click next button",
+        className: "bg-green-600 text-white",
+      });
+      goNextFn(stepIndex + 1);
 
-    // setBranchStep({
-    //   step: stepIndex,
-    //   data,
-    // });
-    // toast({
-    //   title: "Success",
-    //   description:
-    //     "Your data has been saved in draft, if you want to continue please click next button",
-    //   className: "bg-green-600 text-white",
-    // });
-    // goNextFn(stepIndex + 1);
-
-    // console.log(branchStep, "branchStep");
+      console.log(branchStep, "branchStep");
+    }
   };
 
   return (
@@ -112,6 +115,9 @@ const WorkingTime = ({ goBackfn, steppers, goNextFn, stepIndex }: Props) => {
           fieldConfig={{
             availableTime: {
               fieldType: PeriodTimeFieldType,
+              inputProps: {
+                value: form.getValues("availableTime"),
+              },
               // fieldType: TimePickerDemo,
             },
             SlotPeriod: {

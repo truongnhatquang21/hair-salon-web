@@ -8,5 +8,10 @@ export const FieldType = ({
   fieldConfigItem,
   fieldProps,
 }: AutoFormInputComponentProps) => (
-  <ReactHookFormDemo field={field} label={label} isRequired={isRequired} />
+  <ReactHookFormDemo
+    field={field}
+    label={label}
+    isRequired={isRequired}
+    defaultValue={fieldConfigItem.inputProps?.value}
+  />
 );

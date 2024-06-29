@@ -14,6 +14,8 @@ export type CredentialsArgument = Partial<
   Record<"email" | "password", unknown>
 >;
 export const signIngApi = async ({ email, password }: CredentialsArgument) => {
+  console.log("email", email, "password", password, "singnInApi");
+
   const response = await fetch(`${Env.SERVER_URL}auth/login`, {
     method: "POST",
     headers: {

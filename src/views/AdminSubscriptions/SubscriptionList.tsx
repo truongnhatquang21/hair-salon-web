@@ -6,12 +6,12 @@ import { getSubscriptionListAPI } from "@/apiCallers/adminSubcription";
 import { DataTable } from "@/components/table/DataTable";
 
 import CreateSubscriptionButton from "./CreateSubscriptionButton";
-import { columns, type PackageCourtSchemaType, sampleData } from "./helper";
+import { columns, type PackageCourtSchemaType } from "./helper";
 
 const SubscriptionList = () => {
   const { data, isLoading } = useQuery({
     queryKey: ["subscriptions"],
-    queryFn: () => getSubscriptionListAPI(sampleData),
+    queryFn: async () => getSubscriptionListAPI(),
   });
   return (
     <div className=" relative size-full overflow-auto">
