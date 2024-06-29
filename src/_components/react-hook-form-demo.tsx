@@ -31,8 +31,15 @@ type Props = {
   isRequired: boolean;
   field: any;
   accetp?: Accept;
+  defaultValue?: File[];
 };
-export function ReactHookFormDemo({ field, isRequired, label, accetp }: Props) {
+export function ReactHookFormDemo({
+  field,
+  isRequired,
+  label,
+  accetp,
+  defaultValue,
+}: Props) {
   console.log("reack hook form demo", field.value);
 
   const [loading, setLoading] = React.useState(false);
@@ -42,7 +49,7 @@ export function ReactHookFormDemo({ field, isRequired, label, accetp }: Props) {
   );
   const form = useForm<Schema>({
     resolver: zodResolver(schema),
-    defaultValues: { images: field.value },
+    defaultValues: { images: field.value ? field.value : defaultValue },
     mode: "onChange",
   });
 

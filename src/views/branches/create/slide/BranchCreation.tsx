@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import React, { useEffect } from "react";
 import { IconRight } from "react-day-picker";
 
@@ -40,7 +40,7 @@ const BranchCreation = ({ stepIndex, goBackfn, goNextFn, steppers }: Props) => {
 
       <div className="flex w-full flex-1 items-start">
         <div className="flex w-full items-center gap-4 ">
-          <Button
+          {/* <Button
             className="mr-auto flex select-none items-center justify-center gap-2 px-4"
             disabled={stepIndex === 0}
             onClick={() => {
@@ -49,7 +49,7 @@ const BranchCreation = ({ stepIndex, goBackfn, goNextFn, steppers }: Props) => {
           >
             <ChevronLeft />
             Back
-          </Button>
+          </Button> */}
 
           <span className="flex flex-1 items-center justify-center text-xl font-semibold">
             Step-{stepIndex}

@@ -82,7 +82,7 @@ export function DataTable<TData, TValue>({
   const path = usePathname();
 
   return (
-    <div className="relative flex w-full flex-col gap-4 p-2">
+    <div className="relative flex w-full flex-col gap-4 overflow-auto p-2">
       {isLoading && (
         <div className="absolute inset-0 z-10 flex items-center justify-center">
           <Loading />

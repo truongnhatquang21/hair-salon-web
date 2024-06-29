@@ -23,6 +23,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
 
       async authorize(credentials): Promise<User | null> {
+        console.log("line 13dsafnsda,: ", credentials);
+
         if (credentials === null) return null;
 
         try {

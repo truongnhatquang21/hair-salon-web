@@ -12,6 +12,16 @@ import { IconRight } from "react-day-picker";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import AutoForm, { AutoFormSubmit } from "@/components/ui/auto-form";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,9 +35,9 @@ import {
 } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
 import type { Steppers } from "@/hooks/useStepper";
-import defaultBadminton from "@/public/assets/images/defaultBadminton.jpeg";
 import { useBranchStepStore } from "@/stores/createBranchStore";
 import { CourtStatusEnum } from "@/types";
+import CourtDialog from "@/views/courts/CourtDialog";
 
 import { FieldType } from "../../ImagesUpload";
 
@@ -70,13 +80,15 @@ const formSchema = z.object({
     .nonempty("At least one court is required"),
 });
 type SchemaType = z.infer<typeof formSchema>;
-type CourtType = z.infer<typeof courtSchema>;
+export type CourtType = z.infer<typeof courtSchema>;
 const CourRegistration = ({
   stepIndex,
   goBackfn,
   goNextFn,
   steppers,
 }: Props) => {
+  const [isGenerateCourtDialogOpen, setIsGenerateCourtDialogOpen] =
+    useState(false);
   const { toast } = useToast();
   const { branchStep, setBranchStep } = useBranchStepStore((state) => {
     return {
@@ -91,6 +103,7 @@ const CourRegistration = ({
     defaultValues: initialValues,
   });
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+
   const validateForm = async () => {
     const isValid = await form.trigger();
     if (!isValid) {
@@ -101,6 +114,7 @@ const CourRegistration = ({
       });
     }
   };
+
   const onSubmit: SubmitHandler<SchemaType> = async (data) => {
     console.log(data.courts.length, "data");
     if (!data.courts || data.courts.length === 0) {
@@ -157,7 +171,78 @@ const CourRegistration = ({
     }
   };
 
-  console.log(form.watch("courts"), "watch");
+  const steps = useBranchStepStore((state) => state.stepStore);
+  console.log(steps, "steps");
+
+  const deleteCourt = (name: string) => {
+    const court = form.getValues("courts");
+    const newCourt = court?.filter((item: CourtType) => item.name !== name);
+    form.setValue("courts", newCourt);
+  };
+
+  const generateCourt = () => {
+    const sampleCourt = form.getValues("courts")[0];
+    const totalCourt =
+      (steps[1]?.data as { amount: number }).amount -
+      form.getValues("courts").length;
+
+    const generatedCourts = [];
+    for (let i = 0; i < totalCourt; i += 1) {
+      generatedCourts.push({
+        ...sampleCourt,
+        name: `${sampleCourt.name}-${i + 1}`,
+      });
+    }
+
+    if (generatedCourts.length > 0) {
+      form.setValue("courts", [
+        ...form.getValues("courts"),
+        ...generatedCourts,
+      ]);
+      toast({
+        title: "Success",
+        description: "Courts has been generated",
+        className: "bg-green-600 text-white",
+      });
+    } else {
+      toast({
+        title: "Infor",
+        description: "you has no court to generate",
+      });
+    }
+    setIsGenerateCourtDialogOpen(false);
+  };
+  const editCourt = (name: string, payload: CourtType) => {
+    const court = form.getValues("courts");
+    if (court && court?.length > 0) {
+      const checkCourt = court?.find(
+        (item) => name !== item.name && item.name === payload.name
+      );
+      if (checkCourt) {
+        toast({
+          title: "Error",
+          description: "Court name is already exist",
+          variant: "destructive",
+        });
+        return false;
+      }
+    }
+    const newCourt = court?.map((item: CourtType) => {
+      if (item.name === name) {
+        return payload;
+      }
+      return item;
+    });
+    form.setValue("courts", newCourt);
+    toast({
+      title: "Success",
+      description: "Court has been updated",
+      className: "bg-green-600 text-white",
+    });
+
+    return true;
+  };
+
   return (
     <div className="flex size-full flex-col gap-4">
       <div className="flex w-full items-center gap-4">
@@ -187,7 +272,13 @@ const CourRegistration = ({
         <div className="flex  items-center justify-end gap-2">
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="ml-auto flex items-center gap-3">
+              <Button
+                className="ml-auto flex items-center gap-3"
+                disabled={
+                  form?.watch("courts") &&
+                  form?.watch("courts").length >= steps[1]?.data.amount
+                }
+              >
                 <BadgePlus /> Add Court
               </Button>
             </DialogTrigger>
@@ -198,7 +289,7 @@ const CourRegistration = ({
                   Fill out the form below to add a new court
                 </DialogDescription>
               </DialogHeader>
-              <div className="w-fullflex-1 relative gap-4 overflow-auto p-2">
+              <div className="relative w-full flex-1 gap-4 overflow-auto p-2">
                 <AutoForm
                   onSubmit={courtCreate}
                   formSchema={courtSchema}
@@ -219,36 +310,84 @@ const CourRegistration = ({
               </div>
             </DialogContent>
           </Dialog>
-
-          <Button variant="outline" className="flex items-center gap-2">
-            <ZapIcon /> Fast generate courts
-          </Button>
+          <AlertDialog
+            open={isGenerateCourtDialogOpen}
+            onOpenChange={setIsGenerateCourtDialogOpen}
+          >
+            <AlertDialogTrigger>
+              <Button variant="outline" className="flex items-center gap-2 ">
+                <ZapIcon /> Fast generate courts
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  {form.watch("courts")?.length
+                    ? "You can generate the courts based on your previous setup. This will override your current courts. Are you sure you want to continue?"
+                    : "This feature needs at least one court to generate the courts. Please add at least one court to continue."}
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                {form.watch("courts")?.length && (
+                  <Button
+                    onClick={() => {
+                      generateCourt();
+                    }}
+                    className="flex items-center gap-2"
+                  >
+                    <ZapIcon /> Generate court
+                  </Button>
+                )}
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </div>
       <div className="grid w-full grid-cols-4 gap-10 border-t py-2">
         {form?.watch("courts") && form?.watch("courts").length > 0 ? (
           form?.watch("courts").map((item: CourtType) => {
             return (
-              <div
-                key={item.name}
-                className="relative z-10 col-span-2 flex cursor-pointer items-center gap-4 rounded-md border-2 border-dashed p-3 shadow-sm hover:bg-accent"
-              >
-                <Trash className="absolute bottom-1 right-1 z-30 rounded-full bg-red-200 p-2 text-red-700 opacity-40 shadow-md transition-all duration-300 ease-in hover:scale-125 hover:opacity-100" />
+              <CourtDialog
+                onSubmit={(data) => {
+                  const res = editCourt(item.name, data);
+                  return res;
+                }}
+                Trigger={
+                  <div className="relative z-10 col-span-2 flex cursor-pointer items-center gap-4 rounded-md border-2 border-dashed p-3 shadow-sm hover:bg-accent">
+                    <Trash
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteCourt(item.name);
+                      }}
+                      className="absolute bottom-1 right-1 z-30 rounded-full bg-red-200 p-2 text-red-700 opacity-40 shadow-md transition-all duration-300 ease-in hover:scale-125 hover:opacity-100"
+                    />
 
-                <Image
-                  alt="defaultBadminton"
-                  src={defaultBadminton}
-                  className="size-20 rounded-md object-cover shadow-md"
-                />
-                <div className="flex flex-1 flex-col gap-1 ">
-                  <span className="text-lg font-semibold">{item.name}</span>
-                  <span className="text-sm text-gray-700 underline underline-offset-2">
-                    {item.price} VND
-                  </span>
-                  <span className="text-xs text-gray-500">{item.status}</span>
-                  <span className="text-xs text-gray-500">{item.type}</span>
-                </div>
-              </div>
+                    <Image
+                      width={20}
+                      height={20}
+                      alt="defaultBadminton"
+                      src={URL.createObjectURL(item.images[0])}
+                      className="size-20 rounded-md object-cover shadow-md"
+                    />
+                    <div className="flex flex-1 flex-col gap-1 ">
+                      <span className="text-lg font-semibold">{item.name}</span>
+                      <span className="text-sm text-gray-700 underline underline-offset-2">
+                        {item.price} VND
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        {item.status}
+                      </span>
+                      <span className="text-xs text-gray-500">{item.type}</span>
+                    </div>
+                  </div>
+                }
+                defaultValue={item}
+                description="Fill out the form below to update court"
+                title="Update court"
+                key={item.name}
+              />
             );
           })
         ) : (

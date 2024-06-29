@@ -150,13 +150,13 @@ export function UserAuthForm({
           await signUpCustomerMutate({
             email: data.email,
             password: data.password,
-            username: data?.username as string,
+            username: data?.username ?? (data.email as string),
           });
         } else {
           await signUpManagerMutate({
             email: data.email,
             password: data.password,
-            username: data?.username as string,
+            username: data?.username ?? (data.email as string),
           });
         }
         router.push("auth/sign-in");

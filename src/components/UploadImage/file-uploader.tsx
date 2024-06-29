@@ -275,7 +275,13 @@ function FileCard({ file, progress, onRemove }: FileCardProps) {
       <div className="flex flex-1 space-x-4">
         {isFileWithPreview(file) ? (
           <Image
-            src={file.type.includes("image") ? file.preview : FileIcon}
+            src={
+              file.type.includes("image")
+                ? file.preview
+                  ? URL.createObjectURL(file)
+                  : file.preview
+                : FileIcon
+            }
             alt={file.name}
             width={48}
             height={48}

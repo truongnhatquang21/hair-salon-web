@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import {
   Select,
@@ -27,7 +27,12 @@ const SelectFieldTypeComp = ({
 }: AutoFormInputComponentProps & {
   enumOptions: string[];
 }) => {
-  console.log(fieldConfigItem.inputProps?.value, "OEOE");
+  useEffect(() => {
+    field.onChange(
+      field.value ? field.value : fieldConfigItem.inputProps?.value
+    );
+  }, [field.value]);
+
   return (
     // <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
     //   <FormControl>
@@ -56,8 +61,10 @@ const SelectFieldTypeComp = ({
         onValueChange={(value) => {
           field.onChange(value);
         }}
-        value={field.value}
-        defaultValue={field.value ?? fieldConfigItem.inputProps?.value}
+        value={field.value ? field.value : fieldConfigItem.inputProps?.value}
+        defaultValue={
+          field.value ? field.value : fieldConfigItem.inputProps?.value
+        }
       >
         <FormControl>
           <SelectTrigger>
