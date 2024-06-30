@@ -10,6 +10,7 @@ import {
   MapPin,
   UsersIcon,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 import { getBranchByIdAPI } from "@/apiCallers/Branches";
 
@@ -25,40 +26,52 @@ import {
 } from "../ui/card";
 import { Separator } from "../ui/separator";
 // interface BranchDetailOverviewProps {}
+import { useToast } from "../ui/use-toast";
 
 const BranchDetailOverview = ({ slug }: { slug: string }) => {
-  const { data, isLoading } = useQuery({
-    queryKey: ["brach"],
+  const router = useRouter();
+  const { toast } = useToast();
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["brachDetail"],
     queryFn: async () => getBranchByIdAPI(slug),
   });
-  console.log("line 18", data);
   if (isLoading) {
     return <div>Loading</div>;
   }
+
+  if (isError || !data?.data) {
+    router.push("/");
+    // toast({
+    //   variant: "destructive",
+    //   title: "Uh oh! Something went wrong.",
+    //   description: data.message || data.statusText,
+    // });
+    return <div>Uh oh! Something went wrong.</div>;
+  }
+
   return (
     <div className="">
       <div className="grid grid-cols-1 gap-4  md:grid-cols-4">
         <div className="col-span-full md:col-span-3">
           <Card className="">
             <CardHeader>
-              <CardTitle>{data.data.name}</CardTitle>
+              <CardTitle>{data?.data.name}</CardTitle>
               <CardDescription>
                 <div className="flex flex-col">
                   <div className="flex gap-4">
                     <div className=""> 1200 Booked</div>
                     <div className=" flex items-center justify-center gap-2">
                       <Clock />
-                      <span>6:00 - 12:00</span>
+                      <span>{data?.data.availableTime}</span>
                     </div>
                     <div className=" flex items-center justify-center gap-2">
-                      <Icons.badminton_court /> <span>6 fields</span>
+                      <Icons.badminton_court />{" "}
+                      <span>{data?.data.courts.length} court</span>
                     </div>
                   </div>
                   <div className="flex">
                     <MapPin className="text-blue-500" />
-                    <span>
-                      Lorem ipsum road, Tantruim-2322, Melbourne, Australia
-                    </span>
+                    <span>{data?.data.address}</span>
                   </div>
                 </div>
               </CardDescription>
@@ -67,18 +80,7 @@ const BranchDetailOverview = ({ slug }: { slug: string }) => {
               <div className="text-2xl font-semibold leading-none tracking-tight">
                 Description
               </div>
-              <div className="p-4">
-                Featuring free WiFi throughout the property, Lakeside Motel
-                Waterfront offers accommodations in Lakes Entrance, 19 mi from
-                Bairnsdale. Free private parking is available on site. Each room
-                at this motel is air conditioned and comes with a flat-screen
-                TV. You will find a kettle, toaster and a microwave in the room.
-                Each room is fitted with a private bathroom. Guests have access
-                to barbecue facilities and a lovely large lawn area. Metung is
-                6.8 mi from Lakeside Motel Waterfront, while Paynesville is 14
-                mi from the property. Couples in particular like the location –
-                they rated it 9.2 for a two-person trip.
-              </div>
+              <div className="p-4">{data?.data.description}</div>
             </CardContent>
             <CardFooter className="flex justify-between">
               <div className="grid grid-cols-2 gap-8">
