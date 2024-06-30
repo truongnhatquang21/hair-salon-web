@@ -35,9 +35,9 @@ export function Menu({ isOpen }: MenuProps) {
                 key={groupLabel}
               >
                 {(isOpen && groupLabel) || isOpen === undefined ? (
-                  <p className="max-w-[248px] truncate px-4 pb-2 text-sm font-medium text-muted-foreground">
+                  <span className="max-w-[248px] truncate px-4 pb-2 text-sm font-medium text-muted-foreground">
                     {groupLabel}
-                  </p>
+                  </span>
                 ) : !isOpen && isOpen !== undefined && groupLabel ? (
                   <TooltipProvider>
                     <Tooltip delayDuration={100}>
@@ -47,7 +47,7 @@ export function Menu({ isOpen }: MenuProps) {
                         </div>
                       </TooltipTrigger>
                       <TooltipContent side="right">
-                        <p>{groupLabel}</p>
+                        <span>{groupLabel}</span>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
@@ -71,7 +71,7 @@ export function Menu({ isOpen }: MenuProps) {
                                 >
                                   <Icon size={18} />
                                 </span>
-                                <p
+                                <span
                                   className={cn(
                                     "max-w-[200px] truncate",
                                     isOpen === false
@@ -80,7 +80,7 @@ export function Menu({ isOpen }: MenuProps) {
                                   )}
                                 >
                                   {label}
-                                </p>
+                                </span>
                               </Link>
                             </Button>
                           </TooltipTrigger>
@@ -119,14 +119,14 @@ export function Menu({ isOpen }: MenuProps) {
                     <span className={cn(isOpen === false ? "" : "mr-4")}>
                       <LogOut size={18} />
                     </span>
-                    <p
+                    <span
                       className={cn(
                         "whitespace-nowrap",
                         isOpen === false ? "opacity-0 hidden" : "opacity-100"
                       )}
                     >
                       Sign out
-                    </p>
+                    </span>
                   </Button>
                 </TooltipTrigger>
                 {isOpen === false && (

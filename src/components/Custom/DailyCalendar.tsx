@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import { getThu } from "@/utils/Helpers";
+
 import { Button } from "../ui/button";
 
 export default function CalendarDaily() {
@@ -40,20 +42,21 @@ export default function CalendarDaily() {
                 ? "default"
                 : "ghost"
             }
-            size="sm"
-            className={`flex h-10 w-24 items-center justify-center rounded-full ${
+            size="lg"
+            className={`flex h-10 w-24 items-center justify-center rounded-full  ${
               day.getDate() === selectedDay.getDate() &&
               day.getMonth() === selectedDay.getMonth()
-                ? "bg-primary text-primary-foreground"
+                ? " bg-primary text-primary-foreground"
                 : "hover:bg-gray-100 dark:hover:bg-gray-800"
             }`}
             onClick={() => handleDaySelect(day)}
             disabled={day.getTime() < new Date().getTime()}
           >
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center ">
               <span>{day.getDate()}</span>
-              <span className="text-xs text-gray-500 dark:text-gray-400">
-                {day.toLocaleString("default", { month: "short" })}
+              <span className="text-xs text-gray-500 dark:text-slate-400">
+                {day.toLocaleString("default", { month: "short" })} -
+                {` ${getThu(day)}`}
               </span>
             </div>
           </Button>

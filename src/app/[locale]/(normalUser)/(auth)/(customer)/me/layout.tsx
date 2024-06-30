@@ -32,9 +32,9 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
     <div className=" flex flex-col gap-2 p-2 px-4">
       <div className="space-y-0.5">
         <h2 className="text-2xl font-bold tracking-tight">Settings</h2>
-        <p className="text-muted-foreground">
+        <span className="text-muted-foreground">
           Manage your account settings and set e-mail preferences.
-        </p>
+        </span>
       </div>
       {/* <Separator className="my-2" /> */}
       <div className="flex w-full flex-col gap-4  rounded-md border border-dashed  p-4 shadow-sm lg:flex-row">

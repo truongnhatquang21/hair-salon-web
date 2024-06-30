@@ -1,5 +1,10 @@
-import Image from "next/image";
+"use client";
 
+import { useQuery } from "@tanstack/react-query";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+
+import { getBranchByIdAPI } from "@/apiCallers/Branches";
 import BranchDetailOverview from "@/components/branchs/BranchDetailOverview";
 import CalendarDaily from "@/components/Custom/DailyCalendar";
 import { TimeSlot } from "@/components/TimeSlot";
@@ -7,7 +12,22 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Page = ({ params }: { params: { slug: string } }) => {
   const { slug } = params;
+  const router = useRouter();
 
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["brachDetail"],
+    queryFn: async () => getBranchByIdAPI(slug),
+  });
+
+  if (isLoading) {
+    return <div>Loading</div>;
+  }
+  console.log("line 41: ", data);
+  if (isError || !data?.data) {
+    router.push("/");
+
+    return <div>Uh oh! Something went wrong.</div>;
+  }
   return (
     <div className="min-h-[calc(100vh_-_56px)] p-5">
       <div className=" rounded-xl bg-slate-400 p-5">
@@ -52,13 +72,13 @@ const Page = ({ params }: { params: { slug: string } }) => {
             <TabsTrigger value="map">Map</TabsTrigger>
           </TabsList>
           <TabsContent value="overview" className="py-4">
-            <BranchDetailOverview slug={slug} />
+            <BranchDetailOverview data={data} />
           </TabsContent>
           <TabsContent value="schedules" className="py-4">
             <div>This is the details tab content.</div>
             <div>
               <CalendarDaily />
-              <TimeSlot />
+              <TimeSlot timeSlotData={data.slots} />
             </div>
           </TabsContent>
           <TabsContent value="map" className="py-4">

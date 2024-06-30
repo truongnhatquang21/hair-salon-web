@@ -298,9 +298,9 @@ const FileUploaderTrigger = React.forwardRef<
               aria-hidden="true"
             />
           </div>
-          <p className="font-medium text-muted-foreground">
+          <span className="font-medium text-muted-foreground">
             Drop the files here
-          </p>
+          </span>
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center gap-4 sm:px-5">
@@ -311,16 +311,16 @@ const FileUploaderTrigger = React.forwardRef<
             />
           </div>
           <div className="space-y-px">
-            <p className="font-medium text-muted-foreground">
+            <span className="font-medium text-muted-foreground">
               Drag {`'n'`} drop files here, or click to select files
-            </p>
-            <p className="text-sm text-muted-foreground/70">
+            </span>
+            <span className="text-sm text-muted-foreground/70">
               You can upload
               {maxFiles > 1
                 ? ` ${maxFiles === Infinity ? "multiple" : maxFiles}
                       files (up to ${formatBytes(maxSize)} each)`
                 : ` a file with ${formatBytes(maxSize)}`}
-            </p>
+            </span>
           </div>
         </div>
       )}
@@ -361,12 +361,12 @@ const FileUploaderItem = React.forwardRef<
         ) : null}
         <div className="flex w-full flex-col gap-2">
           <div className="space-y-px">
-            <p className="line-clamp-1 text-sm font-medium text-foreground/80">
+            <span className="line-clamp-1 text-sm font-medium text-foreground/80">
               {file.name}
-            </p>
-            <p className="text-xs text-muted-foreground">
+            </span>
+            <span className="text-xs text-muted-foreground">
               {formatBytes(file.size)}
-            </p>
+            </span>
           </div>
           {progress ? <Progress value={progress} /> : null}
         </div>

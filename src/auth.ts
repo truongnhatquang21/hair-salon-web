@@ -26,7 +26,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
 
       async authorize(credentials) {
-        console.log(credentials);
         if (credentials === null) return null;
 
         const profile = await getProfileApi(credentials.email as string);
@@ -58,7 +57,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.accessToken = token.accessToken as string;
         session.refreshToken = token.refreshToken as string;
       }
-      console.log(session);
 
       return session;
     },

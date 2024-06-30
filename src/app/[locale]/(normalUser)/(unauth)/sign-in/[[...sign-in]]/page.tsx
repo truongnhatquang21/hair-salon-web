@@ -35,10 +35,10 @@ export default function AuthenticationPage() {
         </div> */}
         <div className="relative z-20 mt-auto">
           <blockquote className="space-y-2">
-            <p className="text-lg">
+            <span className="text-lg">
               “I love the game of badminton. It is a game of skill, subtlety,
               and precision.”
-            </p>
+            </span>
             <footer className="text-sm">Bookminton teams</footer>
           </blockquote>
         </div>
@@ -47,12 +47,12 @@ export default function AuthenticationPage() {
         <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
           <div className="flex flex-col space-y-2 text-center">
             <h1 className="text-2xl font-semibold tracking-tight">Sign in</h1>
-            <p className="text-sm text-muted-foreground">
+            <span className="text-sm text-muted-foreground">
               Complete our form below to sign in your account
-            </p>
+            </span>
           </div>
           <UserAuthForm type="sign-in" />
-          <p className="px-8 text-center text-sm text-muted-foreground">
+          <span className="px-8 text-center text-sm text-muted-foreground">
             By clicking continue, you agree to our{" "}
             <Link
               href="/terms"
@@ -68,7 +68,7 @@ export default function AuthenticationPage() {
               Privacy Policy
             </Link>
             .
-          </p>
+          </span>
         </div>
       </div>
     </div>

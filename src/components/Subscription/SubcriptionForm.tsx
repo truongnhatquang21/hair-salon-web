@@ -55,9 +55,9 @@ export function SubscriptionAutoForm() {
       Alternatively, you can not pass a submit button
       to create auto-saving forms etc.
       */}
-      <p className="text-2xl underline underline-offset-2">
+      <span className="text-2xl underline underline-offset-2">
         <strong>Total price:</strong> $10
-      </p>
+      </span>
       <Button className="w-full" onClick={() => router.push("checkout")}>
         Go to checkout
       </Button>

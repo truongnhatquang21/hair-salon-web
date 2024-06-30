@@ -1,40 +1,85 @@
 "use client";
 
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@radix-ui/react-popover";
-import { Calendar, CalendarDaysIcon } from "lucide-react";
 import { useMemo, useState } from "react";
+
+import type { ISlot } from "@/interfaces/slot.interface";
 
 import { Button } from "./ui/button";
 
-export const TimeSlot = () => {
+export const TimeSlot = ({ timeSlotData }: { timeSlotData: ISlot[] }) => {
+  console.log(timeSlotData);
   const [selectedSlots, setSelectedSlots] = useState<string[]>([]);
   const [showSelectedSlots, setShowSelectedSlots] = useState(false);
   const [date, setDate] = useState(new Date());
   const [startSlot, setStartSlot] = useState(null);
   const [endSlot, setEndSlot] = useState(null);
   const timeSlots = useMemo(() => {
-    const slots = [];
-    const startHour = 6;
-    const endHour = 22;
-    for (let hour = startHour; hour < endHour; hour++) {
-      for (let minute = 0; minute < 60; minute += 60) {
+    const slots = [] as string[];
+    // const timeSlotData = [
+    //   {
+    //     _id: "66819bee99b486f35b652aa6",
+    //     weekDay: "Saturday",
+    //     startTime: "11:00",
+    //     endTime: "12:00",
+    //     surcharge: 0,
+    //     branch: "66819bee99b486f35b652a4e",
+    //     __v: 0,
+    //     createdAt: "2024-06-30T17:54:54.390Z",
+    //     updatedAt: "2024-06-30T17:54:54.390Z",
+    //   },
+    //   {
+    //     _id: "66819bee99b486f35b652aa7",
+    //     weekDay: "Saturday",
+    //     startTime: "12:00",
+    //     endTime: "13:00",
+    //     surcharge: 0,
+    //     branch: "66819bee99b486f35b652a4e",
+    //     __v: 0,
+    //     createdAt: "2024-06-30T17:54:54.390Z",
+    //     updatedAt: "2024-06-30T17:54:54.390Z",
+    //   },
+    //   {
+    //     _id: "66819bee99b486f35b652aa8",
+    //     weekDay: "Saturday",
+    //     startTime: "13:00",
+    //     endTime: "14:00",
+    //     surcharge: 0,
+    //     branch: "66819bee99b486f35b652a4e",
+    //     __v: 0,
+    //     createdAt: "2024-06-30T17:54:54.390Z",
+    //     updatedAt: "2024-06-30T17:54:54.390Z",
+    //   },
+    // ];
+    if (timeSlotData.length !== 0) {
+      for (const slot of timeSlotData) {
+        // const startTime = new Date(
+        //   date.getFullYear(),
+        //   date.getMonth(),
+        //   date.getDate(),
+        //   hour,
+        //   minute
+        // );
+        // const endTime = new Date(
+        //   date.getFullYear(),
+        //   date.getMonth(),
+        //   date.getDate(),
+        //   hour + 1,
+        //   minute
+        // );
+
         const startTime = new Date(
           date.getFullYear(),
           date.getMonth(),
           date.getDate(),
-          hour,
-          minute
+          parseInt(slot.startTime?.split(":")[0] ?? "0", 10),
+          parseInt(slot.startTime?.split(":")[1] ?? "1", 10)
         );
         const endTime = new Date(
           date.getFullYear(),
           date.getMonth(),
           date.getDate(),
-          hour + 1,
-          minute
+          parseInt(slot.endTime?.split(":")[0] ?? "0", 10),
+          parseInt(slot.endTime?.split(":")[1] ?? "1", 10)
         );
         const startTimeString = startTime
           .toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
@@ -44,6 +89,7 @@ export const TimeSlot = () => {
           .replace(/^0/, "");
         slots.push(`${startTimeString} - ${endTimeString}`);
       }
+      return slots;
     }
     return slots;
   }, [date]);
@@ -80,34 +126,12 @@ export const TimeSlot = () => {
       );
     }
   };
-  const handleDateChange = (newDate) => {
-    setDate(newDate);
-    setStartSlot(null);
-    setEndSlot(null);
-    setSelectedSlots([]);
-    setShowSelectedSlots(false);
-  };
+
   return (
     <div className="p-6 sm:p-10">
       <div className="mx-auto max-w-2xl">
         <h2 className="mb-6 text-2xl font-bold">Book a Badminton Court</h2>
-        <div className="mb-6 flex items-center justify-between">
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" className="flex items-center gap-2">
-                <CalendarDaysIcon className="size-4" />
-                <span>Select Date</span>
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="single"
-                value={date}
-                onValueChange={handleDateChange}
-              />
-            </PopoverContent>
-          </Popover>
-        </div>
+
         <div className="grid grid-cols-4 gap-4">
           {timeSlots.map((slot) => (
             <Button
@@ -156,21 +180,7 @@ export const TimeSlot = () => {
             </Button>
           ))}
         </div>
-        {showSelectedSlots && (
-          <div className="mt-6">
-            <h3 className="mb-2 text-lg font-bold">Selected Slots:</h3>
-            <div className="grid grid-cols-4 gap-4">
-              {selectedSlots.map((slot) => (
-                <div
-                  key={slot}
-                  className="rounded-md bg-primary px-4 py-2 text-primary-foreground"
-                >
-                  {slot}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+
         <div className="mt-6 flex justify-end">
           <Button variant="default" className="rounded-md px-6 py-2">
             Book Selected Slots

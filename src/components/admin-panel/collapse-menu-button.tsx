@@ -71,7 +71,7 @@ export function CollapseMenuButton({
               <span className="mr-4">
                 <Icon size={18} />
               </span>
-              <p
+              <span
                 className={cn(
                   "max-w-[150px] truncate",
                   isOpen
@@ -80,7 +80,7 @@ export function CollapseMenuButton({
                 )}
               >
                 {label}
-              </p>
+              </span>
             </div>
             <div
               className={cn(
@@ -110,7 +110,7 @@ export function CollapseMenuButton({
               <span className="ml-2 mr-4">
                 <Dot size={18} />
               </span>
-              <p
+              <span
                 className={cn(
                   "max-w-[170px] truncate",
                   isOpen
@@ -119,7 +119,7 @@ export function CollapseMenuButton({
                 )}
               >
                 {label}
-              </p>
+              </span>
             </Link>
           </Button>
         ))}
@@ -140,14 +140,14 @@ export function CollapseMenuButton({
                     <span className={cn(isOpen === false ? "" : "mr-4")}>
                       <Icon size={18} />
                     </span>
-                    <p
+                    <span
                       className={cn(
                         "max-w-[200px] truncate",
                         isOpen === false ? "opacity-0" : "opacity-100"
                       )}
                     >
                       {label}
-                    </p>
+                    </span>
                   </div>
                 </div>
               </Button>
@@ -166,7 +166,7 @@ export function CollapseMenuButton({
         {submenus.map(({ href, label }, index) => (
           <DropdownMenuItem key={index} asChild>
             <Link className="cursor-pointer" href={href}>
-              <p className="max-w-[180px] truncate">{label}</p>
+              <span className="max-w-[180px] truncate">{label}</span>
             </Link>
           </DropdownMenuItem>
         ))}
