@@ -5,6 +5,7 @@ import React from "react";
 
 import { getMyBookingReceipt } from "@/apiCallers/customerBooking";
 import BookingReceipt from "@/components/CustomerBooking/BookingReceipts";
+import { EmptyComponent } from "@/components/Empty";
 
 type Props = {};
 
@@ -27,7 +28,15 @@ const Receipt: React.FC<Props> = () => {
 
   return (
     <div>
-      <BookingReceipt bookings={bookings} />
+      {bookings?.length > 0 ? (
+        <BookingReceipt bookings={bookings} />
+      ) : (
+        <EmptyComponent
+          title="No Booking History Found"
+          description="You haven't made any bookings yet. Start booking now to manage your reservations."
+          className="w-full"
+        />
+      )}
     </div>
   );
 };
