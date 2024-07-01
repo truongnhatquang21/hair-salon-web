@@ -151,6 +151,7 @@ export function UserAuthForm({
     },
 
     onSuccess: async (data: ResponseType) => {
+      console.log(data);
       if (!data.ok) {
         if (data.error) {
           const errs = data.error as { [key: string]: { message: string } };
@@ -214,10 +215,10 @@ export function UserAuthForm({
           password: data.password,
         });
 
-        if (rest.accessToken) {
+        if (rest.data.accessToken) {
           await SignInServer({
-            email: rest.accessToken,
-            password: rest.refreshToken,
+            email: rest.data.accessToken,
+            password: rest.data.refreshToken,
           });
         }
       }

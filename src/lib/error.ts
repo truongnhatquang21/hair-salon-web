@@ -31,9 +31,5 @@ export const responseMapping = (response: any): ResponseType => {
     result.data = response.data;
   }
 
-  if (response.accessToken) {
-    result.accessToken = response.accessToken;
-    result.refreshToken = response.refreshToken;
-  }
   return result;
 };

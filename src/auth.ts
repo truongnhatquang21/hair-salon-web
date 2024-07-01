@@ -29,13 +29,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (credentials === null) return null;
 
         const profile = await getProfileApi(credentials.email as string);
-        if (profile.message) {
+
+        if (profile === undefined) {
           throw new Error("Email or Password is not correct");
         }
 
         return {
-          name: profile.user.username,
-          email: profile.user.email,
+          name: profile.data.username,
+          email: profile.data.email,
           accessToken: credentials.email,
           refreshToken: credentials.password,
         } as ExtendedUser;
