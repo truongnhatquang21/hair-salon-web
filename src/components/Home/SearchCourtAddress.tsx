@@ -56,7 +56,7 @@ export function SearchCourtAddress({ onValueChange }: SearchCourtAddressProps) {
     <AutoComplete
       options={FRAMEWORKS}
       emptyMessage="No results."
-      placeholder="Court address"
+      placeholder="Search court address, name..."
       onValueChange={handleChange}
       value={value}
     />

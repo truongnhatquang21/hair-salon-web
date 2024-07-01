@@ -1,132 +1,35 @@
-import React from "react";
+"use client";
 
+import React, { useEffect, useState } from "react";
+
+import { getMyBookingReceipt } from "@/app/api/auth/booking-receipt";
 import BookingReceipt from "@/components/CustomerBooking/BookingReceipts";
+import type IBookingReceipt from "@/types/BookingReceipt";
 
 type Props = {};
-const bookingData = [
-  {
-    _id: "667b9765ade8d64bb6564e86",
-    type: "single_schedule",
-    paymentType: "haft",
-    paymentMethod: "vnpay",
-    totalPrice: 12345,
-    totalHour: 30,
-    startDate: "2024-06-11T00:00:00.000Z",
-    endDate: "2024-06-11T00:00:00.000Z",
-    status: "Pending",
-    court: {
-      name: "san cau long abc",
-      type: "hehe",
-      price: 1233,
-      images: [
-        "https://babolat.com.vn/wp-content/uploads/2023/10/san-cau-long-viettel.jpg",
-        "https://thethao365.com.vn/Data/upload/images/Product/Caulong/kich-thuoc-san-cau-long.jpg",
-      ],
-      description: "123",
-      status: "Termination",
-      branch: {
-        name: "san cau long abcd",
-        images: [
-          "https://babolat.com.vn/wp-content/uploads/2023/10/san-cau-long-viettel.jpg",
-          "https://thethao365.com.vn/Data/upload/images/Product/Caulong/kich-thuoc-san-cau-long.jpg",
-        ],
-      },
-    },
-  },
-  {
-    _id: "667b9765ade8d64bb6564e86",
-    type: "single_schedule",
-    paymentType: "haft",
-    paymentMethod: "vnpay",
-    totalPrice: 12345,
-    totalHour: 30,
-    startDate: "2024-06-11T00:00:00.000Z",
-    endDate: "2024-06-11T00:00:00.000Z",
-    status: "Pending",
-    court: {
-      name: "san cau long abc",
-      type: "hehe",
-      price: 1233,
-      images: [
-        "https://babolat.com.vn/wp-content/uploads/2023/10/san-cau-long-viettel.jpg",
-        "https://thethao365.com.vn/Data/upload/images/Product/Caulong/kich-thuoc-san-cau-long.jpg",
-      ],
-      description: "123",
-      status: "Termination",
-      branch: {
-        name: "san cau long abcd",
-        images: [
-          "https://babolat.com.vn/wp-content/uploads/2023/10/san-cau-long-viettel.jpg",
-          "https://thethao365.com.vn/Data/upload/images/Product/Caulong/kich-thuoc-san-cau-long.jpg",
-        ],
-      },
-    },
-  },
-  {
-    _id: "667b9765ade8d64bb6564e86",
-    type: "single_schedule",
-    paymentType: "haft",
-    paymentMethod: "vnpay",
-    totalPrice: 12345,
-    totalHour: 30,
-    startDate: "2024-06-11T00:00:00.000Z",
-    endDate: "2024-06-11T00:00:00.000Z",
-    status: "Pending",
-    court: {
-      name: "san cau long abc",
-      type: "hehe",
-      price: 1233,
-      images: [
-        "https://babolat.com.vn/wp-content/uploads/2023/10/san-cau-long-viettel.jpg",
-        "https://thethao365.com.vn/Data/upload/images/Product/Caulong/kich-thuoc-san-cau-long.jpg",
-      ],
-      description: "123",
-      status: "Termination",
-      branch: {
-        name: "san cau long abcd",
-        images: [
-          "https://babolat.com.vn/wp-content/uploads/2023/10/san-cau-long-viettel.jpg",
-          "https://thethao365.com.vn/Data/upload/images/Product/Caulong/kich-thuoc-san-cau-long.jpg",
-        ],
-      },
-    },
-  },
-  {
-    _id: "667b9765ade8d64bb6564e86",
-    type: "single_schedule",
-    paymentType: "haft",
-    paymentMethod: "vnpay",
-    totalPrice: 12345,
-    totalHour: 30,
-    startDate: "2024-06-11T00:00:00.000Z",
-    endDate: "2024-06-11T00:00:00.000Z",
-    status: "Pending",
-    court: {
-      name: "san cau long abc",
-      type: "hehe",
-      price: 1233,
-      images: [
-        "https://babolat.com.vn/wp-content/uploads/2023/10/san-cau-long-viettel.jpg",
-        "https://thethao365.com.vn/Data/upload/images/Product/Caulong/kich-thuoc-san-cau-long.jpg",
-      ],
-      description: "123",
-      status: "Termination",
-      branch: {
-        name: "san cau long abcd",
-        images: [
-          "https://babolat.com.vn/wp-content/uploads/2023/10/san-cau-long-viettel.jpg",
-          "https://thethao365.com.vn/Data/upload/images/Product/Caulong/kich-thuoc-san-cau-long.jpg",
-        ],
-      },
-    },
-  },
-];
-const page = (props: Props) => {
+
+const Receipt: React.FC<Props> = () => {
+  const [bookings, setBookings] = useState<IBookingReceipt[]>([]);
+
+  useEffect(() => {
+    const fetchBookings = async () => {
+      try {
+        const data = await getMyBookingReceipt();
+        console.log(data);
+        setBookings(data?.bookingList);
+      } catch (error) {
+        console.error("Failed to fetch booking receipts:", error);
+      }
+    };
+
+    fetchBookings();
+  }, []);
+
   return (
     <div>
-      <BookingReceipt bookings={bookingData} />
+      <BookingReceipt bookings={bookings} />
     </div>
   );
 };
 
-export default page;
+export default Receipt;

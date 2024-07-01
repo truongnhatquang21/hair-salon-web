@@ -13,7 +13,7 @@ const BookingReceipt: React.FC<Props> = ({ bookings }) => {
   return (
     <div className="container my-10 flex-col items-center gap-5">
       <div className="flex w-full flex-wrap justify-between gap-3">
-        {bookings.map((booking) => (
+        {bookings?.map((booking) => (
           <div
             key={booking._id}
             className="flex w-full flex-col gap-2 rounded-md border-2 border-dashed p-4"
