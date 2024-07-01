@@ -1,7 +1,5 @@
 "use client";
 
-import "@/styles/home.css";
-
 import { AlignLeft, Clock, MapPin } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -24,6 +22,7 @@ type ResultSectionProps = {
   totalPages: number;
   onPageChange: (page: number) => void;
 };
+
 const ResultSection = ({
   branches,
   currentPage,

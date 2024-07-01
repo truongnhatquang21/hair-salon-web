@@ -1,52 +1,44 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
 
-import { getAllBadminton } from "@/app/api/unauth/popular-badminton-place";
+import { getBranchListAPI } from "@/apiCallers/Branches";
 import type IBadminton from "@/types/badminton";
 
 const PopularBadmintonPlaces = () => {
   const t = useTranslations("PopularBadminton");
-  const [badminton, setBadminton] = useState<IBadminton[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<null | string>(null);
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["branches"], // Unique key for this query
+    queryFn: () => getBranchListAPI(), // Function to fetch the data
+  });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await getAllBadminton();
-        setBadminton(data);
-      } catch (err) {
-        if (err instanceof Error) {
-          setError(err.message);
-        } else {
-          setError("An unexpected error occurred");
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-  if (loading) {
-    return <p>{t("loading")}</p>;
+  if (isLoading) {
+    return <p>{t("loading")}</p>; // Display loading state
   }
 
-  if (error) {
-    return <p>{t("error", { error })}</p>;
+  if (isError) {
+    return (
+      <p>
+        {t("error", {
+          error: error?.message || "An unexpected error occurred",
+        })}
+      </p>
+    ); // Handle error state
   }
+
+  const badminton: IBadminton = data?.data ?? []; // Ensure data is always an array
+
   return (
     <div className="my-8">
       <h2 className="mb-4 text-2xl font-bold">{t("title")}</h2>
       <p className="mb-8">{t("description")}</p>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4">
-        {badminton.map((bad: IBadminton) => (
-          <div key={bad.id} className="overflow-hidden rounded-sm shadow-lg">
-            <Link href={`/badminton/${bad.id}`}>
+        {badminton?.map((bad: IBadminton) => (
+          <div key={bad._id} className="overflow-hidden rounded-sm shadow-lg">
+            <Link href={`/badminton/${bad._id}`}>
               <div className="relative h-48 w-full">
                 <Image
                   src={bad.images[0] ?? ""}

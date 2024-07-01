@@ -1,64 +1,30 @@
-"use client";
+// src/components/Home/SearchCourtAddress.tsx
 
-import { useState } from "react";
+import { AutoComplete } from "../ui/autocomplete";
+import { Input } from "../ui/input";
 
-import { AutoComplete, type Option } from "@/components/ui/autocomplete";
+export type Option = {
+  value: string;
+  label: string;
+};
 
 type SearchCourtAddressProps = {
-  onValueChange?: (value: Option | null) => void;
+  value: string;
+  onChange?: (value: Option | null) => void;
 };
-const FRAMEWORKS = [
-  {
-    value: "next.js",
-    label: "Next.js",
-  },
-  {
-    value: "sveltekit",
-    label: "SvelteKit",
-  },
-  {
-    value: "nuxt.js",
-    label: "Nuxt.js",
-  },
-  {
-    value: "remix",
-    label: "Remix",
-  },
-  {
-    value: "astro",
-    label: "Astro",
-  },
-  {
-    value: "wordpress",
-    label: "WordPress",
-  },
-  {
-    value: "express.js",
-    label: "Express.js",
-  },
-  {
-    value: "nest.js",
-    label: "Nest.js",
-  },
-];
 
-export function SearchCourtAddress({ onValueChange }: SearchCourtAddressProps) {
-  const [value, setValue] = useState<Option>();
 
-  const handleChange = (newValue: Option) => {
-    setValue(newValue);
-    if (onValueChange) {
-      onValueChange(newValue);
-    }
-  };
 
+const SearchCourtAddress = ({ value, onChange }: SearchCourtAddressProps) => {
   return (
-    <AutoComplete
-      options={FRAMEWORKS}
-      emptyMessage="No results."
-      placeholder="Search court address, name..."
-      onValueChange={handleChange}
-      value={value}
-    />
+    // <AutoComplete
+    //   emptyMessage="No results."
+    //   placeholder="Search court address, name..."
+    //   onValueChange={onChange}
+    //   value={value}
+    // />
+    
   );
-}
+};
+
+export default SearchCourtAddress;
