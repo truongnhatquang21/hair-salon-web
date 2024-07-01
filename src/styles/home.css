@@ -1,0 +1,53 @@
+/* Remove the icon for input type=date */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  display: none;
+}
+
+input[type="date"]::-webkit-inner-spin-button,
+input[type="date"]::-webkit-clear-button {
+  display: none;
+  -webkit-appearance: none;
+}
+
+/* Remove the icon for input type=time */
+input[type="time"]::-webkit-calendar-picker-indicator {
+  display: none;
+}
+
+input[type="time"]::-webkit-inner-spin-button,
+input[type="time"]::-webkit-clear-button {
+  display: none;
+  -webkit-appearance: none;
+}
+
+/* Remove appearance of arrow buttons in other browsers */
+input[type="date"],
+input[type="time"] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border: 0;
+}
+
+input[type="date"]:focus,
+input[type="time"]:focus {
+  outline: none;
+  border: none;
+  border-color: #fff;
+}
+
+.description {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+.search-address-container .border-b {
+  border-bottom: 0;
+}
+
+.autocomplete-container .lucide-search {
+  display: none;
+}
+
+.autocomplete-container input {
+  height: 2.5rem;
+}

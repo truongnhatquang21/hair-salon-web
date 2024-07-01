@@ -1,4 +1,5 @@
 "use client";
+"use client";
 
 import Error from "next/error";
 
