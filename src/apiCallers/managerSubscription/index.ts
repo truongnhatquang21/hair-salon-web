@@ -7,8 +7,8 @@ import {
 
 import { fetcher } from "..";
 
-export const getSubscriptionListAPI = async (managerId: string) => {
-  return fetcher(`package-purchase/get-purchases/${managerId}`);
+export const getSubscriptionListAPI = async () => {
+  return fetcher(`package-purchase/get-purchases`);
 };
 
 export const postSubscriptionListAPI = async (data: PackageCourtSchemaType) => {

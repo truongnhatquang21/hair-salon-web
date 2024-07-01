@@ -5,7 +5,7 @@ import TrackingSubscription from "@/views/Subscription/tracking/TrackingSubscrip
 type Props = {};
 
 const page = (props: Props) => {
-  return <TrackingSubscription managerId="6677a936ad67370179bfe0ab" />; // get id of login manager
+  return <TrackingSubscription />;
 };
 
 export default page;
