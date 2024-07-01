@@ -17,6 +17,12 @@ export const postBranchListAPI = async (data: BranchSchemaType) => {
     method: "POST",
   });
 };
+export const searchBranchesAPI = async (searchParams: { keyword: string }) => {
+  return fetcher("branch/search", {
+    method: "POST",
+    body: JSON.stringify(searchParams),
+  });
+};
 export const putBranchListAPI = async (data: BranchSchemaType) => {
   // return fetcher("package-court", {
   //   body: JSON.stringify(data),

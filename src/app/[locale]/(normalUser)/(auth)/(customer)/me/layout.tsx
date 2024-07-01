@@ -14,8 +14,8 @@ const sidebarNavItems = [
     href: "/me/booking",
   },
   {
-    title: "Booking reciepts",
-    href: "/me/reciepts",
+    title: "Booking receipts",
+    href: "/me/receipts",
   },
   {
     title: "Balance history",
