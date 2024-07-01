@@ -7,7 +7,6 @@ import Image from "next/image";
 
 import { DataTableColumnHeader } from "@/components/table/ColumnHeader";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,28 +19,28 @@ import type { IBranch } from "@/interfaces/branch.interface";
 import image from "@/public/assets/images/banner.jpeg";
 
 export const columns: ColumnDef<IBranch>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
+  // {
+  //   id: "select",
+  //   header: ({ table }) => (
+  //     <Checkbox
+  //       checked={
+  //         table.getIsAllPageRowsSelected() ||
+  //         (table.getIsSomePageRowsSelected() && "indeterminate")
+  //       }
+  //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+  //       aria-label="Select all"
+  //     />
+  //   ),
+  //   cell: ({ row }) => (
+  //     <Checkbox
+  //       checked={row.getIsSelected()}
+  //       onCheckedChange={(value) => row.toggleSelected(!!value)}
+  //       aria-label="Select row"
+  //     />
+  //   ),
+  //   enableSorting: false,
+  //   enableHiding: false,
+  // },
   {
     accessorKey: "images",
     header: "Image",
@@ -79,6 +78,12 @@ export const columns: ColumnDef<IBranch>[] = [
     accessorKey: "phone",
     header: ({ column }) => {
       return <DataTableColumnHeader column={column} title="Phone" />;
+    },
+  },
+  {
+    accessorKey: "availableTime",
+    header: ({ column }) => {
+      return <DataTableColumnHeader column={column} title="Available time" />;
     },
   },
   {

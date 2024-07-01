@@ -128,6 +128,12 @@ export const columns: ColumnDef<BranchSchemaType>[] = [
     },
   },
   {
+    accessorKey: "availableTime",
+    header: ({ column }) => {
+      return <DataTableColumnHeader column={column} title="Available time" />;
+    },
+  },
+  {
     accessorKey: "status",
     header: ({ column }) => {
       return <DataTableColumnHeader column={column} title="Status" />;

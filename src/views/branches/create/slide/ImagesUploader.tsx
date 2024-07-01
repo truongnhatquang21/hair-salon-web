@@ -66,8 +66,6 @@ const ImagesUploader = ({ goBackfn, goNextFn, steppers, stepIndex }: Props) => {
     console.log(branchStep, "branchStep");
   };
 
-  console.log(form.watch("images"), "imagedsajfks");
-
   return (
     <div className="flex size-full flex-col gap-2 overflow-auto">
       <div className="flex w-full items-center gap-4">

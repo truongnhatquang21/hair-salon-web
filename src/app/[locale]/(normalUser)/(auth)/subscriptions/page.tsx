@@ -1,9 +1,12 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import { CheckCircle2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 
+import { getSubscriptionListAPI } from "@/apiCallers/adminSubcription";
+import { Loading } from "@/components/loading";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -15,34 +18,34 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
+import { PackageEnum } from "@/views/AdminSubscriptions/helper";
 
 type PricingSwitchProps = {
   onSwitch: (value: string) => void;
 };
 
 type PricingCardProps = {
-  isYearly?: boolean;
-  title: string;
-  monthlyPrice?: number;
-  yearlyPrice?: number;
+  priceEachCourt: number;
+  name: string;
+  totalPrice: number;
   description: string;
-  features: string[];
-  actionLabel: string;
-  popular?: boolean;
-  exclusive?: boolean;
-  slug?: string;
+  type: PackageEnum;
+  _id?: string;
+  duration: number;
+  maxCourt: number;
+  showBtn?: boolean;
 };
 
 const PricingHeader = ({
   title,
-  subtitle,
+  subTitle,
 }: {
   title: string;
-  subtitle: string;
+  subTitle: string;
 }) => (
   <section className="text-center">
     <h2 className="text-3xl font-bold">{title}</h2>
-    <span className="pt-1 text-xl">{subtitle}</span>
+    <p className="pt-1 text-xl">{subTitle}</p>
     <br />
   </section>
 );
@@ -51,10 +54,10 @@ const PricingSwitch = ({ onSwitch }: PricingSwitchProps) => (
   <Tabs defaultValue="0" className="mx-auto w-40" onValueChange={onSwitch}>
     <TabsList className="px-2 py-6">
       <TabsTrigger value="0" className="text-base">
-        Monthly
+        {PackageEnum.Standard}
       </TabsTrigger>
       <TabsTrigger value="1" className="text-base">
-        Yearly
+        {PackageEnum.Custom}
       </TabsTrigger>
     </TabsList>
   </Tabs>
@@ -67,149 +70,173 @@ const CheckItem = ({ text }: { text: string }) => (
     </span>
   </div>
 );
+function transformStringToArray(input: string): string[] {
+  // Split the input string by newline character
+  const lines = input.split("\n");
+
+  // Trim each line and remove the leading '- ' if present
+  const array = lines.map((line) =>
+    line.trim().startsWith("- ") ? line.slice(2) : line
+  );
+
+  return array;
+}
+
 export const PricingCard = ({
-  isYearly,
-  title,
-  monthlyPrice,
-  yearlyPrice,
+  priceEachCourt,
+  name,
+  totalPrice,
+  type,
+  maxCourt,
+  duration,
   description,
-  features,
-  actionLabel,
-  popular,
-  exclusive,
-  slug,
+
+  _id,
+  showBtn = true,
 }: PricingCardProps) => {
   const router = useRouter();
+  const des = transformStringToArray(description);
+
   return (
     <Card
-      className={cn(
-        `w-72 flex flex-col justify-between py-1 ${popular ? "border-rose-400" : "border-zinc-700"} mx-auto sm:mx-0`,
-        {
-          "animate-background-shine bg-white dark:bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] transition-colors":
-            exclusive,
-        }
-      )}
+      className={cn(`w-72 flex flex-col justify-between py-1 mx-auto sm:mx-0`, {
+        "animate-background-shine bg-white dark:bg-[linear-gradient(110deg,#000103,45%,#1e2631,55%,#000103)] bg-[length:200%_100%] transition-colors":
+          true,
+      })}
     >
       <div>
         <CardHeader className="pb-8 pt-4">
-          {isYearly && yearlyPrice && monthlyPrice ? (
-            <div className="flex justify-between">
-              <CardTitle className="text-lg text-zinc-700 dark:text-zinc-300">
-                {title}
-              </CardTitle>
+          <div className="flex size-full items-center justify-between">
+            <CardTitle className="text-lg text-zinc-700 dark:text-zinc-300">
+              {name}
+            </CardTitle>
+            {type === PackageEnum.Standard && (
               <div
                 className={cn(
-                  "px-2.5 rounded-xl h-fit text-sm py-1 bg-zinc-200 text-black dark:bg-zinc-800 dark:text-white",
+                  "min-w-[120px] h-[20px] px-2.5 rounded-xl  text-xs py-1 bg-gradient-to-r from-green-400 to-blue-400 text-black dark:bg-zinc-800 dark:text-white font-bold flex items-center gap-1",
                   {
-                    "bg-gradient-to-r from-orange-400 to-rose-400 dark:text-black ":
-                      popular,
+                    "bg-gradient-to-r from-orange-400 to-rose-400 dark:text-black  ":
+                      maxCourt >= 10,
                   }
                 )}
               >
-                Save ${monthlyPrice * 12 - yearlyPrice}
+                <span className="text-xl text-white">{maxCourt}</span>Court
+                {maxCourt > 1 ? "s" : ""}
               </div>
-            </div>
-          ) : (
-            <CardTitle className="text-lg text-zinc-700 dark:text-zinc-300">
-              {title}
-            </CardTitle>
-          )}
+            )}
+            {type === PackageEnum.Custom && (
+              <div
+                className={cn(
+                  "min-w-[120px] h-[20px] px-2.5 rounded-xl  text-xs py-0.5 bg-gradient-to-r from-green-400 to-blue-400 text-black dark:bg-zinc-800 dark:text-white font-bold flex items-center gap-1",
+                  {
+                    "bg-gradient-to-r from-yellow-400 to-purple-400 dark:text-black  ":
+                      true,
+                  }
+                )}
+              >
+                {type}
+              </div>
+            )}
+          </div>
+
           <div className="flex gap-0.5">
             <h3 className="text-3xl font-bold">
-              {yearlyPrice && isYearly
-                ? `$${yearlyPrice}`
-                : monthlyPrice
-                  ? `$${monthlyPrice}`
-                  : "Custom"}
+              {totalPrice && `$ ${totalPrice}`}
+              {priceEachCourt && !totalPrice && (
+                <span>
+                  $ {priceEachCourt}
+                  <span className="text-base font-normal">/court</span>
+                </span>
+              )}
             </h3>
             <span className="mb-1 flex flex-col justify-end text-sm">
-              {yearlyPrice && isYearly
-                ? "/year"
-                : monthlyPrice
-                  ? "/month"
-                  : null}
+              {type === PackageEnum.Standard
+                ? `/ ${duration} month${duration > 1 ? "s" : ""}`
+                : null}
             </span>
           </div>
-          <CardDescription className="h-12 pt-1.5">
-            {description}
-          </CardDescription>
+          <CardDescription className="h-12 pt-1.5">{des[0]}</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-2">
-          {features.map((feature: string) => (
-            <CheckItem key={feature} text={feature} />
-          ))}
+          {des.slice(1).map((d: string) => d && <CheckItem key={d} text={d} />)}
         </CardContent>
       </div>
-      <CardFooter className="mt-2">
-        <Button
-          onClick={() => {
-            router.push(`/subscriptions/order/${slug || 1}`);
-          }}
-          className="relative inline-flex w-full items-center justify-center rounded-md bg-black px-6 font-medium text-white transition-colors  focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50 dark:bg-white dark:text-black"
-        >
-          <div className="absolute -inset-0.5 -z-10 rounded-lg bg-gradient-to-b from-[#c7d2fe] to-[#8678f9] opacity-75 blur" />
-          {actionLabel}
-        </Button>
-      </CardFooter>
+      {showBtn && (
+        <CardFooter className="mt-2">
+          <Button
+            onClick={() => {
+              if (type === PackageEnum.Standard) {
+                router.push(`/subscriptions/order/${_id}/checkout`);
+              } else {
+                router.push(`/subscriptions/order/${_id}`);
+              }
+            }}
+            className="relative inline-flex w-full items-center justify-center rounded-md bg-black px-6 font-medium text-white transition-colors  focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 focus:ring-offset-slate-50 dark:bg-white dark:text-black"
+          >
+            <div className="absolute -inset-0.5 -z-10 rounded-lg bg-gradient-to-b from-[#c7d2fe] to-[#8678f9] opacity-75 blur" />
+            {type === PackageEnum.Standard ? "Select Plan" : "Custom your plan"}
+          </Button>
+        </CardFooter>
+      )}
     </Card>
   );
 };
 export default function Page() {
-  const [isYearly, setIsYearly] = useState(false);
+  const [isCustom, setIsYearly] = useState(false);
   const togglePricingPeriod = (value: string) => setIsYearly(value === "1");
 
-  const plans = [
-    {
-      title: "Basic",
-      monthlyPrice: 10,
-      yearlyPrice: 100,
-      description: "Essential features you need to get started",
-      features: [
-        "Example Feature Number 1",
-        "Example Feature Number 2",
-        "Example Feature Number 3",
-      ],
-      actionLabel: "Get Started",
+  const { data: SubscriptionList, isLoading } = useQuery({
+    queryKey: ["subscription"],
+    queryFn: async () => {
+      return getSubscriptionListAPI();
     },
-    {
-      title: "Pro",
-      monthlyPrice: 25,
-      yearlyPrice: 250,
-      description: "Perfect for owners of small & medium businessess",
-      features: [
-        "Example Feature Number 1",
-        "Example Feature Number 2",
-        "Example Feature Number 3",
-      ],
-      actionLabel: "Get Started",
-      popular: true,
-    },
-    {
-      title: "Enterprise",
-      price: "Custom",
-      description: "Dedicated support and infrastructure to fit your needs",
-      features: [
-        "Example Feature Number 1",
-        "Example Feature Number 2",
-        "Example Feature Number 3",
-        "Super Exclusive Feature",
-      ],
-      actionLabel: "Contact Sales",
-      exclusive: true,
-    },
-  ];
+  });
+
+  const subsData = useMemo(() => {
+    const Subs = SubscriptionList?.data;
+    if (Subs && !isCustom) {
+      return Subs.filter((sub) => sub.type === PackageEnum.Standard);
+    }
+    if (Subs && isCustom) {
+      return Subs.filter((sub) => sub.type === PackageEnum.Custom);
+    }
+    return Subs;
+  }, [SubscriptionList, isCustom]);
   return (
     <div className="py-8">
       <PricingHeader
         title="Pricing Plans"
-        subtitle="Choose the plan that's right for you"
+        subTitle="Choose the plan that's right for you"
       />
       <PricingSwitch onSwitch={togglePricingPeriod} />
-      <section className="mt-8 flex flex-col justify-center gap-8 sm:flex-row sm:flex-wrap">
-        {plans.map((plan) => {
-          return <PricingCard key={plan.title} {...plan} isYearly={isYearly} />;
-        })}
-      </section>
+      {
+        // If the data is still loading, show a loading spinner
+        isLoading ? (
+          <div className="flex justify-center py-2">
+            <Loading />
+          </div>
+        ) : (
+          <section className="mt-8 flex flex-col justify-center gap-8 sm:flex-row sm:flex-wrap">
+            {subsData
+              ? subsData.map((plan) => {
+                  return (
+                    <PricingCard
+                      priceEachCourt={plan.priceEachCourt as number}
+                      key={plan._id}
+                      description={plan.description as string}
+                      duration={plan.duration as number}
+                      maxCourt={plan.maxCourt as number}
+                      name={plan.name as string}
+                      totalPrice={plan.totalPrice as number}
+                      type={plan.type as PackageEnum}
+                      _id={plan._id as string}
+                    />
+                  );
+                })
+              : null}
+          </section>
+        )
+      }
     </div>
   );
 }
