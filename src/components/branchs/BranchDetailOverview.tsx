@@ -3,7 +3,7 @@
 "use client";
 
 import { Clock, DollarSignIcon, MapPin, UsersIcon } from "lucide-react";
-import type { Dispatch, FC, SetStateAction } from "react";
+import type { FC } from "react";
 
 import type { IBranch } from "@/interfaces/branch.interface";
 import type { ICourt } from "@/interfaces/court.interface";
@@ -25,13 +25,9 @@ interface BranchDetailOverviewProps {
     data: IBranch;
     courts: ICourt;
   };
-  setDay: Dispatch<SetStateAction<Date | undefined>>;
 }
 
-const BranchDetailOverview: FC<BranchDetailOverviewProps> = ({
-  data,
-  setDay,
-}) => {
+const BranchDetailOverview: FC<BranchDetailOverviewProps> = ({ data }) => {
   return (
     <div className="">
       <div className="grid grid-cols-1 gap-4  md:grid-cols-4">
@@ -211,7 +207,7 @@ const BranchDetailOverview: FC<BranchDetailOverviewProps> = ({
             </div> */}
           </div>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {data.courts.map((court: ICourt) => {
+            {data.data.courts.map((court: ICourt) => {
               return (
                 <Card key={court._id}>
                   <CardContent className="grid gap-4 overflow-hidden p-5">
@@ -231,7 +227,7 @@ const BranchDetailOverview: FC<BranchDetailOverviewProps> = ({
                           variant="solid"
                           className="bg-yellow-500 text-white"
                         >
-                          Pending
+                          {court.status}
                         </Badge>
                       </div>
                       <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">

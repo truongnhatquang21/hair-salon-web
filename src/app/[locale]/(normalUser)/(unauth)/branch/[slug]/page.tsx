@@ -26,16 +26,20 @@ const Page = ({ params }: { params: { slug: string } }) => {
   const [startSlot, setStartSlot] = useState(null);
   const [endSlot, setEndSlot] = useState(null);
   const [selectedSlots, setSelectedSlots] = useState<string[]>([]);
+  const [selectedCourt, setSelectedCourt] = useState(null);
   const { data, isLoading, isError } = useQuery({
     queryKey: ["brachDetail"],
     queryFn: async () => getBranchByIdAPI(slug),
   });
+  const handleCourtSelection = (court) => {
+    setSelectedCourt(court);
+  };
   const timeSlots = useMemo(() => {
-    const slotArray = data?.slots?.filter((el: ISlot) =>
+    const slotArray = data?.data?.slots?.filter((el: ISlot) =>
       el.weekDay.includes(getThu(selectDay))
     );
     return slotArray;
-  }, [data?.slots, selectDay]);
+  }, [data?.data?.slots, selectDay]);
   if (isLoading) {
     return (
       <div className="flex min-h-[calc(100vh_-_56px)]  items-center justify-center p-5">
@@ -111,7 +115,7 @@ const Page = ({ params }: { params: { slug: string } }) => {
               />
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {startSlot &&
-                  data.courts.map((court: ICourt) => {
+                  data?.data?.courts.map((court: ICourt) => {
                     return (
                       <Card key={court._id}>
                         <CardContent className="grid gap-4 overflow-hidden p-5">
