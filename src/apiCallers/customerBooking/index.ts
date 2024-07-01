@@ -3,5 +3,5 @@
 import { fetcher } from "..";
 
 export const getMyBookingReceipt = async () => {
-  return fetcher("/api/booking-receipt");
+  return fetcher("booking/MyBooking");
 };

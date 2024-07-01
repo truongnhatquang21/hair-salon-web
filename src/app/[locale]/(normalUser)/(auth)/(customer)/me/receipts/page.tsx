@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
 
-import { getMyBookingReceipt } from "@/app/api/auth/booking-receipt";
+import { getMyBookingReceipt } from "@/apiCallers/customerBooking";
 import BookingReceipt from "@/components/CustomerBooking/BookingReceipts";
 
 type Props = {};
@@ -16,6 +16,7 @@ const Receipt: React.FC<Props> = () => {
 
   const bookings = data?.bookingList ?? [];
 
+  console.log(data);
   if (isLoading) {
     return <div>Loading...</div>;
   }
