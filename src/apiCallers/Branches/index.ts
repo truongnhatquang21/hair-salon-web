@@ -1,22 +1,20 @@
+"use server";
+
 import { mockRequest } from "@/lib/mockRequest";
-import type {
-  BranchSchemaType,
-  BranchSchemaType,
-} from "@/views/branches/helper";
+import type { BranchSchemaType } from "@/views/branches/helper";
 import { sampleData } from "@/views/requestedBranches/helper";
 
-export const getBranchListAPI = async (sampleData?: any) => {
-  // return fetcher("package-court")
-  return mockRequest(sampleData);
+import { fetcher } from "..";
+
+export const getBranchListAPI = async () => {
+  return fetcher("branch");
 };
 
 export const postBranchListAPI = async (data: BranchSchemaType) => {
-  // return fetcher("package-court", {
-  //   body: JSON.stringify(data),
-  //   method: "POST",
-  // });
-
-  return mockRequest(sampleData);
+  return fetcher("branch", {
+    body: JSON.stringify(data),
+    method: "POST",
+  });
 };
 export const putBranchListAPI = async (data: BranchSchemaType) => {
   // return fetcher("package-court", {

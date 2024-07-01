@@ -1,14 +1,18 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { PlusCircleIcon } from "lucide-react";
-import React from "react";
+import React, { useEffect } from "react";
 import type { SubmitHandler, SubmitHandler } from "react-hook-form";
 import { useForm } from "react-hook-form";
 
-import { postSubscriptionListAPI } from "@/apiCallers/adminSubcription";
+import {
+  postSubscriptionListAPI,
+  putSubscriptionListAPI,
+} from "@/apiCallers/adminSubcription";
 import { SelectFieldTypeWrapWithEnum } from "@/components/SelectFieldTypeComp";
 import SpinnerIcon from "@/components/SpinnerIcon";
 import AutoForm, { AutoFormSubmit } from "@/components/ui/auto-form";
+import { DependencyType } from "@/components/ui/auto-form/types";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -22,13 +26,17 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import { PackageCourtTypeEnum } from "@/types";
 
-import type { PackageCourtSchemaType } from "./helper";
-import { createPackageCourtSchema } from "./helper";
+import type {
+  PackageCourtSchemaType,
+  PackageCourtSchemaTypeWithId,
+  PackageCourtSchemaTypeWithId,
+} from "./helper";
+import { createPackageCourtSchema, PackageEnum } from "./helper";
 
 type Props = {
   ButtonTrigger?: React.ReactNode;
   isEdit?: boolean;
-  defaultValues?: PackageCourtSchemaType;
+  defaultValues?: PackageCourtSchemaTypeWithId;
   onClose?: () => void;
 };
 const CreateSubscriptionButton = ({
@@ -40,14 +48,14 @@ const CreateSubscriptionButton = ({
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const form = useForm<PackageCourtSchemaType>({
-    defaultValues: defaultValues || {},
+    defaultValues: defaultValues || {
+      duration: 1,
+    },
     resolver: zodResolver(createPackageCourtSchema),
     shouldFocusError: true,
   });
-  const {
-    setError,
-    formState: { isDirty },
-  } = form;
+  const { setError } = form;
+
   const { mutateAsync: createSubscriptionMutating, isPending: createMutating } =
     useMutation({
       mutationFn: async (data: PackageCourtSchemaType) =>
@@ -93,8 +101,8 @@ const CreateSubscriptionButton = ({
     });
   const { mutateAsync: editSubscriptionMutating, isPending: editMutating } =
     useMutation({
-      mutationFn: async (data: PackageCourtSchemaType) =>
-        postSubscriptionListAPI(data),
+      mutationFn: async (data: PackageCourtSchemaTypeWithId) =>
+        putSubscriptionListAPI(data),
       onSuccess: (data) => {
         console.log(data);
 
@@ -138,9 +146,12 @@ const CreateSubscriptionButton = ({
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
   const onSubmit: SubmitHandler<PackageCourtSchemaType> = async (values) => {
     try {
-      console.log(values, "OSDAOF");
       if (isEdit) {
-        await editSubscriptionMutating(values);
+        const prepareData = {
+          ...values,
+          _id: defaultValues?._id,
+        };
+        await editSubscriptionMutating(prepareData);
       } else {
         await createSubscriptionMutating(values);
       }
@@ -152,6 +163,11 @@ const CreateSubscriptionButton = ({
     }
   };
 
+  useEffect(() => {
+    if (form.watch("type") === PackageEnum.Custom) {
+      form.setValue("duration", 1);
+    }
+  }, [form.watch("type")]);
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger asChild>
@@ -179,42 +195,73 @@ const CreateSubscriptionButton = ({
             values={defaultValues}
             onSubmit={onSubmit}
             formSchema={createPackageCourtSchema}
+            dependencies={[
+              {
+                // "age" hides "parentsAllowed" when the age is 18 or older
+                sourceField: "type",
+                type: DependencyType.HIDES,
+                targetField: "totalPrice",
+                when: (type: PackageEnum) => type !== PackageEnum.Standard,
+              },
+              {
+                // "age" hides "parentsAllowed" when the age is 18 or older
+                sourceField: "type",
+                type: DependencyType.HIDES,
+                targetField: "priceEachCourt",
+                when: (type: PackageEnum) => type === PackageEnum.Standard,
+              },
+              {
+                // "age" hides "parentsAllowed" when the age is 18 or older
+                sourceField: "type",
+                type: DependencyType.HIDES,
+                targetField: "maxCourt",
+                when: (type: PackageEnum) => type !== PackageEnum.Standard,
+              },
+              {
+                // "age" hides "parentsAllowed" when the age is 18 or older
+                sourceField: "type",
+                type: DependencyType.DISABLES,
+                targetField: "duration",
+                when: (type: PackageEnum) => type === PackageEnum.Custom,
+              },
+            ]}
             fieldConfig={{
               name: {
                 inputProps: {
-                  placeholder: "Standard Package",
+                  placeholder: "--",
                   required: true,
                 },
                 description: "Name of the package, e.g. 'Standard Package'",
               },
               totalPrice: {
                 inputProps: {
-                  placeholder: "1000",
+                  placeholder: "--",
                 },
                 description: "Total price of the package, e.g. '1000'",
               },
               priceEachCourt: {
                 inputProps: {
-                  placeholder: "100",
+                  placeholder: "--",
                 },
                 description: "Price per court of the package, e.g. '100'",
               },
 
               maxCourt: {
                 inputProps: {
-                  placeholder: "10",
+                  placeholder: "--",
                 },
                 description: "Maximum court of the package, e.g. '10'",
               },
               duration: {
                 inputProps: {
-                  placeholder: "2",
+                  placeholder: "--",
+                  defaultValue: 1,
                 },
                 description: "Duration of the package, e.g. '2'",
               },
               description: {
                 inputProps: {
-                  placeholder: "This is a sample package",
+                  placeholder: "--",
                 },
                 fieldType: "textarea",
                 description:
@@ -236,7 +283,7 @@ const CreateSubscriptionButton = ({
             <DialogFooter className="w-full">
               <AutoFormSubmit
                 className="w-full"
-                disabled={createMutating || editMutating || !isDirty}
+                disabled={createMutating || editMutating}
               >
                 <Button
                   type="submit"

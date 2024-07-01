@@ -51,7 +51,7 @@ function AutoForm<
   className,
   dependencies,
 }: {
-  controlForm: UseFormReturn<z.infer<SchemaType>>;
+  controlForm?: UseFormReturn<z.infer<SchemaType>>;
   formSchema: SchemaType;
   values?: Partial<z.infer<SchemaType>>;
   onValuesChange?: (values: Partial<z.infer<SchemaType>>) => void;

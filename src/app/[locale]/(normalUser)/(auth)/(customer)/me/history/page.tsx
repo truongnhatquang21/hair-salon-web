@@ -3,9 +3,7 @@ import React from "react";
 import { TransactionList } from "@/components/TransactionList";
 import { Separator } from "@/components/ui/separator";
 
-type Props = {};
-
-const HistoryPage = (props: Props) => {
+const HistoryPage = () => {
   return (
     <div className="flex flex-col gap-4">
       <div>

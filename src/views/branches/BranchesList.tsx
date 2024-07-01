@@ -1,14 +1,16 @@
+"use client";
+
 import { useQuery } from "@tanstack/react-query";
 
 import { getBranchListAPI } from "@/apiCallers/Branches";
 import { DataTable } from "@/components/table/DataTable";
 
-import { type BranchSchemaType, columns, sampleData } from "./helper";
+import { type BranchSchemaType, columns } from "./helper";
 
-export default async function BranchesList() {
+export default function BranchesList() {
   const { data, isLoading } = useQuery({
     queryKey: ["branches"],
-    queryFn: () => getBranchListAPI(sampleData),
+    queryFn: async () => getBranchListAPI(),
   });
   return (
     <div className=" relative size-full overflow-auto">

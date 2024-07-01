@@ -1,6 +1,10 @@
 "use server";
 
+import { AuthError } from "next-auth";
+import type { z } from "zod";
+
 import { signIn, signOut } from "@/auth";
+import { LoginSchema } from "@/validations";
 
 // ...
 
@@ -24,10 +28,40 @@ import { signIn, signOut } from "@/auth";
 //     throw error;
 //   }
 // }
-export async function signInServer(formData: any) {
-  await signIn("credentials", formData);
-}
+export const SignInServer = async (
+  values: z.infer<typeof LoginSchema>,
+  callbackUrl?: string | "/sign-in"
+) => {
+  const validatedFields = LoginSchema.safeParse(values);
 
+  if (!validatedFields.success) {
+    return { error: "Invalid fields!" };
+  }
+
+  const { email, password } = validatedFields.data;
+  console.log("email", email, "password", password, "callbackUrl", callbackUrl);
+
+  try {
+    await signIn("credentials", {
+      email,
+      password,
+      redirectTo: callbackUrl || "/",
+    });
+
+    return { success: "Login Sucess!" };
+  } catch (error) {
+    if (error instanceof AuthError) {
+      switch (error.type) {
+        case "CredentialsSignin":
+          return { error: "Invalid credentials!" };
+        default:
+          return { error: "Something went wrong!" };
+      }
+    }
+
+    throw error;
+  }
+};
 export async function signOutServer() {
   await signOut();
 }

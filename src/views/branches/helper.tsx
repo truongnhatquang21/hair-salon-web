@@ -53,8 +53,17 @@ export const createBranchSchema = z.object({
     .regex(regexPhoneNumber, { message: "Phone must be a valid phone" }),
   courts: z.array(createCourtObject).min(1, "Courts must have at least 1"),
   slots: z.array(createSlotObject).min(1, "Slots must have at least 1"),
+  images: z.array(z.string()).min(1, "Images must have at least 1"),
 });
+
 export type BranchSchemaType = z.infer<typeof createBranchSchema>;
+export type BranchTypeInCreate = Omit<
+  BranchSchemaType,
+  "license" | "images"
+> & {
+  licenses: File[];
+  images: File[];
+};
 export const columns: ColumnDef<BranchSchemaType>[] = [
   // {
   // id: "select",
@@ -78,6 +87,7 @@ export const columns: ColumnDef<BranchSchemaType>[] = [
   //   enableSorting: false,
   //   enableHiding: false,
   // },
+
   {
     accessorKey: "images",
     header: "Image",

@@ -1,9 +1,17 @@
-import NextAuth from "next-auth";
+/* eslint-disable no-param-reassign */
+import NextAuth, { AuthError, type User } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+
+import { getProfileApi, signIngApi } from "./apiCallers/login";
 
 // Your own logic for dealing with plaintext password strings; be careful!
 // import { saltAndHashPassword } from "@/utils/password";
 
+interface ExtendedUser extends User {
+  message: string;
+  accessToken: string;
+  refreshToken: string;
+}
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     Credentials({
@@ -14,26 +22,60 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         password: {},
       },
 
-      authorize: async (credentials) => {
-        console.log("credentials", credentials);
+      async authorize(credentials): Promise<User | null> {
+        console.log("line 13dsafnsda,: ", credentials);
 
-        // logic to salt and hash password
-        // const pwHash = saltAndHashPassword(credentials.password);
+        if (credentials === null) return null;
 
-        // logic to verify if user exists
-        // user = await getUserFromDb(credentials.email, pwHash);
+        try {
+          const account = await signIngApi(credentials);
+          console.log(account);
+          if (account) {
+            const profile = await getProfileApi(account.accessToken);
+            return {
+              name: profile.username,
+              email: profile.user.email,
+              accessToken: account.accessToken,
+              refreshToken: account.refreshToken,
+              message: account.message,
+            } as ExtendedUser;
+          }
+          throw new Error("User not found");
+        } catch (error) {
+          if (error instanceof AuthError) {
+            switch (error.type) {
+              case "CredentialsSignin":
+                return { error: "Invalid credentials!" };
+              default:
+                return { error: "Something went wrong!" };
+            }
+          }
 
-        // if (!user) {
-        //   // No user found, so this is their first attempt to login
-        //   // meaning this is also the place you could do registration
-        //   throw new Error("User not found.");
-        // }
-
-        // return user object with the their profile data
-        return { email: credentials.email, password: credentials.password };
+          throw error;
+        }
       },
     }),
   ],
+  callbacks: {
+    jwt: async ({ token, user }) => {
+      const extendUser: ExtendedUser = user as ExtendedUser;
+      if (extendUser) {
+        token.accessToken = extendUser.accessToken;
+        token.refreshToken = extendUser.refreshToken;
+      }
+
+      return token;
+    },
+    session: async ({ session, token }) => {
+      if (token.accessToken && token.refreshToken) {
+        session.accessToken = token.accessToken as string;
+        session.refreshToken = token.refreshToken as string;
+      }
+
+      return session;
+    },
+  },
+
   pages: {
     signIn: "/sign-in",
   },

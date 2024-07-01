@@ -17,7 +17,7 @@ import { Icons } from "@/components/icons";
 import type { ResponseType } from "@/lib/error";
 import { cn } from "@/lib/utils";
 import { RoleEnum } from "@/types";
-import { signInServer } from "@/utils/serverActions";
+import { SignInServer } from "@/utils/serverActions";
 
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -60,6 +60,7 @@ export function UserAuthForm({
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
+    reset,
   } = useForm<SignUpSchemaType & SignInSchemaType>({
     resolver: zodResolver(type === "sign-up" ? SignUpSchema : SignInSchema),
     defaultValues: {},
@@ -149,23 +150,35 @@ export function UserAuthForm({
           await signUpCustomerMutate({
             email: data.email,
             password: data.password,
-            username: data?.username as string,
+            username: data?.username ?? (data.email as string),
           });
         } else {
           await signUpManagerMutate({
             email: data.email,
             password: data.password,
-            username: data?.username as string,
+            username: data?.username ?? (data.email as string),
           });
         }
         router.push("auth/sign-in");
       }
       if (type === "sign-in") {
-        await signInServer({
-          email: data.email,
-          password: data.password,
-          redirectTo: "/",
-        });
+        await SignInServer(data).then(
+          (
+            res:
+              | { error: string; success?: undefined }
+              | { success: string; error?: undefined }
+          ) => {
+            if (res?.error) {
+              reset();
+              // setError(data?.error);
+            }
+
+            if (res?.success) {
+              reset();
+              // setSuccess(data?.success);
+            }
+          }
+        );
       }
     } catch (err) {
       console.log(err, "cath error");
