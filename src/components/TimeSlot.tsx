@@ -1,18 +1,30 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { type Dispatch, type SetStateAction, useMemo, useState } from "react";
 
 import type { ISlot } from "@/interfaces/slot.interface";
 
 import { Button } from "./ui/button";
 
-export const TimeSlot = ({ timeSlotData }: { timeSlotData: ISlot[] }) => {
-  console.log(timeSlotData);
-  const [selectedSlots, setSelectedSlots] = useState<string[]>([]);
-  const [showSelectedSlots, setShowSelectedSlots] = useState(false);
+export const TimeSlot = ({
+  timeSlotData,
+  setStartSlot,
+  setEndSlot,
+  startSlot,
+  endSlot,
+  setSelectedSlots,
+  selectedSlots,
+}: {
+  timeSlotData: ISlot[];
+  setStartSlot: Dispatch<SetStateAction<null>>;
+  startSlot: string | null;
+  endSlot: string | null;
+  selectedSlots: string[] | null;
+  setEndSlot: Dispatch<SetStateAction<null>>;
+  setSelectedSlots: Dispatch<SetStateAction<string[]>>;
+}) => {
   const [date, setDate] = useState(new Date());
-  const [startSlot, setStartSlot] = useState(null);
-  const [endSlot, setEndSlot] = useState(null);
+
   const timeSlots = useMemo(() => {
     const slots = [] as string[];
     // const timeSlotData = [
@@ -92,13 +104,12 @@ export const TimeSlot = ({ timeSlotData }: { timeSlotData: ISlot[] }) => {
       return slots;
     }
     return slots;
-  }, [date]);
+  }, [date, timeSlotData]);
   const toggleSlot = (slot) => {
     const slotIndex = timeSlots.indexOf(slot);
     if (!startSlot) {
       setStartSlot(slot);
       setSelectedSlots([slot]);
-      setShowSelectedSlots(true);
     } else if (!endSlot) {
       const startIndex = timeSlots.indexOf(startSlot);
       const endIndex = slotIndex;
@@ -113,7 +124,6 @@ export const TimeSlot = ({ timeSlotData }: { timeSlotData: ISlot[] }) => {
       setStartSlot(null);
       setEndSlot(null);
       setSelectedSlots([]);
-      setShowSelectedSlots(false);
     } else {
       const startIndex = timeSlots.indexOf(startSlot);
       const endIndex = timeSlots.indexOf(slot);
@@ -133,52 +143,56 @@ export const TimeSlot = ({ timeSlotData }: { timeSlotData: ISlot[] }) => {
         <h2 className="mb-6 text-2xl font-bold">Book a Badminton Court</h2>
 
         <div className="grid grid-cols-4 gap-4">
-          {timeSlots.map((slot) => (
-            <Button
-              key={slot}
-              variant={
-                selectedSlots.includes(slot)
-                  ? "solid"
-                  : startSlot === slot ||
-                      (startSlot &&
-                        endSlot &&
-                        timeSlots.indexOf(slot) >=
-                          (timeSlots.indexOf(startSlot) <=
-                          timeSlots.indexOf(endSlot)
-                            ? timeSlots.indexOf(startSlot)
-                            : timeSlots.indexOf(endSlot)) &&
-                        timeSlots.indexOf(slot) <=
-                          (timeSlots.indexOf(startSlot) <=
-                          timeSlots.indexOf(endSlot)
-                            ? timeSlots.indexOf(endSlot)
-                            : timeSlots.indexOf(startSlot)))
-                    ? "outline"
-                    : "ghost"
-              }
-              className={`h-12 rounded-md px-4 ${
-                selectedSlots.includes(slot)
-                  ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                  : startSlot === slot ||
-                      (startSlot &&
-                        endSlot &&
-                        timeSlots.indexOf(slot) >=
-                          (timeSlots.indexOf(startSlot) <=
-                          timeSlots.indexOf(endSlot)
-                            ? timeSlots.indexOf(startSlot)
-                            : timeSlots.indexOf(endSlot)) &&
-                        timeSlots.indexOf(slot) <=
-                          (timeSlots.indexOf(startSlot) <=
-                          timeSlots.indexOf(endSlot)
-                            ? timeSlots.indexOf(endSlot)
-                            : timeSlots.indexOf(startSlot)))
-                    ? "hover:bg-muted"
-                    : "text-muted-foreground"
-              }`}
-              onClick={() => toggleSlot(slot)}
-            >
-              {slot}
-            </Button>
-          ))}
+          {timeSlots.length !== 0 ? (
+            timeSlots.map((slot) => (
+              <Button
+                key={slot}
+                variant={
+                  selectedSlots.includes(slot)
+                    ? "solid"
+                    : startSlot === slot ||
+                        (startSlot &&
+                          endSlot &&
+                          timeSlots.indexOf(slot) >=
+                            (timeSlots.indexOf(startSlot) <=
+                            timeSlots.indexOf(endSlot)
+                              ? timeSlots.indexOf(startSlot)
+                              : timeSlots.indexOf(endSlot)) &&
+                          timeSlots.indexOf(slot) <=
+                            (timeSlots.indexOf(startSlot) <=
+                            timeSlots.indexOf(endSlot)
+                              ? timeSlots.indexOf(endSlot)
+                              : timeSlots.indexOf(startSlot)))
+                      ? "outline"
+                      : "ghost"
+                }
+                className={`h-12 rounded-md px-4 ${
+                  selectedSlots.includes(slot)
+                    ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                    : startSlot === slot ||
+                        (startSlot &&
+                          endSlot &&
+                          timeSlots.indexOf(slot) >=
+                            (timeSlots.indexOf(startSlot) <=
+                            timeSlots.indexOf(endSlot)
+                              ? timeSlots.indexOf(startSlot)
+                              : timeSlots.indexOf(endSlot)) &&
+                          timeSlots.indexOf(slot) <=
+                            (timeSlots.indexOf(startSlot) <=
+                            timeSlots.indexOf(endSlot)
+                              ? timeSlots.indexOf(endSlot)
+                              : timeSlots.indexOf(startSlot)))
+                      ? "hover:bg-muted"
+                      : "text-muted-foreground"
+                }`}
+                onClick={() => toggleSlot(slot)}
+              >
+                {slot}
+              </Button>
+            ))
+          ) : (
+            <div>empty</div>
+          )}
         </div>
 
         <div className="mt-6 flex justify-end">

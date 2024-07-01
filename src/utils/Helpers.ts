@@ -11,35 +11,35 @@ export const getBaseUrl = () => {
 };
 
 export function getThu(date: Date): string {
-  const day = date.getDay();
+  const day = date?.getDay();
 
   let thu: string;
   switch (day) {
     case 0:
-      thu = "Chủ nhật";
+      thu = "Sunday";
 
       break;
     case 1:
-      thu = "thứ Hai";
+      thu = "Monday";
 
       break;
     case 2:
-      thu = "thứ Ba";
+      thu = "Tuesday";
 
       break;
     case 3:
-      thu = "thứ Tư";
+      thu = "Wednesday";
 
       break;
     case 4:
-      thu = "thứ Năm";
+      thu = "Thursday";
 
       break;
     case 5:
-      thu = "thứ Sáu";
+      thu = "Friday";
       break;
     case 6:
-      thu = "thứ Bảy";
+      thu = "Saturday";
 
       break;
     default:

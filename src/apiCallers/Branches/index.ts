@@ -1,5 +1,6 @@
 "use server";
 
+import type { ISlot } from "@/interfaces/slot.interface";
 import { mockRequest } from "@/lib/mockRequest";
 import type { BranchSchemaType } from "@/views/branches/helper";
 import { sampleData } from "@/views/requestedBranches/helper";
@@ -45,10 +46,10 @@ export const getBranchByIdAPI = async (slug: string) => {
         const slotResponse = await fetcher(`slot/get-by-id/${slot}`, {
           method: "GET",
         });
-        return slotResponse.data; // assuming courtResponse.data is the court details
+        return slotResponse.data as ISlot[]; // assuming courtResponse.data is the court details
       })
     );
-
+    console.log(slots);
     return {
       ...rest,
       courts,

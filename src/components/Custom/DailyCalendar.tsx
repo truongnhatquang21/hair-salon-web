@@ -1,12 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { type Dispatch, type SetStateAction, useState } from "react";
 
 import { getThu } from "@/utils/Helpers";
 
 import { Button } from "../ui/button";
 
-export default function CalendarDaily() {
+interface CalendarDailyProps {
+  setDay: Dispatch<SetStateAction<Date | undefined>>;
+  setSelectedSlots: Dispatch<SetStateAction<string[]>>;
+}
+
+export default function CalendarDaily({
+  setDay,
+  setSelectedSlots,
+}: CalendarDailyProps) {
   const [selectedDay, setSelectedDay] = useState(new Date());
   const [currentWeek, setCurrentWeek] = useState(0);
   const daysInWeek = 7;
@@ -27,8 +35,10 @@ export default function CalendarDaily() {
     setCurrentWeek(currentWeek + 1);
     setSelectedDay(new Date(selectedDay.getTime() + 7 * 24 * 60 * 60 * 1000));
   };
-  const handleDaySelect = (day) => {
+  const handleDaySelect = (day: Date): void => {
+    setSelectedSlots([]);
     setSelectedDay(day);
+    setDay(day);
   };
   return (
     <div className="flex flex-col items-center gap-4">
@@ -53,10 +63,13 @@ export default function CalendarDaily() {
             disabled={day.getTime() < new Date().getTime()}
           >
             <div className="flex flex-col items-center ">
-              <span>{day.getDate()}</span>
+              <span>
+                {`${day.getDate()} - ${day.toLocaleString("default", {
+                  month: "short",
+                })}`}
+              </span>
               <span className="text-xs text-gray-500 dark:text-slate-400">
-                {day.toLocaleString("default", { month: "short" })} -
-                {` ${getThu(day)}`}
+                {getThu(day)}
               </span>
             </div>
           </Button>

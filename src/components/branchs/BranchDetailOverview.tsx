@@ -3,14 +3,13 @@
 "use client";
 
 import { Clock, DollarSignIcon, MapPin, UsersIcon } from "lucide-react";
-import type { FC } from "react";
+import type { Dispatch, FC, SetStateAction } from "react";
 
 import type { IBranch } from "@/interfaces/branch.interface";
 import type { ICourt } from "@/interfaces/court.interface";
 
 import { Icons } from "../icons";
 import { Badge } from "../ui/badge";
-import { Button } from "../ui/button";
 import {
   Card,
   CardContent,
@@ -26,9 +25,13 @@ interface BranchDetailOverviewProps {
     data: IBranch;
     courts: ICourt;
   };
+  setDay: Dispatch<SetStateAction<Date | undefined>>;
 }
 
-const BranchDetailOverview: FC<BranchDetailOverviewProps> = ({ data }) => {
+const BranchDetailOverview: FC<BranchDetailOverviewProps> = ({
+  data,
+  setDay,
+}) => {
   return (
     <div className="">
       <div className="grid grid-cols-1 gap-4  md:grid-cols-4">
@@ -45,7 +48,7 @@ const BranchDetailOverview: FC<BranchDetailOverviewProps> = ({ data }) => {
                       <span>{data?.data.availableTime}</span>
                     </div>
                     <div className=" flex items-center justify-center gap-2">
-                      <Icons.badminton_court />{" "}
+                      <Icons.BadmintonCourt />{" "}
                       <span>{data?.data.courts.length} court</span>
                     </div>
                   </div>
@@ -213,7 +216,7 @@ const BranchDetailOverview: FC<BranchDetailOverviewProps> = ({ data }) => {
                 <Card key={court._id}>
                   <CardContent className="grid gap-4 overflow-hidden p-5">
                     <div className="flex items-center gap-4">
-                      <Icons.badminton_court className="rounded-lg object-cover" />
+                      <Icons.BadmintonCourt className="rounded-lg object-cover" />
                       {/* <Image src={} alt="Court Image" width={80} height={80} /> */}
                       <div>
                         <h3 className="font-semibold">{court.name}</h3>
@@ -241,9 +244,9 @@ const BranchDetailOverview: FC<BranchDetailOverviewProps> = ({ data }) => {
                         <DollarSignIcon className="size-4" />
                         <span>{court.price}/hr</span>
                       </div>
-                      <Button variant="outline" size="sm">
+                      {/* <Button variant="outline" size="sm">
                         Book Now
-                      </Button>
+                      </Button> */}
                     </div>
                   </CardContent>
                 </Card>
