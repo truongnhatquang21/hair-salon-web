@@ -11,7 +11,7 @@ type Props = {};
 const Receipt: React.FC<Props> = () => {
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["bookingReceipts"],
-    queryFn: getMyBookingReceipt,
+    queryFn: async () => getMyBookingReceipt(),
   });
 
   const bookings = data?.bookingList ?? [];
