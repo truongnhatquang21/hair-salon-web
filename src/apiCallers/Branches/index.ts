@@ -6,7 +6,8 @@ import { sampleData } from "@/views/requestedBranches/helper";
 
 import { fetcher } from "..";
 
-export const getBranchListAPI = async () => {
+export const getBranchListAPI = async (sampleData?: any) => {
+  // return fetcher("package-court")
   return fetcher("branch");
 };
 
@@ -29,4 +30,12 @@ export const putBranchListAPI = async (data: BranchSchemaType) => {
   // });
 
   return mockRequest(sampleData);
+};
+
+export const getBranchByIdAPI = async (slug: string) => {
+  const rest = await fetcher(`branch/get-by-id/${slug}`, {
+    method: "GET",
+  });
+
+  return rest;
 };

@@ -58,7 +58,7 @@ export default function AutoFormFile({
       )}
       {file && (
         <div className="flex h-[40px] w-full flex-row items-center justify-between space-x-2 rounded-sm border p-2 text-black focus-visible:ring-0 focus-visible:ring-offset-0 dark:bg-white dark:text-black dark:focus-visible:ring-0 dark:focus-visible:ring-offset-0">
-          <p>{fileName}</p>
+          <span>{fileName}</span>
           <button onClick={handleRemoveClick} aria-label="Remove image">
             <Trash2 size={16} />
           </button>

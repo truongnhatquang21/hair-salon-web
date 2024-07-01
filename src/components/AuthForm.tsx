@@ -1,3 +1,5 @@
+/* eslint-disable react/jsx-pascal-case */
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,9 +12,11 @@ import { z } from "zod";
 
 import {
   type AuthType,
+  signInAPI,
   signUpCustomerAPI,
   signUpManagerAPI,
 } from "@/apiCallers/auth";
+import type { CredentialsArgument } from "@/apiCallers/login";
 import { Icons } from "@/components/icons";
 import type { ResponseType } from "@/lib/error";
 import { cn } from "@/lib/utils";
@@ -60,7 +64,6 @@ export function UserAuthForm({
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-    reset,
   } = useForm<SignUpSchemaType & SignInSchemaType>({
     resolver: zodResolver(type === "sign-up" ? SignUpSchema : SignInSchema),
     defaultValues: {},
@@ -141,6 +144,51 @@ export function UserAuthForm({
       });
     },
   });
+
+  const { mutateAsync: signInMutate } = useMutation({
+    mutationFn: async (data: CredentialsArgument) => {
+      return signInAPI(data);
+    },
+
+    onSuccess: async (data: ResponseType) => {
+      console.log(data);
+      if (!data.ok) {
+        if (data.error) {
+          const errs = data.error as { [key: string]: { message: string } };
+          Object.entries(errs).forEach(([key, value]) => {
+            setError(key as keyof SignInSchemaType, {
+              type: "manual",
+              message: value.message,
+            });
+          });
+        }
+        toast({
+          variant: "destructive",
+          title: "Uh oh! Something went wrong.",
+          description: data.message || data.statusText,
+        });
+        throw new Error(data.message || data.statusText);
+      }
+      if (data.message) {
+        return toast({
+          variant: "default",
+          className: "bg-green-600 text-white",
+          title: "Message from system",
+          description: data.message,
+        });
+      }
+      if (data) {
+        toast({
+          variant: "default",
+          title: "Login successfully",
+          description: "You can do something else now",
+        });
+      }
+      // const data2 = getValues();
+
+      return true;
+    },
+  });
   const onSubmit: SubmitHandler<SignUpSchemaType & SignInSchemaType> = async (
     data
   ) => {
@@ -162,23 +210,17 @@ export function UserAuthForm({
         router.push("auth/sign-in");
       }
       if (type === "sign-in") {
-        await SignInServer(data).then(
-          (
-            res:
-              | { error: string; success?: undefined }
-              | { success: string; error?: undefined }
-          ) => {
-            if (res?.error) {
-              reset();
-              // setError(data?.error);
-            }
+        const rest = await signInMutate({
+          email: data.email,
+          password: data.password,
+        });
 
-            if (res?.success) {
-              reset();
-              // setSuccess(data?.success);
-            }
-          }
-        );
+        if (rest.data.accessToken) {
+          await SignInServer({
+            email: rest.data.accessToken,
+            password: rest.data.refreshToken,
+          });
+        }
       }
     } catch (err) {
       console.log(err, "cath error");

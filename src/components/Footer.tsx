@@ -273,9 +273,9 @@ const Footer = () => {
           </div>
         </div>
         <div className="justify-centermt-16 flex border-t border-gray-900/10 pt-8 sm:mt-20 lg:mt-24">
-          <p className="mx-auto text-xs leading-5 text-gray-500">
+          <span className="mx-auto text-xs leading-5 text-gray-500">
             &copy; 2024 Bookminton , Inc. All rights reserved.
-          </p>
+          </span>
         </div>
       </div>
     </footer>

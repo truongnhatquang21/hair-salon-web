@@ -69,13 +69,13 @@ export function AccountAutoForm() {
       {/*
       All children passed to the form will be rendered below the form.
       */}
-      <p className="text-sm text-gray-500">
+      <span className="text-sm text-gray-500">
         By submitting this form, you agree to our
         <Button variant="link" className="text-primary underline">
           terms and conditions
         </Button>
         .
-      </p>
+      </span>
     </AutoForm>
   );
 }

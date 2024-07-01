@@ -8,9 +8,9 @@ const HistoryPage = () => {
     <div className="flex flex-col gap-4">
       <div>
         <h3 className="text-lg font-medium">Balance History</h3>
-        <p className="text-sm text-muted-foreground">
+        <span className="text-sm text-muted-foreground">
           view balance history of your account
-        </p>
+        </span>
       </div>
       <Separator />
       <TransactionList />

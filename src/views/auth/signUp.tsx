@@ -41,12 +41,12 @@ const SignUp = () => {
             <h1 className="text-2xl font-semibold tracking-tight">
               Create an account
             </h1>
-            <p className="text-sm text-muted-foreground">
+            <span className="text-sm text-muted-foreground">
               Complete our form below to create your account
-            </p>
+            </span>
           </div>
           <UserAuthForm type="sign-up" role={role} />
-          <p className="px-8 text-center text-sm text-muted-foreground">
+          <span className="px-8 text-center text-sm text-muted-foreground">
             By clicking continue, you agree to our{" "}
             <Link
               href="/terms"
@@ -62,7 +62,7 @@ const SignUp = () => {
               Privacy Policy
             </Link>
             .
-          </p>
+          </span>
         </div>
       </div>
     </div>

@@ -4,7 +4,7 @@ import { AuthError } from "next-auth";
 import type { z } from "zod";
 
 import { signIn, signOut } from "@/auth";
-import { LoginSchema } from "@/validations";
+import type { LoginSchema } from "@/validations";
 
 // ...
 
@@ -32,19 +32,10 @@ export const SignInServer = async (
   values: z.infer<typeof LoginSchema>,
   callbackUrl?: string | "/sign-in"
 ) => {
-  const validatedFields = LoginSchema.safeParse(values);
-
-  if (!validatedFields.success) {
-    return { error: "Invalid fields!" };
-  }
-
-  const { email, password } = validatedFields.data;
-  console.log("email", email, "password", password, "callbackUrl", callbackUrl);
-
   try {
     await signIn("credentials", {
-      email,
-      password,
+      email: values.email,
+      password: values.password,
       redirectTo: callbackUrl || "/",
     });
 

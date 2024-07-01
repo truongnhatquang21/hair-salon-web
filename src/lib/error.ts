@@ -8,6 +8,8 @@ export type ResponseType<T = any> = {
 };
 
 export const responseMapping = (response: any): ResponseType => {
+  // console.log("line 11: ", response);
+
   const result: { [key: string]: any } = {};
   if (response.message) {
     result.message = response.message;
@@ -28,5 +30,6 @@ export const responseMapping = (response: any): ResponseType => {
   if (response.data) {
     result.data = response.data;
   }
+
   return result;
 };

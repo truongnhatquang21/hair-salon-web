@@ -1,8 +1,9 @@
 /* eslint-disable no-param-reassign */
-import NextAuth, { AuthError, type User } from "next-auth";
+
+import NextAuth, { type User } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 
-import { getProfileApi, signIngApi } from "./apiCallers/login";
+import { getProfileApi } from "./apiCallers/login";
 
 // Your own logic for dealing with plaintext password strings; be careful!
 // import { saltAndHashPassword } from "@/utils/password";
@@ -20,39 +21,25 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       credentials: {
         email: {},
         password: {},
+        // accessToken: "" || {},
+        // refreshToken: "" || {},
       },
 
-      async authorize(credentials): Promise<User | null> {
-        console.log("line 13dsafnsda,: ", credentials);
-
+      async authorize(credentials) {
         if (credentials === null) return null;
 
-        try {
-          const account = await signIngApi(credentials);
-          console.log(account);
-          if (account) {
-            const profile = await getProfileApi(account.accessToken);
-            return {
-              name: profile.username,
-              email: profile.user.email,
-              accessToken: account.accessToken,
-              refreshToken: account.refreshToken,
-              message: account.message,
-            } as ExtendedUser;
-          }
-          throw new Error("User not found");
-        } catch (error) {
-          if (error instanceof AuthError) {
-            switch (error.type) {
-              case "CredentialsSignin":
-                return { error: "Invalid credentials!" };
-              default:
-                return { error: "Something went wrong!" };
-            }
-          }
+        const profile = await getProfileApi(credentials.email as string);
 
-          throw error;
+        if (profile === undefined) {
+          throw new Error("Email or Password is not correct");
         }
+
+        return {
+          name: profile.data.username,
+          email: profile.data.email,
+          accessToken: credentials.email,
+          refreshToken: credentials.password,
+        } as ExtendedUser;
       },
     }),
   ],
