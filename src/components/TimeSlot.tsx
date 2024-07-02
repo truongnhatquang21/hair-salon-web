@@ -21,7 +21,7 @@ export const TimeSlot = ({
   endSlot: string | null;
   selectedSlots: string[] | null;
   setEndSlot: Dispatch<SetStateAction<null>>;
-  setSelectedSlots: Dispatch<SetStateAction<string[]>>;
+  setSelectedSlots: Dispatch<SetStateAction<[]>>;
 }) => {
   const [date, setDate] = useState(new Date());
 
