@@ -1,5 +1,6 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import {
   BadgePlus,
   Clock,
@@ -10,9 +11,21 @@ import {
   PlayCircle,
   Wallet,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import React, { useMemo } from "react";
 
+import { getProfileAPI } from "@/apiCallers/auth";
+import { getCourtListAPI } from "@/apiCallers/courts";
 import Stepper from "@/components/stepper";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import type { Steppers } from "@/hooks/useStepper";
 import useStepper from "@/hooks/useStepper";
 
@@ -157,12 +170,76 @@ export const CreateView = () => {
         );
     }
   }, [activeStep]);
+  const { data: profileData } = useQuery({
+    queryKey: ["myProfile"],
+    queryFn: async () => getProfileAPI(),
+  });
+
+  const { data: courtsData } = useQuery({
+    queryKey: ["courts"],
+    queryFn: async () => getCourtListAPI(),
+  });
+  const availableCourts = useMemo(() => {
+    if (!profileData?.data?.maxCourt) {
+      return 0;
+    }
+    if (profileData.data.maxCourt) {
+      return (
+        profileData.data.maxCourt - (courtsData?.data?.length as number) || 0
+      );
+    }
+    return 0;
+  }, [profileData?.data?.maxCourt, courtsData?.data?.length]);
+
+  const router = useRouter();
   return (
     <div className="relative flex size-full flex-col  gap-2  overflow-auto">
       <Stepper steppers={steppers} activeStep={activeStep} />
       <div className="relative w-[600px] flex-1  self-center overflow-auto rounded-lg xl:w-[800px]  ">
         {Silde}
       </div>
+      <AlertDialog open={availableCourts === 0}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Availability of your account reminder
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {availableCourts > 0 ? (
+                <span className="">
+                  You have{" "}
+                  <span className="text-2xl font-bold text-black">
+                    {availableCourts}
+                  </span>{" "}
+                  available to create, please click continue to create a new
+                  court. If you have any issue please contact support.
+                  Otherwise, if you want to create more courts, please upgrade
+                  your plan.
+                </span>
+              ) : (
+                <span className="">
+                  You have reached{" "}
+                  <span className="text-xl font-bold text-black">
+                    the maximum number of courts
+                  </span>{" "}
+                  you can create. If you want to create more courts, please
+                  upgrade your plan. Please contact support for more
+                  information.
+                </span>
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction
+              onClick={() => {
+                router.push("/dashboard/branches");
+              }}
+            >
+              Go back
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

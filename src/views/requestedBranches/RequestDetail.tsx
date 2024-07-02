@@ -34,6 +34,7 @@ import { detailsFormSchema } from "../branches/create/slide/BranchDetails";
 import { amountFormSchema } from "../branches/create/slide/CourAvailability";
 import { PeriodTimeFieldType } from "../branches/create/slide/PeriodTimeField";
 import SlotDialog from "../branches/SlotDialog";
+import { BranchStatusEnum } from "@/types";
 
 export const workingTimeFormSchemaAdminRequest = z.object({
   availableTime: z.coerce.string({
@@ -163,69 +164,79 @@ const RequestDetail = ({ branchId }: Props) => {
             <div className="mr-auto flex items-center gap-2 text-2xl font-semibold">
               Review request
               <span className="text-xl font-semibold">{branch?.name}</span>
-              <Badge variant="default">{branch?.status}</Badge>
+              <Badge variant="default" className="bg-green-500">
+                {branch?.status}
+              </Badge>
               <span className="text-xs text-gray-400" />
             </div>
-            <AlertDialog open={rejectDialog} onOpenChange={setRejectDialog}>
-              <AlertDialogTrigger>
-                <Button
-                  className="flex items-center gap-2 opacity-50 hover:opacity-100 "
-                  variant="destructive"
-                >
-                  <X /> Reject request
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Please read request and confirm that you will reject this
-                    request, this action cannot be undone.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <Button
-                    onClick={() => handleRequest(false)}
-                    disabled={isPending}
-                    variant="destructive"
-                    className="flex w-40 items-center justify-center"
-                  >
-                    {isPending ? <SpinnerIcon /> : "Reject"}
-                  </Button>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-            <AlertDialog open={acceptDialog} onOpenChange={setAcceptDialog}>
-              <AlertDialogTrigger>
-                <Button
-                  className="flex items-center gap-2  opacity-50 hover:opacity-100"
-                  variant="default"
-                >
-                  <CheckCheck /> Accept request
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Please read request and confirm that you will accept this
-                    request, this action cannot be undone.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <Button
-                    onClick={() => handleRequest(true)}
-                    disabled={isPending}
-                    variant="default"
-                    className="flex w-40 items-center justify-center"
-                  >
-                    {isPending ? <SpinnerIcon /> : "Accept"}
-                  </Button>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+            {branch.status === BranchStatusEnum.PENDING && (
+              <>
+                <AlertDialog open={rejectDialog} onOpenChange={setRejectDialog}>
+                  <AlertDialogTrigger>
+                    <Button
+                      className="flex items-center gap-2 opacity-50 hover:opacity-100 "
+                      variant="destructive"
+                    >
+                      <X /> Reject request
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        Are you absolutely sure?
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Please read request and confirm that you will reject
+                        this request, this action cannot be undone.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <Button
+                        onClick={() => handleRequest(false)}
+                        disabled={isPending}
+                        variant="destructive"
+                        className="flex w-40 items-center justify-center"
+                      >
+                        {isPending ? <SpinnerIcon /> : "Reject"}
+                      </Button>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+                <AlertDialog open={acceptDialog} onOpenChange={setAcceptDialog}>
+                  <AlertDialogTrigger>
+                    <Button
+                      className="flex items-center gap-2  opacity-50 hover:opacity-100"
+                      variant="default"
+                    >
+                      <CheckCheck /> Accept request
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        Are you absolutely sure?
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Please read request and confirm that you will accept
+                        this request, this action cannot be undone.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <Button
+                        onClick={() => handleRequest(true)}
+                        disabled={isPending}
+                        variant="default"
+                        className="flex w-40 items-center justify-center"
+                      >
+                        {isPending ? <SpinnerIcon /> : "Accept"}
+                      </Button>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </>
+            )}
           </div>
           <div className="w-full flex-1 ">
             <div className=" relative  mx-auto  w-[600px] lg:w-[800px]">

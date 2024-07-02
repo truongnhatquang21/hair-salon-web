@@ -58,6 +58,7 @@ export const getProfileApi = async (accessToken: string) => {
       "Content-Type": "application/json",
       Authorization: `Bearer ${accessToken}`,
     },
+    cache: "no-cache",
   });
   const result = await response.json();
   const transformedResult = responseMapping(result);

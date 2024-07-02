@@ -7,9 +7,6 @@ import { sampleData } from "@/views/requestedBranches/helper";
 
 import { fetcher } from "..";
 
-export const getBranchListAPI = async (sampleData?: any) => {
-  // return fetcher("package-court")
-  return fetcher("branch");
 export type BranchType = {
   _id: string;
   name: string;
@@ -76,4 +73,4 @@ export const handleRequestBranchAPI = async (data: {
     method: "POST",
     body: JSON.stringify(data),
   });
-}
+};

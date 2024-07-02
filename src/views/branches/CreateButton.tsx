@@ -42,6 +42,7 @@ const CreateButton = () => {
   }, [profileData?.data?.maxCourt, courtsData?.data?.length]);
 
   const router = useRouter();
+  console.log(profileData, "profileData");
 
   return (
     <AlertDialog>
