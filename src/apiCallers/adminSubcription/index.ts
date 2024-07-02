@@ -8,7 +8,11 @@ import {
 import { fetcher } from "..";
 
 export const getSubscriptionListAPI = async () => {
-  return fetcher("package-court");
+  return fetcher<PackageCourtSchemaTypeWithId[]>("package-court");
+};
+
+export const getSubscriptionByIdAPI = async (id: string) => {
+  return fetcher<PackageCourtSchemaTypeWithId>(`package-court/${id}`);
 };
 
 export const postSubscriptionListAPI = async (data: PackageCourtSchemaType) => {
@@ -20,7 +24,7 @@ export const postSubscriptionListAPI = async (data: PackageCourtSchemaType) => {
 export const putSubscriptionListAPI = async (
   data: PackageCourtSchemaTypeWithId
 ) => {
-  console.log(data);
+  console.log("updateSubscriptionListAPI", data);
 
   return fetcher(`package-court/${data._id}`, {
     body: JSON.stringify(data),

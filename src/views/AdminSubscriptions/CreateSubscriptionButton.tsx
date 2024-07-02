@@ -1,8 +1,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { PlusCircleIcon } from "lucide-react";
-import React, { useEffect } from "react";
-import type { SubmitHandler, SubmitHandler } from "react-hook-form";
+import React from "react";
+import type { SubmitHandler } from "react-hook-form";
 import { useForm } from "react-hook-form";
 
 import {
@@ -29,7 +29,6 @@ import { PackageCourtTypeEnum } from "@/types";
 import type {
   PackageCourtSchemaType,
   PackageCourtSchemaTypeWithId,
-  PackageCourtSchemaTypeWithId,
 } from "./helper";
 import { createPackageCourtSchema, PackageEnum } from "./helper";
 
@@ -53,13 +52,15 @@ const CreateSubscriptionButton = ({
     },
     resolver: zodResolver(createPackageCourtSchema),
     shouldFocusError: true,
+    mode: "onChange",
   });
   const { setError } = form;
 
   const { mutateAsync: createSubscriptionMutating, isPending: createMutating } =
     useMutation({
-      mutationFn: async (data: PackageCourtSchemaType) =>
-        postSubscriptionListAPI(data),
+      mutationFn: async (data: PackageCourtSchemaType) => {
+        return postSubscriptionListAPI(data);
+      },
       onSuccess: (data) => {
         console.log(data);
 
@@ -101,12 +102,12 @@ const CreateSubscriptionButton = ({
     });
   const { mutateAsync: editSubscriptionMutating, isPending: editMutating } =
     useMutation({
-      mutationFn: async (data: PackageCourtSchemaTypeWithId) =>
-        putSubscriptionListAPI(data),
-      onSuccess: (data) => {
+      mutationFn: async (data: PackageCourtSchemaTypeWithId) => {
         console.log(data);
-
-        if (data.ok && !data.ok) {
+        return putSubscriptionListAPI(data);
+      },
+      onSuccess: (data) => {
+        if (!data.ok) {
           if (data.error) {
             const errs = data.error as { [key: string]: { message: string } };
             Object.entries(errs).forEach(([key, value]) => {
@@ -151,23 +152,25 @@ const CreateSubscriptionButton = ({
           ...values,
           _id: defaultValues?._id,
         };
+        console.log(prepareData, "odsao");
+
         await editSubscriptionMutating(prepareData);
       } else {
         await createSubscriptionMutating(values);
       }
       queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
       setIsDialogOpen(false);
-      if (onClose) onClose();
+      // if (onClose) onClose();
     } catch (e) {
       console.log(e);
     }
   };
-
-  useEffect(() => {
-    if (form.watch("type") === PackageEnum.Custom) {
-      form.setValue("duration", 1);
-    }
-  }, [form.watch("type")]);
+  // const typePackage = form.watch("type");
+  // useEffect(() => {
+  //   if (typePackage === PackageCourtTypeEnum.CUSTOM) {
+  //     form.setValue("duration", 1);
+  //   }
+  // }, [typePackage]);
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger asChild>
@@ -191,8 +194,8 @@ const CreateSubscriptionButton = ({
         </DialogHeader>
         <div className="w-full flex-1 overflow-auto p-2">
           <AutoForm
-            formControl={form}
-            values={defaultValues}
+            controlForm={form}
+            values={defaultValues || form.getValues()}
             onSubmit={onSubmit}
             formSchema={createPackageCourtSchema}
             dependencies={[
@@ -217,13 +220,13 @@ const CreateSubscriptionButton = ({
                 targetField: "maxCourt",
                 when: (type: PackageEnum) => type !== PackageEnum.Standard,
               },
-              {
-                // "age" hides "parentsAllowed" when the age is 18 or older
-                sourceField: "type",
-                type: DependencyType.DISABLES,
-                targetField: "duration",
-                when: (type: PackageEnum) => type === PackageEnum.Custom,
-              },
+              // {
+              //   // "age" hides "parentsAllowed" when the age is 18 or older
+              //   sourceField: "type",
+              //   type: DependencyType.DISABLES,
+              //   targetField: "duration",
+              //   when: (type: PackageEnum) => type === PackageEnum.Custom,
+              // },
             ]}
             fieldConfig={{
               name: {
@@ -257,7 +260,7 @@ const CreateSubscriptionButton = ({
                   placeholder: "--",
                   defaultValue: 1,
                 },
-                description: "Duration of the package, e.g. '2'",
+                description: "Duration of the package, e.g. '1'",
               },
               description: {
                 inputProps: {
@@ -270,7 +273,8 @@ const CreateSubscriptionButton = ({
               type: {
                 inputProps: {
                   placeholder: "Select type of package",
-                  value: defaultValues?.type,
+                  value: form.watch("type"),
+                  disabled: isEdit,
                 },
 
                 fieldType: SelectFieldTypeWrapWithEnum(

@@ -31,10 +31,6 @@ export const PeriodTimeFieldType = ({
       );
     }
   }, [startDate, endDate]);
-  console.log(
-    fieldConfigItem.inputProps?.value,
-    "fieldConfigItem.inputProps?.value"
-  );
 
   return (
     <div className="flex w-full flex-col gap-2 ">

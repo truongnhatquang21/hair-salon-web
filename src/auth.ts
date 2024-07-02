@@ -33,6 +33,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (profile === undefined) {
           throw new Error("Email or Password is not correct");
         }
+        console.log(profile, "profile");
 
         return {
           name: profile.data.username,
