@@ -10,7 +10,7 @@ export const getBaseUrl = () => {
   return "http://localhost:3000";
 };
 
-export function getThu(date: Date): string {
+export function getThu(date: Date | undefined): string {
   const day = date?.getDay();
 
   let thu: string;

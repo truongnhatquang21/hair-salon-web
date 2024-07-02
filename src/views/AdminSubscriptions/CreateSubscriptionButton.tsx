@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { PlusCircleIcon } from "lucide-react";
 import React, { useEffect } from "react";
-import type { SubmitHandler, SubmitHandler } from "react-hook-form";
+import type { SubmitHandler } from "react-hook-form";
 import { useForm } from "react-hook-form";
 
 import {
@@ -28,7 +28,6 @@ import { PackageCourtTypeEnum } from "@/types";
 
 import type {
   PackageCourtSchemaType,
-  PackageCourtSchemaTypeWithId,
   PackageCourtSchemaTypeWithId,
 } from "./helper";
 import { createPackageCourtSchema, PackageEnum } from "./helper";

@@ -26,7 +26,7 @@ export const TimeSlot = ({
   const [date, setDate] = useState(new Date());
 
   const timeSlots = useMemo(() => {
-    const slots = [] as string[];
+    const slots = [] as any[];
     // const timeSlotData = [
     //   {
     //     _id: "66819bee99b486f35b652aa6",
@@ -64,21 +64,6 @@ export const TimeSlot = ({
     // ];
     if (timeSlotData.length !== 0) {
       for (const slot of timeSlotData) {
-        // const startTime = new Date(
-        //   date.getFullYear(),
-        //   date.getMonth(),
-        //   date.getDate(),
-        //   hour,
-        //   minute
-        // );
-        // const endTime = new Date(
-        //   date.getFullYear(),
-        //   date.getMonth(),
-        //   date.getDate(),
-        //   hour + 1,
-        //   minute
-        // );
-
         const startTime = new Date(
           date.getFullYear(),
           date.getMonth(),
@@ -99,7 +84,11 @@ export const TimeSlot = ({
         const endTimeString = endTime
           .toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
           .replace(/^0/, "");
-        slots.push(`${startTimeString} - ${endTimeString}`);
+
+        slots.push({
+          ...slot,
+          timeDisplay: `${startTimeString} - ${endTimeString}`,
+        });
       }
       return slots;
     }
@@ -146,10 +135,10 @@ export const TimeSlot = ({
           {timeSlots.length !== 0 ? (
             timeSlots.map((slot) => (
               <Button
-                key={slot}
+                key={slot.timeDisplay}
                 variant={
                   selectedSlots.includes(slot)
-                    ? "solid"
+                    ? "default"
                     : startSlot === slot ||
                         (startSlot &&
                           endSlot &&
@@ -187,18 +176,12 @@ export const TimeSlot = ({
                 }`}
                 onClick={() => toggleSlot(slot)}
               >
-                {slot}
+                {slot.timeDisplay}
               </Button>
             ))
           ) : (
             <div>empty</div>
           )}
-        </div>
-
-        <div className="mt-6 flex justify-end">
-          <Button variant="default" className="rounded-md px-6 py-2">
-            Book Selected Slots
-          </Button>
         </div>
       </div>
     </div>
