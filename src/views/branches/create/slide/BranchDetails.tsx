@@ -140,6 +140,7 @@ const BranchDetails = ({ goBackfn, steppers, stepIndex, goNextFn }: Props) => {
               inputProps: {
                 placeholder: "Description",
               },
+              fieldType: "textarea",
               description: "Description of your branch",
             },
             // availableTime: {

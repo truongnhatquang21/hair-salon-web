@@ -297,6 +297,16 @@ const CourRegistration = ({
                     images: {
                       fieldType: FieldType,
                     },
+                    status: {
+                      inputProps: {
+                        readOnly: true,
+                        disabled: true,
+                        defaultValue: CourtStatusEnum.PENDING,
+                      },
+                    },
+                    description: {
+                      fieldType: "textarea",
+                    },
                   }}
                 >
                   <DialogFooter className="w-full">

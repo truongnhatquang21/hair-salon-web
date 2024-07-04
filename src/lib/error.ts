@@ -7,9 +7,7 @@ export type ResponseType<T = any> = {
   statusText?: string;
 };
 
-export const responseMapping = (response: any): ResponseType => {
-  // console.log("line 11: ", response);
-
+export const responseMapping = <T>(response: any): ResponseType<T> => {
   const result: { [key: string]: any } = {};
   if (response.message) {
     result.message = response.message;
@@ -28,7 +26,7 @@ export const responseMapping = (response: any): ResponseType => {
     result.statusText = response.status;
   }
   if (response.data) {
-    result.data = response.data;
+    result.data = response.data as T;
   }
 
   return result;

@@ -84,6 +84,7 @@ function AutoForm<
   }
 
   const values = form.watch();
+
   // valuesString is needed because form.watch() returns a new object every time
   const valuesString = JSON.stringify(values);
 

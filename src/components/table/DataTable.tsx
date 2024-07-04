@@ -99,7 +99,9 @@ export function DataTable<TData, TValue>({
         />
         <DataTableViewOptions table={table} />
         {canCreate &&
-          (CreateButton || (
+          (CreateButton ? (
+            <div className="ml-auto">{CreateButton}</div>
+          ) : (
             <Button
               className="ml-auto flex items-center gap-2"
               onClick={() => {

@@ -43,6 +43,7 @@ export enum BranchStatusEnum {
   PENDING = "Pending",
   ACTIVE = "Active",
   INACTIVE = "Inactive",
+  DENIED = "Denied",
 }
 
 export enum CourtStatusEnum {

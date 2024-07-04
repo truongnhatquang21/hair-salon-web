@@ -17,7 +17,7 @@ import defaultFile from "@/public/assets/images/fileIcon.png";
 import { useBranchStepStore } from "@/stores/createBranchStore";
 import CourtDialog from "@/views/courts/CourtDialog";
 
-import type { BranchTypeInCreate } from "../../helper";
+import type { BranchSchemaType, BranchTypeInCreate } from "../../helper";
 import SlotDialog from "../../SlotDialog";
 import type { SlotSchemaType } from "./AvailableSlot";
 import { detailsFormSchema } from "./BranchDetails";
@@ -35,7 +35,7 @@ type Props = {
 
 const Confirmation = ({ goBackfn, goNextFn, steppers, stepIndex }: Props) => {
   const steps = useBranchStepStore((state) => state.stepStore);
-  const toast = useToast();
+  const { toast } = useToast();
   const weekdays = [
     "Monday",
     "Tuesday",
@@ -89,6 +89,7 @@ const Confirmation = ({ goBackfn, goNextFn, steppers, stepIndex }: Props) => {
         return uploadImagesAPI(formData);
       },
     });
+
   const { isPending: isUploadLicense, mutateAsync: triggerUploadLicense } =
     useMutation({
       mutationFn: async (files: File[]) => {
@@ -103,12 +104,156 @@ const Confirmation = ({ goBackfn, goNextFn, steppers, stepIndex }: Props) => {
 
   const { isPending: isPostBranch, mutateAsync: triggerPostBranch } =
     useMutation({
-      mutationFn: async (data: any) => {
+      mutationFn: async (data: BranchSchemaType) => {
+        console.log(data, "data");
         return postBranchListAPI(data);
+      },
+      onSuccess: (data) => {
+        console.log(data, "data");
+        if (!data.ok) {
+          if (data.error) {
+            //   const errs = data.error as { [key: string]: { message: string } };
+            //   Object.entries(errs).forEach(([key, value]) => {
+            //     setError(key as keyof PackageCourtSchemaType, {
+            //       type: "manual",
+            //       message: value.message,
+            //     });
+            //   });
+            // }
+
+            toast({
+              variant: "destructive",
+              title: "Uh oh! Something went wrong.",
+              description: data.message || data.statusText,
+            });
+
+            throw new Error(data.message || data.statusText);
+          }
+
+          if (data.message) {
+            return toast({
+              variant: "default",
+              className: "bg-green-600 text-white",
+              title: "Message from system",
+              description: data.message,
+            });
+          }
+
+          return toast({
+            variant: "default",
+            title: "Submitted successfully",
+            description: "You can do something else now",
+          });
+        }
+      },
+      onError: (error) => {
+        console.error("Error while posting branch", error);
+        toast({
+          variant: "destructive",
+          title: "Uh oh! Something went wrong.",
+          description: "Error while posting branch",
+        });
       },
     });
 
   const router = useRouter();
+  // const cloneSteps = useMemo(() => {
+  //   const stepsClone: StoreStep[] = JSON.parse(JSON.stringify(steps));
+  //   const prepaeData: BranchTypeInCreate = stepsClone.reduce((acc, item) => {
+  //     return { ...acc, ...item.data };
+  //   }, {} as BranchTypeInCreate);
+  //   prepaeData.courts = prepaeData.courts.map((court) => {
+  //     return {
+  //       ...court,
+  //       images: court.images.map((image) => {
+  //         return URL.createObjectURL(image as File);
+  //       }),
+  //     };
+  //   });
+  //   prepaeData.images = prepaeData.images.map((image) => {
+  //     return URL.createObjectURL(image as File);
+  //   });
+  //   prepaeData.licenses = prepaeData.licenses.map((license) => {
+  //     return URL.createObjectURL(license as File);
+  //   });
+  //   return prepaeData;
+  // }, [steps]);
+
+  // useEffect(() => {
+  //   return () => {
+  //     for (const court of cloneSteps.courts) {
+  //       URL.revokeObjectURL(court.images[0]);
+  //     }
+  //     for (const image of cloneSteps.images) {
+  //       URL.revokeObjectURL(image);
+  //     }
+  //     for (const license of cloneSteps.licenses) {
+  //       URL.revokeObjectURL(license);
+  //     }
+  //   };
+  // });
+  // console.log(cloneSteps, "cloneSteps");
+
+  const handleCreateBranch = async () => {
+    // const stepsClone: StoreStep[] = JSON.parse(JSON.stringify(steps));
+    const prepaeData: BranchTypeInCreate = steps.reduce((acc, item) => {
+      return { ...acc, ...item.data };
+    }, {} as BranchTypeInCreate);
+
+    for (const court of prepaeData.courts) {
+      console.log(court.images, "court");
+
+      await triggerUploadImages(court.images)
+        .then((res) => {
+          court.images = res.data;
+        })
+        .catch((error) => {
+          console.log("error", error);
+
+          return toast({
+            title: "Error",
+            description: "Error while uploading images",
+            variant: "destructive",
+          });
+        });
+    }
+    console.log(prepaeData, "prepaeData");
+    await Promise.all([
+      triggerUploadImages(prepaeData.images),
+      triggerUploadLicense(prepaeData.licenses),
+    ])
+      .then((res) => {
+        prepaeData.images = res[0].data;
+        prepaeData.licenses = res[1].data;
+      })
+      .catch(() => {
+        return toast({
+          title: "Error",
+          description: "Error while uploading images",
+          variant: "destructive",
+        });
+      });
+    // console.log(prepaeData, "prepaeData");
+    // const sendData = JSON.stringify(prepaeData);
+    await triggerPostBranch(prepaeData)
+      .then(() => {
+        toast({
+          title: "Success",
+          description: "Branch sent to review successfully",
+          className: "bg-green-600 text-white",
+        });
+        router.push("/dashboard/branches");
+      })
+      .catch((error) => {
+        console.log("error", error);
+
+        return toast({
+          title: "Error",
+          description: "Error while sending branch to review",
+          variant: "destructive",
+        });
+      });
+  };
 
   return (
     <div className="flex size-full flex-col gap-4">
@@ -201,14 +346,14 @@ const Confirmation = ({ goBackfn, goNextFn, steppers, stepIndex }: Props) => {
                   key={image.name}
                 >
                   <a
-                    href={URL.createObjectURL(image)}
+                    href={image.preview}
                     download
                     className="flex size-full items-center justify-center"
                   >
                     <Image
                       width={40}
                       height={40}
-                      src={URL.createObjectURL(image)}
+                      src={image.preview}
                       alt="image"
                       className="h-40 w-full object-contain"
                     />
@@ -224,7 +369,7 @@ const Confirmation = ({ goBackfn, goNextFn, steppers, stepIndex }: Props) => {
                 <a
                   key={license.name}
                   className="w-full "
-                  href={URL.createObjectURL(license)}
+                  href={license.preview}
                   download
                 >
                   <div className="flex w-full cursor-pointer items-center gap-2 rounded-md bg-gray-50 p-2 transition-all duration-200 ease-in hover:bg-accent">
@@ -252,7 +397,7 @@ const Confirmation = ({ goBackfn, goNextFn, steppers, stepIndex }: Props) => {
                         width={20}
                         height={20}
                         alt="defaultBadminton"
-                        src={URL.createObjectURL(item.images[0])}
+                        src={item.images[0].preview}
                         className="size-20 rounded-md object-cover shadow-md"
                       />
                       <div className="flex flex-1 flex-col gap-1 ">
@@ -351,45 +496,7 @@ const Confirmation = ({ goBackfn, goNextFn, steppers, stepIndex }: Props) => {
         disabled={isPostBranch || isUploadImage || isUploadLicense}
         type="submit"
         className="flex h-72 w-full select-none items-center justify-center gap-2 px-4"
-        onClick={async () => {
-          const prepaeData: BranchTypeInCreate = steps.reduce((acc, item) => {
-            return { ...acc, ...item.data };
-          }, {} as BranchTypeInCreate);
-          console.log(prepaeData, "ODAOSF");
-          console.log("license", prepaeData.licenses);
-
-          await Promise.all([
-            triggerUploadImages(prepaeData.images),
-            triggerUploadLicense(prepaeData.licenses),
-          ])
-            .then((res) => {
-              prepaeData.images = res[0].data;
-              prepaeData.licenses = res[1].data;
-            })
-            .catch(() => {
-              toast.toast({
-                title: "Error",
-                description: "Error while uploading images",
-                variant: "destructive",
-              });
-            });
-          await triggerPostBranch(prepaeData)
-            .then(() => {
-              toast.toast({
-                title: "Success",
-                description: "Branch sent to review successfully",
-                className: "bg-green-600 text-white",
-              });
-              router.push("/dashboard/branches");
-            })
-            .catch(() => {
-              toast.toast({
-                title: "Error",
-                description: "Error while sending branch to review",
-                variant: "destructive",
-              });
-            });
-        }}
+        onClick={handleCreateBranch}
       >
         {isPostBranch || isUploadImage || isUploadLicense ? (
           <SpinnerIcon />
