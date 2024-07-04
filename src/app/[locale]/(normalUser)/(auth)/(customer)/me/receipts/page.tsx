@@ -1,18 +1,22 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import React from "react";
+import React, { useState } from "react";
 
-import { getMyBookingReceipt } from "@/apiCallers/customerBooking";
+import { getMyBookingReceiptByStatus } from "@/apiCallers/customerBooking";
 import BookingReceipt from "@/components/CustomerBooking/BookingReceipts";
+import StatusFilter from "@/components/CustomerBooking/StatusFilter";
 import { EmptyComponent } from "@/components/Empty";
 
 type Props = {};
 
 const Receipt: React.FC<Props> = () => {
+  const [status, setStatus] = useState("All");
+
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["bookingReceipts"],
-    queryFn: async () => getMyBookingReceipt(),
+    queryKey: ["bookingReceipts", status],
+    queryFn: async () =>
+      getMyBookingReceiptByStatus(status === "All" ? "" : status),
   });
 
   const bookings = data?.data ?? [];
@@ -28,6 +32,9 @@ const Receipt: React.FC<Props> = () => {
 
   return (
     <div>
+      <div className="my-4 flex justify-end">
+        <StatusFilter currentStatus={status} onStatusChange={setStatus} />
+      </div>
       {bookings?.length > 0 ? (
         <BookingReceipt bookings={bookings} />
       ) : (

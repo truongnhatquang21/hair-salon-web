@@ -20,6 +20,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { signOutServer } from "@/utils/serverActions";
 
 export function UserNav() {
   return (
@@ -68,7 +69,12 @@ export function UserNav() {
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="hover:cursor-pointer" onClick={() => {}}>
+        <DropdownMenuItem
+          className="hover:cursor-pointer"
+          onClick={() => {
+            signOutServer();
+          }}
+        >
           <LogOut className="mr-3 size-4 text-muted-foreground" />
           Sign out
         </DropdownMenuItem>
