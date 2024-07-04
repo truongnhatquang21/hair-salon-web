@@ -1,3 +1,5 @@
+/* eslint-disable no-param-reassign */
+
 "use client";
 
 import { createContext, type ReactNode, useContext, useRef } from "react";
@@ -34,7 +36,13 @@ export const bookingStore = (
 ) => {
   return createStore<BookingDataStore>()((set) => ({
     ...initState,
-    setBookingData: (data) => set({ bookingData: { ...data } }),
+    setBookingData: (data) =>
+      set((state) => {
+        state.bookingData.booking = data.booking;
+        state.bookingData.schedule = data.schedule;
+
+        return { ...state };
+      }),
     resetBookingData: () => set(defaultInitState),
   }));
 };

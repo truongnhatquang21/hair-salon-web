@@ -4,7 +4,7 @@
 
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { DollarSignIcon, UsersIcon } from "lucide-react";
+import { UsersIcon } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
@@ -13,10 +13,10 @@ import { getBranchByIdAPI } from "@/apiCallers/Branches";
 import { postBooking } from "@/apiCallers/customerBooking";
 import BranchDetailOverview from "@/components/branchs/BranchDetailOverview";
 import CalendarDaily from "@/components/Custom/DailyCalendar";
+import CustomTag from "@/components/CustomTag";
 import { Icons } from "@/components/icons";
 import { Loading } from "@/components/loading";
 import { TimeSlot } from "@/components/TimeSlot";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -26,7 +26,7 @@ import type { ICourt } from "@/interfaces/court.interface";
 import type { ISchedule } from "@/interfaces/schedule.interface";
 import type { ISlot } from "@/interfaces/slot.interface";
 import { useBookingStore } from "@/stores/bookingStore";
-import { getThu } from "@/utils/Helpers";
+import { calculateTotalPrice, getThu } from "@/utils/Helpers";
 
 const BranchDetailCustomer = ({ slug }: { slug: string }) => {
   const router = useRouter();
@@ -45,7 +45,10 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
     queryKey: ["brachDetail"],
     queryFn: async () => getBranchByIdAPI(slug),
   });
+  console.log("data", data);
 
+  console.log("endSlot", endSlot);
+  console.log("startSlot", startSlot);
   const handleCourtSelection = (court: ICourt) => {
     if (selectedCourt?._id === court._id) {
       setSelectedCourt(null);
@@ -107,19 +110,19 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
           type: "single_schedule",
           paymentType: "haft",
           paymentMethod: "vnpay",
-          totalPrice: 123,
+          totalPrice: calculateTotalPrice(selectedSlots, selectedCourt.price),
           totalHour: selectedSlots.length,
           startDate: format(selectDay.toString(), "yyyy-MM-dd"),
           endDate: format(selectDay.toString(), "yyyy-MM-dd"),
-          court: selectedCourt?._id as string,
+          court: selectedCourt,
         },
         schedule: {
           type: "booking",
           slots: selectedSlots.map((el) => el._id),
           startTime: startSlot.startTime,
-          endTime: endSlot.endTime,
+          endTime: endSlot ? endSlot.endTime : startSlot.endTime,
           date: format(selectDay.toString(), "yyyy-MM-dd"),
-          court: selectedCourt?._id as string,
+          court: selectedCourt,
         },
       });
       router.push("/booking");
@@ -272,12 +275,7 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
                           </div>
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                              <Badge
-                                variant="default"
-                                className="bg-yellow-500 text-white"
-                              >
-                                Pending
-                              </Badge>
+                              <CustomTag status={court.status} />
                             </div>
                             <div
                               className={`flex items-center gap-2 text-sm ${
@@ -300,8 +298,11 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
                                   : "text-gray-500 dark:text-gray-400"
                               }`}
                             >
-                              <DollarSignIcon className="size-4" />
-                              <span>{court.price}/hr</span>
+                              {/* <DollarSignIcon className="size-4" /> */}
+                              <span>
+                                {(court.price / 100).toFixed(2)}
+                                VND/slot
+                              </span>
                             </div>
                             {/* <Button variant="outline" size="sm">
                         Book Now
