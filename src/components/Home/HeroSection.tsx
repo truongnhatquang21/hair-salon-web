@@ -1,7 +1,5 @@
 "use client";
 
-import "@/styles/home.css";
-
 import { MapPin } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -17,11 +15,9 @@ const HeroSection = () => {
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleSearch = () => {
-    router.push({
-      pathname: "/search",
-      query: { keyword: searchQuery },
-    });
+    router.push(`/search?query=${encodeURIComponent(searchQuery)}`);
   };
+
   return (
     <div>
       <div className="relative flex h-[400px] justify-center rounded-lg">

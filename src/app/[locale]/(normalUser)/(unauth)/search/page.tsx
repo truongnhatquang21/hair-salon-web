@@ -1,26 +1,25 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import SearchAllBranch from "@/components/SearchAllBranch/SearchAllBranch";
 
 const SearchPage = () => {
-  const router = useRouter();
+  const searchParams = useSearchParams();
   const [keyword, setKeyword] = useState<string>("");
 
   useEffect(() => {
-    if (router.query && router.query.keyword) {
-      const { keyword } = router.query;
-      if (typeof keyword === "string") {
-        setKeyword(keyword);
-      }
+    // Extract the query parameter from the URL
+    const query = searchParams.get("query");
+    if (query) {
+      setKeyword(query);
     }
-  }, [router.query]);
+  }, [searchParams]);
 
   return (
     <div>
-      <SearchAllBranch />
+      <SearchAllBranch initialKeyword={keyword} />
     </div>
   );
 };

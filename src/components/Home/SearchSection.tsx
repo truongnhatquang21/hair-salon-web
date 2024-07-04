@@ -3,9 +3,9 @@
 import { useMutation } from "@tanstack/react-query";
 import { MapPin } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-import { searchBranchesAPI } from "@/apiCallers/Branches";
+import { searchBranchesAPI } from "@/apiCallers/Branches"; // Import your API call function
 
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -15,18 +15,26 @@ type SearchSectionProps = {
   onSearch: (data: any) => void;
 };
 
-const SearchSection = ({ onSearch, initialKeyword }: SearchSectionProps) => {
+const SearchSection = ({
+  initialKeyword = "",
+  onSearch,
+}: SearchSectionProps) => {
   const router = useRouter();
-  const [keyword, setKeyword] = useState(initialKeyword ?? "");
+  const [keyword, setKeyword] = useState(initialKeyword);
 
-  // Use useMutation for search
+  useEffect(() => {
+    if (initialKeyword) {
+      setKeyword(initialKeyword);
+    }
+  }, [initialKeyword]);
+
   const mutation = useMutation({
     mutationFn: searchBranchesAPI,
     onSuccess: (data) => {
       onSearch(data.data);
       router.push({
         pathname: "/search",
-        query: { keyword },
+        query: { query: keyword }, // Ensure the URL query parameter is updated
       });
     },
     onError: (error) => {
@@ -50,7 +58,6 @@ const SearchSection = ({ onSearch, initialKeyword }: SearchSectionProps) => {
             value={keyword}
             className="flex h-10 w-full rounded-md border-0 bg-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0"
           />
-          {/* <SearchCourtAddress value={keyword} onChange={handleAddressChange} /> */}
         </div>
         <Button
           variant="default"
