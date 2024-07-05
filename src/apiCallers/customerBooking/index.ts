@@ -14,3 +14,10 @@ export const postBooking = async (data: {
 }) => {
   return fetcher("booking", { method: "POST", body: JSON.stringify(data) });
 };
+
+export const getMyBookingReceiptByStatus = async (status: string = "") => {
+  const endpoint = status
+    ? `booking/GetBookingByStatus/${status}`
+    : "booking/MyBooking";
+  return fetcher(endpoint);
+};

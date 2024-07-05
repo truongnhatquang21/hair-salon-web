@@ -4,8 +4,8 @@ import CheckoutSubcription from "@/views/Subscription/checkout/CheckoutSubcripti
 
 type Props = {};
 
-const page = (props: Props) => {
-  return <CheckoutSubcription />;
+const page = ({ params }: { params: { slug: string } }) => {
+  return <CheckoutSubcription subsId={params.slug} />;
 };
 
 export default page;

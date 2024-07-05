@@ -1,6 +1,9 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
+import { useMemo } from "react";
+import { useForm } from "react-hook-form";
 import * as z from "zod";
 
 import AutoForm from "@/components/ui/auto-form";
@@ -23,14 +26,38 @@ export const subscriptionFormSchema = z.object({
     .default(1)
     .describe("Months per court"),
 });
-
-export function SubscriptionAutoForm() {
+export type SubscriptionFormSchemaType = z.infer<typeof subscriptionFormSchema>;
+type Props = {
+  onSubmit: (value: SubscriptionFormSchemaType) => void;
+  defaultValue?: SubscriptionFormSch;
+  priceEachCourt: number;
+};
+export function SubscriptionAutoForm({
+  onSubmit,
+  defaultValue,
+  priceEachCourt,
+}: Props) {
   const router = useRouter();
+  const form = useForm<SubscriptionFormSchemaType>({
+    defaultValues: defaultValue || {},
+    resolver: zodResolver(subscriptionFormSchema),
+  });
+  const totalPrice = useMemo(() => {
+    if (
+      !form.watch("totalCourt") ||
+      !form.watch("duration") ||
+      !priceEachCourt ||
+      form.watch("totalCourt") <= 0
+    ) {
+      return 0;
+    }
+    return form.watch("totalCourt") * priceEachCourt;
+  }, [form.watch("totalCourt")]);
   return (
     <AutoForm
-      onSubmit={(value) => {
-        console.log(value);
-      }}
+      controlForm={form}
+      onSubmit={onSubmit}
+      values={defaultValue}
       // Pass the schema to the form
       formSchema={subscriptionFormSchema}
       // You can add additional config for each field
@@ -42,8 +69,9 @@ export function SubscriptionAutoForm() {
           },
         },
         duration: {
-          description: "This duration will applied for all courts",
+          description: "This is the common duration for all courts.",
           inputProps: {
+            readOnly: true,
             placeholder: "Duration",
           },
         },
@@ -55,12 +83,8 @@ export function SubscriptionAutoForm() {
       Alternatively, you can not pass a submit button
       to create auto-saving forms etc.
       */}
-      <span className="text-2xl underline underline-offset-2">
-        <strong>Total price:</strong> $10
-      </span>
-      <Button className="w-full" onClick={() => router.push("checkout")}>
-        Go to checkout
-      </Button>
+      <h3 className="text-3xl font-bold">${totalPrice}</h3>
+      <Button className="w-full">Continue</Button>
 
       {/*
       All children passed to the form will be rendered below the form.

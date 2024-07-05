@@ -15,7 +15,7 @@ const BookingReceipt: React.FC<Props> = ({ bookings }) => {
       <div className="flex w-full flex-wrap justify-between gap-3">
         {bookings?.map((booking) => (
           <div
-            key={booking._id}
+            key={booking?._id}
             className="flex w-full flex-col gap-2 rounded-md border-2 border-dashed p-4"
           >
             <BookingCard booking={booking} />

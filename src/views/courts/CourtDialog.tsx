@@ -68,8 +68,8 @@ const CourtDialog = ({
               },
               status: {
                 inputProps: {
-                  disabled,
-                  readOnly,
+                  disabled: true,
+                  readOnly: true,
                   placeholder: "Select Court Status",
                   value: defaultValue.status,
                 },

@@ -1,11 +1,14 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQuery } from "@tanstack/react-query";
 import { ChevronLeft, ChevronRight, ShoppingBagIcon } from "lucide-react";
 import Link from "next/link";
-import React from "react";
+import React, { useMemo } from "react";
 import { IconRight } from "react-day-picker";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { getProfileAPI } from "@/apiCallers/auth";
+import { getCourtListAPI } from "@/apiCallers/courts";
 import AutoForm, { AutoFormSubmit } from "@/components/ui/auto-form";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
@@ -22,7 +25,7 @@ export const amountFormSchema = z.object({
   amount: z.coerce
     .number()
     .positive("Amount is required")
-    .max(4)
+
     .describe("Amount of court"),
 });
 export type SchemaType = z.infer<typeof amountFormSchema>;
@@ -72,6 +75,26 @@ const CourAvailability = ({
     console.log(branchStep, "branchStep");
   };
 
+  const { data: profileData } = useQuery({
+    queryKey: ["myProfile"],
+    queryFn: async () => getProfileAPI(),
+  });
+
+  const { data: courtsData } = useQuery({
+    queryKey: ["courts"],
+    queryFn: async () => getCourtListAPI(),
+  });
+  const availableCourts = useMemo(() => {
+    if (!profileData?.data?.maxCourt) {
+      return 0;
+    }
+    if (profileData.data.maxCourt) {
+      return (
+        profileData.data.maxCourt - (courtsData?.data?.length as number) || 0
+      );
+    }
+    return 0;
+  }, [profileData?.data?.maxCourt, courtsData?.data?.length]);
   return (
     <div className="flex size-full flex-col gap-4">
       <div className="flex w-full items-center gap-4">
@@ -97,8 +120,14 @@ const CourAvailability = ({
 
       <div className="flex items-center gap-4 text-sm">
         <span className="text-3xl text-destructive">*</span>
-        You must create 1 court at least and can create up to 4 court in your
-        current subcriptions.
+        <span>
+          You must create <b className="text-xl">1</b> court at least and can
+          create up to{" "}
+          <b className="text-xl underline underline-offset-2">
+            {availableCourts}{" "}
+          </b>{" "}
+          court in your current subcriptions.
+        </span>
         <Link href="/subscriptions">
           <Button variant="outline" className="flex items-center gap-2">
             <ShoppingBagIcon /> Extend your subscriptions
@@ -116,6 +145,7 @@ const CourAvailability = ({
               inputProps: {
                 type: "number",
                 placeholder: "Amount of court",
+                max: availableCourts,
               },
               description: "Amount of court you want to create in advance",
             },
