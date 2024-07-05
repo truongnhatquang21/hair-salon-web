@@ -76,6 +76,15 @@ export function getMenuList(pathname: string): Group[] {
           icon: LayoutGrid,
           submenus: [],
         },
+        {
+          href: "/dashboard/subscriptions-order/tracking-subscription",
+          label: "Tracking Subscriptions",
+          active: pathname.includes(
+            "/dashboard/subscriptions-order/tracking-subscription"
+          ),
+          icon: LayoutGrid,
+          submenus: [],
+        },
       ],
     },
     // manager

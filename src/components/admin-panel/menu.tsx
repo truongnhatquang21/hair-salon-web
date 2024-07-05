@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/tooltip";
 import { getMenuList } from "@/lib/menu-list";
 import { cn } from "@/lib/utils";
+import { signOutServer } from "@/utils/serverActions";
 
 interface MenuProps {
   isOpen: boolean | undefined;
@@ -112,7 +113,9 @@ export function Menu({ isOpen }: MenuProps) {
               <Tooltip delayDuration={100}>
                 <TooltipTrigger asChild>
                   <Button
-                    onClick={() => {}}
+                    onClick={() => {
+                      signOutServer();
+                    }}
                     variant="destructive"
                     className="mt-5 h-10 w-full justify-center"
                   >
