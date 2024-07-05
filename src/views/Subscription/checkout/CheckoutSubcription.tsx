@@ -14,7 +14,6 @@ import { getSubscriptionByIdAPI } from "@/apiCallers/adminSubcription";
 import {
   buySubscriptionAPI,
   type PurchasedOrderType,
-  type PurchasedOrderType,
 } from "@/apiCallers/package";
 import { addCardAPI, getCardListAPI } from "@/apiCallers/payment";
 import { PricingCard } from "@/app/[locale]/(normalUser)/(auth)/subscriptions/page";
