@@ -2,12 +2,16 @@
 
 import "react-big-calendar/lib/css/react-big-calendar.css";
 
+import { useQuery } from "@tanstack/react-query";
 import moment from "moment";
 import {
   Calendar as BigCalendar,
   momentLocalizer,
   Views,
 } from "react-big-calendar";
+
+import { getScheduleOfCustomer } from "@/apiCallers/schedule";
+import { Loading } from "@/components/loading";
 
 const localizer = momentLocalizer(moment);
 
@@ -48,7 +52,7 @@ const events = [
 //   { resourceId: 2, resourceTitle: "Training room" },
 //   { resourceId: 3, resourceTitle: "Meeting room 1" },
 //   { resourceId: 4, resourceTitle: "Meeting room 2" },
-// ];
+// ];f
 
 const styles = {
   container: {
@@ -59,18 +63,55 @@ const styles = {
 };
 
 export default function CustomCalendar() {
+  const { data: scheduleCustomer, isLoading } = useQuery({
+    queryKey: ["schedule"],
+    queryFn: async () => {
+      return getScheduleOfCustomer();
+    },
+  });
+  console.log("schedule: ", scheduleCustomer);
+  const eventData = scheduleCustomer?.data.Pending.map((el) => {
+    const calculateStart = () => {
+      const parsedDate = new Date(el.date);
+
+      parsedDate.setHours(...el.startTime.split(":").map(Number));
+
+      return parsedDate;
+    };
+    const calculateEnd = () => {
+      const parsedDate = new Date(el.date);
+
+      parsedDate.setHours(...el.endTime.split(":").map(Number));
+
+      return parsedDate;
+    };
+    const starTime = calculateStart();
+    const endDate = calculateEnd();
+    return {
+      id: el._id,
+      title: el.booking,
+      start: starTime,
+      end: endDate,
+    };
+  });
   return (
     <div className="h-[70vh]">
-      <BigCalendar
-        style={{ width: "100%" }}
-        // selectable
-        localizer={localizer}
-        events={events}
-        defaultView={Views.MONTH}
-        views={[Views.DAY, Views.WEEK, Views.MONTH]}
-        step={60}
-        defaultDate={new Date()}
-      />
+      {isLoading ? (
+        <div className="flex justify-center py-2">
+          <Loading />
+        </div>
+      ) : (
+        <BigCalendar
+          style={{ width: "100%" }}
+          // selectable
+          localizer={localizer}
+          events={eventData}
+          defaultView={Views.MONTH}
+          views={[Views.DAY, Views.WEEK, Views.MONTH]}
+          step={60}
+          defaultDate={new Date()}
+        />
+      )}
     </div>
   );
 }

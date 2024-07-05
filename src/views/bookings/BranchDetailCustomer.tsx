@@ -2,7 +2,7 @@
 
 "use client";
 
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { UsersIcon } from "lucide-react";
 import Image from "next/image";
@@ -10,7 +10,6 @@ import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 
 import { getBranchByIdAPI } from "@/apiCallers/Branches";
-import { postBooking } from "@/apiCallers/customerBooking";
 import BranchDetailOverview from "@/components/branchs/BranchDetailOverview";
 import CalendarDaily from "@/components/Custom/DailyCalendar";
 import CustomTag from "@/components/CustomTag";
@@ -21,9 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
-import type { IBooking } from "@/interfaces/booking.interface";
 import type { ICourt } from "@/interfaces/court.interface";
-import type { ISchedule } from "@/interfaces/schedule.interface";
 import type { ISlot } from "@/interfaces/slot.interface";
 import { useBookingStore } from "@/stores/bookingStore";
 import { calculateTotalPrice, getThu } from "@/utils/Helpers";
@@ -56,52 +53,6 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
       setSelectedCourt(court);
     }
   };
-  const { mutateAsync: bookingMutation, isPending: bookingMutating } =
-    useMutation({
-      mutationFn: async (bookingData: {
-        booking: Omit<IBooking, "status">;
-        schedule: Omit<ISchedule, "status">;
-      }) => postBooking(bookingData),
-      onSuccess: (data) => {
-        console.log(data);
-
-        if (data.ok && !data.ok) {
-          if (data.error) {
-            // const errs = data.error as { [key: string]: { message: string } };
-            // Object.entries(errs).forEach(([key, value]) => {
-            //   setError(key as keyof PackageCourtSchemaType, {
-            //     type: "manual",
-            //     message: value.message,
-            //   });
-            // });
-            console.log(data.error);
-          }
-
-          toast({
-            variant: "destructive",
-            title: "Uh oh! Something went wrong.",
-            description: data.message || data.statusText,
-          });
-
-          throw new Error(data.message || data.statusText);
-        }
-
-        if (data.message) {
-          return toast({
-            variant: "default",
-            className: "bg-green-600 text-white",
-            title: "Message from system",
-            description: data.message,
-          });
-        }
-
-        return toast({
-          variant: "default",
-          title: "Submitted successfully",
-          description: "You can do something else now",
-        });
-      },
-    });
 
   const handleBooking = async () => {
     if (selectedCourt !== null) {
@@ -127,27 +78,6 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
       });
       router.push("/booking");
     }
-
-    // await bookingMutation({
-    //   booking: {
-    //     type: "single_schedule",
-    //     paymentType: "haft",
-    //     paymentMethod: "vnpay",
-    //     totalPrice: 123,
-    //     totalHour: selectedSlots.length,
-    //     startDate: format(selectDay.toString(), "yyyy-MM-dd"),
-    //     endDate: format(selectDay.toString(), "yyyy-MM-dd"),
-    //     court: selectedCourt?._id as string,
-    //   },
-    //   schedule: {
-    //     type: "booking",
-    //     slots: selectedSlots.map((el) => el._id),
-    //     startTime: startSlot.startTime,
-    //     endTime: endSlot.endTime,
-    //     date: format(selectDay.toString(), "yyyy-MM-dd"),
-    //     court: selectedCourt?._id as string,
-    //   },
-    // });
   };
   const timeSlots = useMemo(() => {
     const slotArray = data?.data?.slots?.filter((el: ISlot) =>

@@ -16,4 +16,5 @@ export const createCourtObject = z.object({
     .min(1, { message: "Description must be greater than 1 characters!" })
     .optional(),
   images: z.array(z.string()).optional().nullable(),
+  status: z.string().optional(),
 });
