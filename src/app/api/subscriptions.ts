@@ -1,6 +1,6 @@
 import type { IResponse } from "@/types/Response";
 
-const baseUrl = `${process.env.NEXT_PUBLIC_BASE_URL}`;
+const baseUrl = `${process.env.SERVER_URL}`;
 export const getManagerSubscription = async (
   managerId: string
 ): Promise<IResponse> => {
