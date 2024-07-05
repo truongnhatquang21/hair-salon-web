@@ -48,6 +48,15 @@ const CourtDetailPage = ({ id }: CourtDetailProps) => {
   });
 
   const branch = branchData?.data ?? null;
+  console.log(branch?.slots);
+  const sundaySlot = branch?.slots?.find((slot) => slot.weekDay === "Monday");
+  const surcharge = sundaySlot?.surcharge ?? 0;
+  const weekendPrice = court?.price
+    ? surcharge !== 0
+      ? court.price * surcharge
+      : court?.price
+    : 0;
+
   if (isCourtLoading || isBranchLoading) {
     return (
       <div className="flex h-screen items-center justify-center">
@@ -108,11 +117,7 @@ const CourtDetailPage = ({ id }: CourtDetailProps) => {
                   {court.price}
                 </span>
               </div>
-              <PriceTooltip
-                price={court.price}
-                specialPrice={court.price}
-                weekendPrice={court.price}
-              />
+              <PriceTooltip price={court.price} weekendPrice={weekendPrice} />
             </div>
           </p>
           <p className="mt-3 text-lg">
