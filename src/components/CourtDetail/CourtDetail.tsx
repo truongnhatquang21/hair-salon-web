@@ -1,16 +1,17 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import { AlertCircle, DollarSign, MapPin, Users } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import React, { useEffect, useState } from "react";
+import React from "react";
 
-import { getCourtById } from "@/app/api/unauth/court";
+import { getBranchByIdAPI } from "@/apiCallers/Branches";
+import { getCourtByIdAPI } from "@/apiCallers/courts/index";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Progress } from "@/components/ui/progress";
-import type ICourt from "@/types/Court";
 
 import CustomTag from "../CustomTag";
+import { EmptyComponent } from "../Empty";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
@@ -21,66 +22,63 @@ type CourtDetailProps = {
   id: string;
 };
 
-const CourtDetailPage = (props: CourtDetailProps) => {
+const CourtDetailPage = ({ id }: CourtDetailProps) => {
   const t = useTranslations("CourtDetail");
-  const [court, setCourt] = useState<ICourt | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<null | string>(null);
-  const [progress, setProgress] = React.useState(13);
+  const {
+    data: courtData,
+    isLoading: isCourtLoading,
+    isError: isCourtError,
+    error: courtError,
+  } = useQuery({
+    queryKey: ["courtDetails", id],
+    queryFn: async () => getCourtByIdAPI(id),
+  });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      let timer;
-      try {
-        const data = await getCourtById(props.id);
-        setCourt(data);
-        timer = setTimeout(() => setProgress(66), 500);
-      } catch (err) {
-        if (err instanceof Error) {
-          setError(err.message);
-        } else {
-          setError("An unexpected error occurred");
-        }
-      } finally {
-        timer = setTimeout(() => setProgress(100), 200);
-        setLoading(false);
+  const court = courtData?.data ?? null;
 
-        clearTimeout(timer);
-      }
-    };
+  const {
+    data: branchData,
+    isLoading: isBranchLoading,
+    isError: isBranchError,
+    error: branchError,
+  } = useQuery({
+    queryKey: ["branchDetails", court?.branch],
+    queryFn: async () => getBranchByIdAPI(court?.branch),
+    enabled: !!court?.branch,
+  });
 
-    fetchData();
-  }, [props.id]);
-
-  if (loading) {
+  const branch = branchData?.data ?? null;
+  if (isCourtLoading || isBranchLoading) {
     return (
       <div className="flex h-screen items-center justify-center">
-        <Progress value={progress} className="w-3/5" />
+        <div>Loading...</div>
       </div>
     );
   }
 
-  if (error) {
+  if (courtError) {
     return (
-      <div className="flex h-screen items-center justify-center">
+      <div className="flex items-center justify-center">
         <Alert variant="destructive">
           <AlertCircle className="size-4" />
           <AlertTitle>{t("Error")}</AlertTitle>
-          <AlertDescription>{error}</AlertDescription>
+          <AlertDescription>{courtError.message}</AlertDescription>
         </Alert>
       </div>
     );
   }
 
-  if (!court) return <div>{t("notFound")}</div>;
+  if (isCourtError) {
+    return <div>{t("notFound")}</div>;
+  }
 
-  return (
+  return court ? (
     <div className="mx-auto my-4 px-2">
       {/* Court information */}
       <div className="flex gap-3">
         <div className="flex-1">
           <div className="w-full px-11">
-            {court.images && court.images.length > 0 && (
+            {court?.images && court?.images.length > 0 && (
               <CourtCarousel
                 court_images={court?.images}
                 court_name={court?.name}
@@ -131,33 +129,41 @@ const CourtDetailPage = (props: CourtDetailProps) => {
         </div>
       </div>
       {/* Branch information */}
-      <div className="mt-3 flex items-center justify-between rounded-lg border p-4">
-        <div className="flex items-center gap-2">
-          <Link href={`/branch/${court.branch_id}`}>
-            <Avatar>
-              <AvatarImage
-                sizes="lg"
-                src={court?.branch_images[0]?.src ?? ""}
-                alt={court?.branch_name ?? "branch_logo"}
-              />
-              <AvatarFallback>
-                {court.branch_name.slice(0, 2).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
+      <Link href={`/branch/${branch?._id}`}>
+        <div className="mt-3 flex items-center justify-between rounded-lg border p-4">
+          <div className="flex items-center gap-2">
+            <Link href={`/branch/${branch?._id}`}>
+              <Avatar>
+                <AvatarImage
+                  sizes="lg"
+                  src={branch?.images[0]?.src ?? ""}
+                  alt={branch?.name ?? "branch_logo"}
+                />
+                <AvatarFallback>
+                  {branch?.name.slice(0, 2).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+            </Link>
+            <p>
+              <h3 className="ml-6 text-xl font-bold">{branch?.name}</h3>
+              <div className="flex items-center gap-1 opacity-75">
+                <MapPin />
+                {branch?.address}
+              </div>
+            </p>
+          </div>
+          <Link href={`/branch/${branch?._id}`}>
+            <Button variant="outline">View branch</Button>
           </Link>
-          <p>
-            <h3 className="text-xl font-bold">{court.branch_name}</h3>
-            <div className="flex items-center gap-1 opacity-75">
-              <MapPin />
-              {court.branch_address}
-            </div>
-          </p>
         </div>
-        <Link href={`/branch/${court.branch_id}`}>
-          <Button variant="outline">View branch</Button>
-        </Link>
-      </div>
+      </Link>
     </div>
+  ) : (
+    <EmptyComponent
+      title="No Court Found"
+      description="This court is not available!"
+      className="w-full"
+    />
   );
 };
 
