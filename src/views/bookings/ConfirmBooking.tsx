@@ -269,10 +269,10 @@ const ConfirmBooking = () => {
                 </SelectTrigger>
                 <SelectContent className="rounded-md border-input bg-background shadow-lg">
                   <SelectItem value="credit-card" className=" hover:bg-muted">
-                    Credit Card
+                    Pay Partial (50%)
                   </SelectItem>
                   <SelectItem value="paypal" className=" hover:bg-muted">
-                    PayPal
+                    Pay Full
                   </SelectItem>
                 </SelectContent>
               </Select>
