@@ -10,14 +10,9 @@ import {
 
 type PriceTooltipProps = {
   price: string;
-  specialPrice: string;
   weekendPrice: string;
 };
-export function PriceTooltip({
-  price,
-  specialPrice,
-  weekendPrice,
-}: PriceTooltipProps) {
+export function PriceTooltip({ price, weekendPrice }: PriceTooltipProps) {
   const t = useTranslations("CourtDetail");
   return (
     <TooltipProvider>
@@ -29,9 +24,7 @@ export function PriceTooltip({
           <p>
             {t("normalPrice")}: {price}/slot
           </p>
-          <p>
-            {t("specialPrice")}: {specialPrice}/slot
-          </p>
+
           <p>
             {t("weekendPrice")}: {weekendPrice}/slot
           </p>
