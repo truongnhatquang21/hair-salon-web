@@ -129,8 +129,6 @@ const AvailableSlot = ({ steppers, goBackfn, goNextFn, stepIndex }: Props) => {
     }
   };
   const slotCreate = (data: SlotSchemaType) => {
-    console.log(data, "oasdjfo");
-
     const slots = form.getValues("slots");
 
     if (slots && slots?.length > 0) {

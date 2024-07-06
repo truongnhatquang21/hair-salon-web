@@ -26,7 +26,9 @@ export type BranchType = {
   updatedAt: string;
   __v: number;
 };
-export type BranchSchemaTypeWithId = BranchSchemaType & { _id: string };
+export type BranchSchemaTypeWithId = BranchSchemaType & {
+  _id: string;
+};
 export const getBranchListAPI = async () => {
   return fetcher<BranchSchemaTypeWithId>("branch");
 };
@@ -68,8 +70,27 @@ export const putBranchListAPI = async (data: BranchSchemaType) => {
 //   return rest;
 // };
 
+export const updateStatusBranchAPI = async (data: {
+  branchId: string;
+  status: BranchStatusEnum;
+}) => {
+  return fetcher("branch/update-status", {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });
+};
+
+export const updateInformationBranchAPI = async (
+  data: BranchSchemaTypeWithId
+) => {
+  return fetcher(`branch/${data._id}`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });
+};
+
 export const getMyBranchListAPI = async () => {
-  return fetcher<BranchSchemaType>("branch/get-my-branchs");
+  return fetcher<BranchSchemaTypeWithId[]>("branch/get-my-branchs");
 };
 
 export const handleRequestBranchAPI = async (data: {

@@ -40,12 +40,12 @@ export function CourtCarousel({
     <div>
       <Carousel setApi={setApi}>
         <CarouselContent className="-ml-4">
-          {court_images.map((image) => (
-            <CarouselItem key={image.id} className="pl-4">
+          {court_images.map((image, index) => (
+            <CarouselItem key={index} className="pl-4">
               <Card className="size-full">
                 <CardContent className="flex items-center justify-center p-0">
                   <Image
-                    src={image.src}
+                    src={image}
                     alt={`${court_name}`}
                     width={900}
                     height={400}

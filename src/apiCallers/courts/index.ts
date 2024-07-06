@@ -1,9 +1,9 @@
+"use server";
+
 import { fetcher } from "..";
 
 export const getCourtByIdAPI = async (slug: string) => {
-  return fetcher(`court/${slug}`, {
-    method: "GET",
-  });
+  return fetcher(`court/${slug}`);
 };
 
 export const searchCourtApi = async (key: string) => {

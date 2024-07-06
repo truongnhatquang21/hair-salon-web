@@ -59,7 +59,7 @@ import { PackageEnum } from "@/views/AdminSubscriptions/helper";
 
 import PaymentSuccesss from "./PaymentSuccess";
 
-const cardSchema = z.object({
+export const cardSchema = z.object({
   accountNumber: z.string().min(16).max(16),
   accountName: z.string(),
   accountBank: z.string(),
@@ -186,8 +186,6 @@ const CheckoutSubcription = ({ subsId }: Props) => {
       return buySubscriptionAPI(data);
     },
     onSuccess: (data) => {
-      console.log(data);
-
       if (!data.ok) {
         // if (data.error) {
         //   const errs = data.error as { [key: string]: { message: string } };

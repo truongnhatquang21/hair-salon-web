@@ -1,5 +1,5 @@
-import { AccountAutoForm } from "@/components/Account/AccountForm";
 import { Separator } from "@/components/ui/separator";
+import Account from "@/views/account/Account";
 
 export default function SettingsAccountPage() {
   return (
@@ -13,7 +13,7 @@ export default function SettingsAccountPage() {
       </div>
       <Separator />
       <div className="flex-1 ">
-        <AccountAutoForm />
+        <Account />
       </div>
     </div>
   );

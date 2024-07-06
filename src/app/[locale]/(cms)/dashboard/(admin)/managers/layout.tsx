@@ -29,7 +29,7 @@ export default function layout({ children }: { children: React.ReactNode }) {
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbPage>Requested branches</BreadcrumbPage>
+            <BreadcrumbPage>Managers</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>

@@ -8,8 +8,7 @@ import { getSubscriptionByIdAPI } from "@/apiCallers/adminSubcription";
 import { Loading } from "@/components/loading";
 import {
   SubscriptionAutoForm,
-  type subscriptionFormSchemaType,
-  type subscriptionFormSchemaType,
+  type SubscriptionFormSchemaType,
 } from "@/components/Subscription/SubcriptionForm";
 import { PackageEnum } from "@/views/AdminSubscriptions/helper";
 
@@ -31,7 +30,7 @@ const page = ({ params }: { params: { slug: string } }) => {
     }
   }, [subscription, router, slug]);
 
-  const onSubmit = (value: subscriptionFormSchemaType) => {
+  const onSubmit = (value: SubscriptionFormSchemaType) => {
     router.push(
       `/subscriptions/order/${slug}/checkout` +
         `?totalCourt=${value.totalCourt}&duration=${value.duration}`
