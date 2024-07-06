@@ -216,7 +216,7 @@ const BranchDetailOverview: FC<BranchDetailOverviewProps> = ({ data }) => {
                       {/* <Image src={} alt="Court Image" width={80} height={80} /> */}
                       <div>
                         <h3 className="font-semibold">{court.name}</h3>
-                        <span className="text-sm text-gray-500 dark:text-gray-400">
+                        <span className="line-clamp-3  text-sm  text-gray-500 dark:text-gray-400">
                           {court.description}
                         </span>
                       </div>

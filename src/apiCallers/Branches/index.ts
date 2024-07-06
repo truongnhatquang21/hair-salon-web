@@ -1,5 +1,7 @@
 "use server";
 
+import type { ICourt } from "@/interfaces/court.interface";
+import type { ISlot } from "@/interfaces/slot.interface";
 import { mockRequest } from "@/lib/mockRequest";
 import type { BranchStatusEnum } from "@/types";
 import type { BranchSchemaType } from "@/views/branches/helper";
@@ -18,8 +20,8 @@ export type BranchType = {
   availableTime: string;
   status: BranchStatusEnum;
   manager: string;
-  courts: string[];
-  slots: string[];
+  courts: ICourt[];
+  slots: ISlot[];
   createdAt: string;
   updatedAt: string;
   __v: number;
@@ -46,6 +48,11 @@ export const searchBranchesAPI = async (searchParams: { keyword: string }) => {
 export const getBranchByIdAPI = async (id: string) => {
   return fetcher<BranchSchemaTypeWithId>(`branch/get-by-id/${id}`);
 };
+
+export const getBranchByIdAPI2 = async (id: string) => {
+  return fetcher<BranchType>(`branch/get-by-id/${id}`);
+};
+
 export const putBranchListAPI = async (data: BranchSchemaType) => {
   // return fetcher("package-court", {
   //   body: JSON.stringify(data),

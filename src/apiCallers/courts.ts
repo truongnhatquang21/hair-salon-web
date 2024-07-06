@@ -41,3 +41,9 @@ export const postCourtAPI = async (data: CourtSchemaTypeWithId) => {
     body: JSON.stringify(data),
   });
 };
+export const getCourtAvailable = async (data) => {
+  return fetcher<CourtType[]>(`court/get-court-available`, {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+};
