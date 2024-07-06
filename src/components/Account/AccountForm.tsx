@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { format } from "date-fns";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -103,10 +104,15 @@ export function AccountAutoForm({
 
   const queryClient = useQueryClient();
   const onSubmit = async (value: CreateCustomerSchemaTypeWithId) => {
-    console.log(value, "Dd");
-
     try {
-      await updateTrigger(value);
+      const preparedData = {
+        ...value,
+        dob: format(value.dob, "yyyy-MM-dd"),
+        _id: defaultValue._id,
+      };
+      console.log(preparedData, "ppd");
+
+      await updateTrigger(preparedData);
       queryClient.invalidateQueries({
         queryKey: ["myProfile"],
       });
