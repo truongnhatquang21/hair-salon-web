@@ -37,23 +37,31 @@ export const createSlotObject = z.object({
     .regex(timeFormat, { message: "Invalid time format! Use HH:MM." }),
   surcharge: z.number().gte(-1),
 });
-
+export enum BranchStatusEnum {
+  PENDING = "Pending",
+  ACTIVE = "Active",
+  INACTIVE = "Inactive",
+  DENIED = "Denied",
+}
 export const createBranchSchema = z.object({
-  name: z
-    .string()
-    .min(1, { message: "Username must be greater than 1 characters!" }),
+  name: z.string().min(1, { message: "Branch name must be required" }),
   address: z.string(),
-  license: z.array(z.string()).min(1, "License must have at least 1"),
-  description: z.string().optional().nullable(),
+  licenses: z.array(z.string()).min(1, "Licenses must have at least 1 item"),
+  description: z.string(),
   availableTime: z.string(),
   phone: z
-    .string()
-    .min(1, { message: "Phone must be greater than 1 number!" })
-    .max(10, { message: "Phone must be less than 10 number!" })
+    .string({
+      message: "Phone number must be a required field!",
+    })
     .regex(regexPhoneNumber, { message: "Phone must be a valid phone" }),
-  courts: z.array(createCourtObject).min(1, "Courts must have at least 1"),
-  slots: z.array(createSlotObject).min(1, "Slots must have at least 1"),
-  images: z.array(z.string()).min(1, "Images must have at least 1"),
+  courts: z.array(createCourtObject).min(1, "Courts must have at least 1 item"),
+  slots: z.array(createSlotObject).min(1, "Slots must have at least 1 item"),
+  images: z.array(z.string()).min(1, "Images must have at least 1 item"),
+  status: z.nativeEnum(BranchStatusEnum, {
+    errorMap: () => ({
+      message: "Invalid status! Must be a valid status.",
+    }),
+  }),
 });
 
 export type BranchSchemaType = z.infer<typeof createBranchSchema>;
@@ -65,29 +73,6 @@ export type BranchTypeInCreate = Omit<
   images: File[];
 };
 export const columns: ColumnDef<BranchSchemaType>[] = [
-  // {
-  // id: "select",
-  // header: ({ table }) => (
-  //   <Checkbox
-  //     checked={
-  //       table.getIsAllPageRowsSelected() ||
-  //       (table.getIsSomePageRowsSelected() && "indeterminate")
-  //     }
-  //     onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-  //     aria-label="Select all"
-  //   />
-  // ),
-  //   cell: ({ row }) => (
-  //     <Checkbox
-  //       checked={row.getIsSelected()}
-  //       onCheckedChange={(value) => row.toggleSelected(!!value)}
-  //       aria-label="Select row"
-  //     />
-  //   ),
-  //   enableSorting: false,
-  //   enableHiding: false,
-  // },
-
   {
     accessorKey: "images",
     header: "Image",

@@ -32,12 +32,18 @@ export const createPackageCourtSchema = z.object({
   maxCourt: z.coerce.number().int().min(1).optional().nullable(),
   duration: z.coerce.number().int().min(1).optional().nullable(),
   description: z.string().optional(),
+  status: z.string().optional(),
 });
+export enum PackageCourtStatusEnum {
+  ACTIVE = "Active",
+  INACTIVE = "Inactive",
+}
 export type PackageCourtSchemaType = z.infer<typeof createPackageCourtSchema>;
 export type PackageCourtSchemaTypeWithId = PackageCourtSchemaType & {
   _id: string;
+  status: PackageCourtStatusEnum;
 };
-export const columns: ColumnDef<PackageCourtSchemaType>[] = [
+export const columns: ColumnDef<PackageCourtSchemaTypeWithId>[] = [
   // {
   //   id: "select",
   //   header: ({ table }) => (
@@ -108,7 +114,7 @@ export const columns: ColumnDef<PackageCourtSchemaType>[] = [
     accessorKey: "duration",
     cell: ({ getValue }) => {
       const data = getValue() as number;
-      return <span>{data || "-"}</span>;
+      return <span>{data ? `${data} month(s)` : "-"}</span>;
     },
     header: ({ column }) => {
       return <DataTableColumnHeader column={column} title="Duration" />;
@@ -132,6 +138,16 @@ export const columns: ColumnDef<PackageCourtSchemaType>[] = [
     },
     header: ({ column }) => {
       return <DataTableColumnHeader column={column} title="Type" />;
+    },
+  },
+  {
+    accessorKey: "status",
+    cell: ({ getValue }) => {
+      const data = getValue() as PackageCourtStatusEnum;
+      return <span>{data}</span>;
+    },
+    header: ({ column }) => {
+      return <DataTableColumnHeader column={column} title="Status" />;
     },
   },
   {
@@ -162,7 +178,7 @@ export const columns: ColumnDef<PackageCourtSchemaType>[] = [
                 defaultValues={data}
                 ButtonTrigger={
                   <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                    View branch
+                    View And Update
                   </DropdownMenuItem>
                 }
               />
@@ -172,9 +188,11 @@ export const columns: ColumnDef<PackageCourtSchemaType>[] = [
                 Trigger={
                   <DropdownMenuItem
                     onSelect={(e) => e.preventDefault()}
-                    className="text-destructive"
+                    className="w-full text-destructive"
                   >
-                    Delete branch
+                    {data.status === PackageCourtStatusEnum.ACTIVE
+                      ? "Deactivate"
+                      : "Activate"}
                   </DropdownMenuItem>
                 }
               />

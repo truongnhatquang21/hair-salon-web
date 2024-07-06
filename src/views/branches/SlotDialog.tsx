@@ -70,6 +70,7 @@ const SlotDialog = ({
                 inputProps: {
                   defaultValue: defaultValue.weekDay,
                   placeholder: "Week Day",
+                  value: defaultValue.weekDay,
                 },
                 fieldType: SelectFieldTypeWrapWithEnum(
                   Object.values(WeekDayEnum)

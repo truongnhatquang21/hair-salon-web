@@ -10,20 +10,35 @@ export const PeriodTimeFieldType = ({
   fieldConfigItem,
   fieldProps,
 }: AutoFormInputComponentProps) => {
+  const initialValue = fieldConfigItem.inputProps?.value || field.value;
   const [startDate, setStartDate] = useState<Date | undefined>(
-    fieldConfigItem.inputProps?.value
+    initialValue
       ? new Date(
-          `${new Date().toISOString().slice(0, 10)}T${fieldConfigItem.inputProps?.value.toString().split("-")[0]}:00`
+          `${new Date().toISOString().slice(0, 10)}T${initialValue.toString().split("-")[0]}:00`
         )
       : new Date()
   );
   const [endDate, setEndDate] = useState<Date | undefined>(
-    fieldConfigItem.inputProps?.value
+    initialValue || field.value
       ? new Date(
-          `${new Date().toISOString().slice(0, 10)}T${fieldConfigItem.inputProps?.value.toString().split("-")[1]}:00`
+          `${new Date().toISOString().slice(0, 10)}T${initialValue.toString().split("-")[1]}:00`
         )
       : new Date()
   );
+  useEffect(() => {
+    if (initialValue) {
+      setStartDate(
+        new Date(
+          `${new Date().toISOString().slice(0, 10)}T${initialValue.toString().split("-")[0]}:00`
+        )
+      );
+      setEndDate(
+        new Date(
+          `${new Date().toISOString().slice(0, 10)}T${initialValue.toString().split("-")[1]}:00`
+        )
+      );
+    }
+  }, [initialValue]);
   useEffect(() => {
     if (startDate && endDate) {
       field.onChange(

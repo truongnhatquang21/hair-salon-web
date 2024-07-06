@@ -1,11 +1,9 @@
 import React from "react";
 
-import RequestBranchList from "@/views/requestedBranches/RequestBranchList";
+import ManagerList from "@/views/manger/ManagerList";
 
-type Props = {};
-
-const page = (props: Props) => {
-  return <RequestBranchList />;
+const page = () => {
+  return <ManagerList />;
 };
 
 export default page;

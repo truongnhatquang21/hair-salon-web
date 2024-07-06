@@ -1,9 +1,9 @@
 import React from "react";
 
-import BranchesList from "@/views/branches/BranchesList";
+import CourtList from "@/views/courts/CourtList";
 
 const page = () => {
-  return <BranchesList />;
+  return <CourtList />;
 };
 
 export default page;
