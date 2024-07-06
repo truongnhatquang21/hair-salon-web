@@ -20,3 +20,9 @@ export type CourtType = {
 export const getCourtListAPI = async () => {
   return fetcher<CourtType[]>("court/get-my-available-courts");
 };
+export const getCourtAvailable = async (data) => {
+  return fetcher<CourtType[]>(`court/get-court-available`, {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+};

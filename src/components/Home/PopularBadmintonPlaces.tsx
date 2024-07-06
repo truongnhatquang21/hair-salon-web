@@ -38,7 +38,7 @@ const PopularBadmintonPlaces = () => {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4">
         {badminton?.map((bad: IBadminton) => (
           <div key={bad._id} className="overflow-hidden rounded-sm shadow-lg">
-            <Link href={`/badminton/${bad._id}`}>
+            <Link href={`/branch/${bad._id}`}>
               <div className="relative h-48 w-full">
                 <Image
                   src={bad.images[0] ?? ""}

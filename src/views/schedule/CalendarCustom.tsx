@@ -108,7 +108,7 @@ export default function CustomCalendar() {
           events={eventData}
           defaultView={Views.MONTH}
           views={[Views.DAY, Views.WEEK, Views.MONTH]}
-          step={60}
+          step={30}
           defaultDate={new Date()}
         />
       )}

@@ -5,3 +5,10 @@ export const getCourtByIdAPI = async (slug: string) => {
     method: "GET",
   });
 };
+
+export const searchCourtApi = async (key: string) => {
+  return fetcher(`court/search`, {
+    method: "POST",
+    body: JSON.stringify(key),
+  });
+};

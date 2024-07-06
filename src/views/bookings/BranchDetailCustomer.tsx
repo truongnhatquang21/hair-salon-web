@@ -2,14 +2,15 @@
 
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { UsersIcon } from "lucide-react";
+import { Info, UsersIcon } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
-import { getBranchByIdAPI } from "@/apiCallers/Branches";
+import { getBranchByIdAPI2 } from "@/apiCallers/Branches";
+import { type CourtType, getCourtAvailable } from "@/apiCallers/courts";
 import BranchDetailOverview from "@/components/branchs/BranchDetailOverview";
 import CalendarDaily from "@/components/Custom/DailyCalendar";
 import CustomTag from "@/components/CustomTag";
@@ -17,8 +18,19 @@ import { Icons } from "@/components/icons";
 import { Loading } from "@/components/loading";
 import { TimeSlot } from "@/components/TimeSlot";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardTitle,
+} from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useToast } from "@/components/ui/use-toast";
 import type { ICourt } from "@/interfaces/court.interface";
 import type { ISlot } from "@/interfaces/slot.interface";
@@ -37,15 +49,58 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
   const [startSlot, setStartSlot] = useState(null);
   const [endSlot, setEndSlot] = useState(null);
   const [selectedSlots, setSelectedSlots] = useState<[]>([]);
+  const [courtList, setCourtList] = useState<CourtType[]>([]);
+
   const [selectedCourt, setSelectedCourt] = useState<ICourt | null>(null);
+  const [activeTab, setActiveTab] = useState("single_schedule");
   const { data, isLoading, isError } = useQuery({
     queryKey: ["brachDetail"],
-    queryFn: async () => getBranchByIdAPI(slug),
+    queryFn: async () => getBranchByIdAPI2(slug),
   });
   console.log("data", data);
+  const { mutateAsync: getCourtAvalableMutatue, isPending } = useMutation({
+    mutationFn: async (data: {
+      slots: ISlot[];
+      date: Date | undefined;
+      branch: string;
+    }) => {
+      return getCourtAvailable(data);
+    },
+    onSuccess: (dataRes) => {
+      console.log(dataRes);
 
-  console.log("endSlot", endSlot);
-  console.log("startSlot", startSlot);
+      if (!dataRes.ok) {
+        // if (data.error) {
+        //   const errs = data.error as { [key: string]: { message: string } };
+        //   Object.entries(errs).forEach(([key, value]) => {
+        //     setError(key as keyof PackageCourtSchemaType, {
+        //       type: "manual",
+        //       message: value.message,
+        //     });
+        //   });
+        // }
+        toast({
+          variant: "destructive",
+          title: "Uh oh! Something went wrong.",
+          description: dataRes.message || dataRes.statusText,
+        });
+        throw new Error(dataRes.message || datdataResa.statusText);
+      }
+      // if (data.message) {
+      //   return toast({
+      //     variant: "default",
+      //     className: "bg-green-600 text-white",
+      //     title: "Message from system",
+      //     description: data.message,
+      //   });
+      // }
+      return toast({
+        variant: "default",
+        title: "Submitted successfully",
+        description: "You can do something else now",
+      });
+    },
+  });
   const handleCourtSelection = (court: ICourt) => {
     if (selectedCourt?._id === court._id) {
       setSelectedCourt(null);
@@ -56,27 +111,29 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
 
   const handleBooking = async () => {
     if (selectedCourt !== null) {
-      setBooking({
-        booking: {
-          type: "single_schedule",
-          paymentType: "haft",
-          paymentMethod: "vnpay",
-          totalPrice: calculateTotalPrice(selectedSlots, selectedCourt.price),
-          totalHour: selectedSlots.length,
-          startDate: format(selectDay.toString(), "yyyy-MM-dd"),
-          endDate: format(selectDay.toString(), "yyyy-MM-dd"),
-          court: selectedCourt,
-        },
-        schedule: {
-          type: "booking",
-          slots: selectedSlots.map((el) => el._id),
-          startTime: startSlot.startTime,
-          endTime: endSlot ? endSlot.endTime : startSlot.endTime,
-          date: format(selectDay.toString(), "yyyy-MM-dd"),
-          court: selectedCourt,
-        },
-      });
-      router.push("/booking");
+      if (activeTab !== "flexible_schedule") {
+        setBooking({
+          booking: {
+            type: activeTab,
+            paymentType: "haft",
+            paymentMethod: "vnpay",
+            totalPrice: calculateTotalPrice(selectedSlots, selectedCourt.price),
+            totalHour: selectedSlots.length,
+            startDate: format(selectDay.toString(), "yyyy-MM-dd"),
+            endDate: format(selectDay.toString(), "yyyy-MM-dd"),
+            court: selectedCourt,
+          },
+          schedule: {
+            type: "booking",
+            slots: selectedSlots.map((el) => el._id),
+            startTime: startSlot.startTime,
+            endTime: endSlot ? endSlot.endTime : startSlot.endTime,
+            date: format(selectDay.toString(), "yyyy-MM-dd"),
+            court: selectedCourt,
+          },
+        });
+        router.push("/booking");
+      }
     }
   };
   const timeSlots = useMemo(() => {
@@ -85,6 +142,17 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
     );
     return slotArray;
   }, [data?.data?.slots, selectDay]);
+
+  useEffect(() => {
+    if (selectedSlots.length != 0) {
+      getCourtAvalableMutatue({
+        branch: slug,
+        slots: selectedSlots,
+        date: selectDay,
+      });
+    }
+  }, [selectDay, selectedSlots, slug]);
+
   if (isLoading) {
     return (
       <div className="flex min-h-[calc(100vh_-_56px)]  items-center justify-center p-5">
@@ -146,115 +214,284 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
           </TabsContent>
           <TabsContent value="schedules" className="py-4">
             <div>
-              <CalendarDaily
-                setSelectedSlots={setSelectedSlots}
-                setDay={setSelectDay}
-              />
-              <TimeSlot
-                selectedSlots={selectedSlots}
-                setSelectedSlots={setSelectedSlots}
-                timeSlotData={timeSlots}
-                endSlot={endSlot}
-                startSlot={startSlot}
-                setEndSlot={setEndSlot}
-                setStartSlot={setStartSlot}
-              />
-
-              {selectedSlots.length !== 0 && (
-                <div className="mx-auto mt-6 max-w-2xl">
-                  <h3 className="mb-2 text-lg font-bold">
-                    Select Badminton Court
-                  </h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    {data?.data?.courts.map((court: ICourt) => (
-                      <Card
-                        key={court._id}
-                        className={`cursor-pointer ${
-                          selectedCourt !== null &&
-                          selectedCourt._id === court._id
-                            ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                            : "hover:bg-muted"
-                        }`}
-                        onClick={() => handleCourtSelection(court)}
-                      >
-                        <CardContent className="grid gap-4 overflow-hidden p-5">
-                          <div className="flex items-center gap-4">
-                            <div
-                              className={`cursor-pointer rounded-lg object-cover p-2 ${
-                                selectedCourt !== null &&
-                                selectedCourt._id === court._id
-                                  ? " bg-slate-500 stroke-white "
-                                  : " border-white text-white "
-                              }`}
-                            >
-                              <Icons.BadmintonCourt className="rounded-lg object-cover" />
-                            </div>
-                            <div>
-                              <h3 className="font-semibold">{court.name}</h3>
-                              <span
-                                className={`text-sm ${
-                                  selectedCourt !== null &&
-                                  selectedCourt._id === court._id
-                                    ? " text-slate-300 dark:text-slate-200 "
-                                    : "text-gray-500 dark:text-gray-400"
-                                }`}
-                              >
-                                {court.description}
-                              </span>
-                            </div>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                              <CustomTag status={court.status} />
-                            </div>
-                            <div
-                              className={`flex items-center gap-2 text-sm ${
-                                selectedCourt !== null &&
-                                selectedCourt._id === court._id
-                                  ? " text-slate-300 dark:text-slate-200 "
-                                  : "text-gray-500 dark:text-gray-400"
-                              }`}
-                            >
-                              <UsersIcon className="size-4" />
-                              <span>type: {court.type}</span>
-                            </div>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <div
-                              className={`flex items-center gap-2 text-sm ${
-                                selectedCourt !== null &&
-                                selectedCourt._id === court._id
-                                  ? " text-slate-300 dark:text-slate-200 "
-                                  : "text-gray-500 dark:text-gray-400"
-                              }`}
-                            >
-                              {/* <DollarSignIcon className="size-4" /> */}
-                              <span>
-                                {(court.price / 100).toFixed(2)}
-                                VND/slot
-                              </span>
-                            </div>
-                            {/* <Button variant="outline" size="sm">
-                        Book Now
-                      </Button> */}
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                  <div className="mt-6 flex justify-end">
-                    <Button
-                      variant="default"
-                      className="rounded-md px-6 py-2"
-                      disabled={selectedCourt == null}
-                      onClick={handleBooking}
-                    >
-                      {/* {bookingMutating && <SpinnerIcon />} */}
-                      Book Selected courts
-                    </Button>
-                  </div>
+              <Tabs
+                defaultValue="single_schedule"
+                value={activeTab}
+                onValueChange={(value) => {
+                  setSelectedSlots([]);
+                  setActiveTab(value);
+                }}
+              >
+                <div className="flex items-center justify-end gap-4">
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Info size={18} className="cursor-pointer" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>permanent là gì</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  <TabsList className="flex w-fit  border-b border-gray-200 dark:border-gray-800">
+                    <TabsTrigger value="single_schedule">Single</TabsTrigger>
+                    <TabsTrigger value="permanent_schedule">
+                      Permanent
+                    </TabsTrigger>
+                    <TabsTrigger value="flexible_schedule">
+                      Flexible
+                    </TabsTrigger>
+                  </TabsList>
                 </div>
-              )}
+                <TabsContent value="permanent_schedule" className="py-4">
+                  <Card className="p-5">
+                    <CardTitle>Permanent Booking</CardTitle>
+                    <CardDescription>
+                      Secure your court for a recurring schedule. Great for
+                      regular players.
+                    </CardDescription>
+                    <CardContent className="mt-5">
+                      {" "}
+                      <CalendarDaily
+                        setSelectedSlots={setSelectedSlots}
+                        setDay={setSelectDay}
+                      />
+                      <TimeSlot
+                        selectedSlots={selectedSlots}
+                        setSelectedSlots={setSelectedSlots}
+                        timeSlotData={timeSlots}
+                        endSlot={endSlot}
+                        startSlot={startSlot}
+                        setEndSlot={setEndSlot}
+                        setStartSlot={setStartSlot}
+                      />
+                      {selectedSlots.length !== 0 && (
+                        <div className="mx-auto mt-6 max-w-2xl">
+                          <h3 className="mb-2 text-lg font-bold">
+                            Select Badminton Court
+                          </h3>
+                          <div className="grid grid-cols-2 gap-4">
+                            {data?.data?.courts.map((value: ICourt) => (
+                              <Card
+                                key={value._id}
+                                className={`cursor-pointer ${
+                                  selectedCourt !== null &&
+                                  selectedCourt._id === value._id
+                                    ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                                    : "hover:bg-muted"
+                                }`}
+                                onClick={() => handleCourtSelection(value)}
+                              >
+                                <CardContent className="grid gap-4 overflow-hidden p-5">
+                                  <div className="flex items-center gap-4">
+                                    <div
+                                      className={`cursor-pointer rounded-lg object-cover p-2 ${
+                                        selectedCourt !== null &&
+                                        selectedCourt._id === value._id
+                                          ? " bg-slate-500 stroke-white "
+                                          : " border-white text-white "
+                                      }`}
+                                    >
+                                      <Icons.BadmintonCourt className="rounded-lg object-cover" />
+                                    </div>
+                                    <div>
+                                      <h3 className="font-semibold">
+                                        {value.name}
+                                      </h3>
+                                      <span
+                                        className={`text-sm ${
+                                          selectedCourt !== null &&
+                                          selectedCourt._id === value._id
+                                            ? " text-slate-300 dark:text-slate-200 "
+                                            : "text-gray-500 dark:text-gray-400"
+                                        }`}
+                                      >
+                                        {value.description}
+                                      </span>
+                                    </div>
+                                  </div>
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                                      <CustomTag status={value.status} />
+                                    </div>
+                                    <div
+                                      className={`flex items-center gap-2 text-sm ${
+                                        selectedCourt !== null &&
+                                        selectedCourt._id === value._id
+                                          ? " text-slate-300 dark:text-slate-200 "
+                                          : "text-gray-500 dark:text-gray-400"
+                                      }`}
+                                    >
+                                      <UsersIcon className="size-4" />
+                                      <span>type: {value.type}</span>
+                                    </div>
+                                  </div>
+                                  <div className="flex items-center justify-between">
+                                    <div
+                                      className={`flex items-center gap-2 text-sm ${
+                                        selectedCourt !== null &&
+                                        selectedCourt._id === value._id
+                                          ? " text-slate-300 dark:text-slate-200 "
+                                          : "text-gray-500 dark:text-gray-400"
+                                      }`}
+                                    >
+                                      {/* <DollarSignIcon className="size-4" /> */}
+                                      <span>
+                                        {(value.price / 100).toFixed(2)}
+                                        VND/slot
+                                      </span>
+                                    </div>
+                                  </div>
+                                </CardContent>
+                              </Card>
+                            ))}
+                          </div>
+                          <div className="mt-6 flex justify-end">
+                            <Button
+                              variant="default"
+                              className="rounded-md px-6 py-2"
+                              disabled={selectedCourt == null}
+                              onClick={handleBooking}
+                            >
+                              {/* {bookingMutating && <SpinnerIcon />} */}
+                              Book Selected courts
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+                <TabsContent value="flexible_schedule" className="py-4">
+                  <Card className="p-5">
+                    <CardTitle>Flexible Booking</CardTitle>
+                    <CardDescription>
+                      Book a court with the option to reschedule. Great for busy
+                      schedules.
+                    </CardDescription>
+                    <CardContent className="mt-5">Flexible</CardContent>
+                  </Card>
+                </TabsContent>
+                <TabsContent value="single_schedule" className="py-4">
+                  <Card className="p-5">
+                    <CardTitle>Booking single</CardTitle>
+                    <CardDescription>
+                      Book a court for a one-time session. Flexible for casual
+                      players.
+                    </CardDescription>
+                    <CardContent className="mt-5">
+                      <CalendarDaily
+                        setSelectedSlots={setSelectedSlots}
+                        setDay={setSelectDay}
+                      />
+                      <TimeSlot
+                        selectedSlots={selectedSlots}
+                        setSelectedSlots={setSelectedSlots}
+                        timeSlotData={timeSlots}
+                        endSlot={endSlot}
+                        startSlot={startSlot}
+                        setEndSlot={setEndSlot}
+                        setStartSlot={setStartSlot}
+                      />
+
+                      {selectedSlots.length !== 0 && (
+                        <div className="mx-auto mt-6 max-w-2xl">
+                          <h3 className="mb-2 text-lg font-bold">
+                            Select Badminton Court
+                          </h3>
+                          <div className="grid grid-cols-2 gap-4">
+                            {data?.data?.courts.map((value: ICourt) => (
+                              <Card
+                                key={value._id}
+                                className={`cursor-pointer ${
+                                  selectedCourt !== null &&
+                                  selectedCourt._id === value._id
+                                    ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                                    : "hover:bg-muted"
+                                }`}
+                                onClick={() => handleCourtSelection(value)}
+                              >
+                                <CardContent className="grid gap-4 overflow-hidden p-5">
+                                  <div className="flex items-center gap-4">
+                                    <div
+                                      className={`cursor-pointer rounded-lg object-cover p-2 ${
+                                        selectedCourt !== null &&
+                                        selectedCourt._id === value._id
+                                          ? " bg-slate-500 stroke-white "
+                                          : " border-white text-white "
+                                      }`}
+                                    >
+                                      <Icons.BadmintonCourt className="rounded-lg object-cover" />
+                                    </div>
+                                    <div>
+                                      <h3 className="font-semibold">
+                                        {value.name}
+                                      </h3>
+                                      <span
+                                        className={`text-sm ${
+                                          selectedCourt !== null &&
+                                          selectedCourt._id === value._id
+                                            ? " text-slate-300 dark:text-slate-200 "
+                                            : "text-gray-500 dark:text-gray-400"
+                                        }`}
+                                      >
+                                        {value.description}
+                                      </span>
+                                    </div>
+                                  </div>
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                                      <CustomTag status={value.status} />
+                                    </div>
+                                    <div
+                                      className={`flex items-center gap-2 text-sm ${
+                                        selectedCourt !== null &&
+                                        selectedCourt._id === value._id
+                                          ? " text-slate-300 dark:text-slate-200 "
+                                          : "text-gray-500 dark:text-gray-400"
+                                      }`}
+                                    >
+                                      <UsersIcon className="size-4" />
+                                      <span>type: {value.type}</span>
+                                    </div>
+                                  </div>
+                                  <div className="flex items-center justify-between">
+                                    <div
+                                      className={`flex items-center gap-2 text-sm ${
+                                        selectedCourt !== null &&
+                                        selectedCourt._id === value._id
+                                          ? " text-slate-300 dark:text-slate-200 "
+                                          : "text-gray-500 dark:text-gray-400"
+                                      }`}
+                                    >
+                                      {/* <DollarSignIcon className="size-4" /> */}
+                                      <span>
+                                        {(value.price / 100).toFixed(2)}
+                                        VND/slot
+                                      </span>
+                                    </div>
+                                  </div>
+                                </CardContent>
+                              </Card>
+                            ))}
+                          </div>
+                          <div className="mt-6 flex justify-end">
+                            <Button
+                              variant="default"
+                              className="rounded-md px-6 py-2"
+                              disabled={selectedCourt == null}
+                              onClick={handleBooking}
+                            >
+                              {/* {bookingMutating && <SpinnerIcon />} */}
+                              Book Selected courts
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+              </Tabs>
             </div>
           </TabsContent>
         </Tabs>
