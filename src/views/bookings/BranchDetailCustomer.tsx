@@ -84,7 +84,7 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
           title: "Uh oh! Something went wrong.",
           description: dataRes.message || dataRes.statusText,
         });
-        throw new Error(dataRes.message || datdataResa.statusText);
+        throw new Error(dataRes.message || dataRes.statusText);
       }
       // if (data.message) {
       //   return toast({
