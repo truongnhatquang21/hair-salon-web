@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 
 import { getBranchListAPI } from "@/apiCallers/Branches";
+import { Loading } from "@/components/loading";
 import type IBadminton from "@/types/badminton";
 
 const PopularBadmintonPlaces = () => {
@@ -16,7 +17,11 @@ const PopularBadmintonPlaces = () => {
   });
 
   if (isLoading) {
-    return <p>{t("loading")}</p>; // Display loading state
+    return (
+      <div className="flex min-h-[calc(100vh_-_56px)]  items-center justify-center p-5">
+        <Loading />
+      </div>
+    );
   }
 
   if (isError) {

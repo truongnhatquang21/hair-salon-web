@@ -10,7 +10,8 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
 import { getBranchByIdAPI2 } from "@/apiCallers/Branches";
-import { type CourtType, getCourtAvailable } from "@/apiCallers/courts";
+import { getCourtAvailable } from "@/apiCallers/courts";
+import { getSlotsOfCourt } from "@/apiCallers/slots";
 import BranchDetailOverview from "@/components/branchs/BranchDetailOverview";
 import CalendarDaily from "@/components/Custom/DailyCalendar";
 import CustomTag from "@/components/CustomTag";
@@ -37,6 +38,8 @@ import type { ISlot } from "@/interfaces/slot.interface";
 import { useBookingStore } from "@/stores/bookingStore";
 import { calculateTotalPrice, getThu } from "@/utils/Helpers";
 
+import FlexibleBooking from "./FlexibleBooking";
+
 const BranchDetailCustomer = ({ slug }: { slug: string }) => {
   const router = useRouter();
   const { toast } = useToast();
@@ -49,7 +52,6 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
   const [startSlot, setStartSlot] = useState(null);
   const [endSlot, setEndSlot] = useState(null);
   const [selectedSlots, setSelectedSlots] = useState<[]>([]);
-  const [courtList, setCourtList] = useState<CourtType[]>([]);
 
   const [selectedCourt, setSelectedCourt] = useState<ICourt | null>(null);
   const [activeTab, setActiveTab] = useState("single_schedule");
@@ -57,18 +59,19 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
     queryKey: ["brachDetail"],
     queryFn: async () => getBranchByIdAPI2(slug),
   });
-  console.log("data", data);
-  const { mutateAsync: getCourtAvalableMutatue, isPending } = useMutation({
-    mutationFn: async (data: {
-      slots: ISlot[];
+
+  const {
+    mutateAsync: getSlotByCourtId,
+
+    data: SlotOfCourt,
+  } = useMutation({
+    mutationFn: async (dataReq: {
       date: Date | undefined;
-      branch: string;
+      courtId: string | undefined;
     }) => {
-      return getCourtAvailable(data);
+      return getSlotsOfCourt(dataReq);
     },
     onSuccess: (dataRes) => {
-      console.log(dataRes);
-
       if (!dataRes.ok) {
         // if (data.error) {
         //   const errs = data.error as { [key: string]: { message: string } };
@@ -86,21 +89,42 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
         });
         throw new Error(dataRes.message || dataRes.statusText);
       }
-      // if (data.message) {
-      //   return toast({
-      //     variant: "default",
-      //     className: "bg-green-600 text-white",
-      //     title: "Message from system",
-      //     description: data.message,
-      //   });
-      // }
-      return toast({
-        variant: "default",
-        title: "Submitted successfully",
-        description: "You can do something else now",
-      });
     },
   });
+  console.log(SlotOfCourt);
+  const {
+    mutateAsync: getCourtAvalableMutatue,
+    isPending,
+    data: CourtData,
+  } = useMutation({
+    mutationFn: async (data: {
+      slots: ISlot[];
+      date: Date | undefined;
+      branch: string;
+    }) => {
+      return getCourtAvailable(data);
+    },
+    onSuccess: (dataRes) => {
+      if (!dataRes.ok) {
+        // if (data.error) {
+        //   const errs = data.error as { [key: string]: { message: string } };
+        //   Object.entries(errs).forEach(([key, value]) => {
+        //     setError(key as keyof PackageCourtSchemaType, {
+        //       type: "manual",
+        //       message: value.message,
+        //     });
+        //   });
+        // }
+        toast({
+          variant: "destructive",
+          title: "Uh oh! Something went wrong.",
+          description: dataRes.message || dataRes.statusText,
+        });
+        throw new Error(dataRes.message || dataRes.statusText);
+      }
+    },
+  });
+  console.log("data", CourtData);
   const handleCourtSelection = (court: ICourt) => {
     if (selectedCourt?._id === court._id) {
       setSelectedCourt(null);
@@ -144,15 +168,22 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
   }, [data?.data?.slots, selectDay]);
 
   useEffect(() => {
-    if (selectedSlots.length != 0) {
+    if (selectedSlots.length !== 0) {
       getCourtAvalableMutatue({
         branch: slug,
         slots: selectedSlots,
         date: selectDay,
       });
     }
-  }, [selectDay, selectedSlots, slug]);
-
+  }, [getCourtAvalableMutatue, selectDay, selectedSlots, slug]);
+  useEffect(() => {
+    if (selectedSlots.length !== 0) {
+      getSlotByCourtId({
+        courtId: selectedCourt?._id,
+        date: selectDay,
+      });
+    }
+  }, [getSlotByCourtId, selectDay, selectedCourt, selectedSlots, slug]);
   if (isLoading) {
     return (
       <div className="flex min-h-[calc(100vh_-_56px)]  items-center justify-center p-5">
@@ -219,6 +250,8 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
                 value={activeTab}
                 onValueChange={(value) => {
                   setSelectedSlots([]);
+                  setStartSlot(null);
+                  setEndSlot(null);
                   setActiveTab(value);
                 }}
               >
@@ -271,7 +304,7 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
                             Select Badminton Court
                           </h3>
                           <div className="grid grid-cols-2 gap-4">
-                            {data?.data?.courts.map((value: ICourt) => (
+                            {CourtData?.data?.map((value: ICourt) => (
                               <Card
                                 key={value._id}
                                 className={`cursor-pointer ${
@@ -299,11 +332,11 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
                                         {value.name}
                                       </h3>
                                       <span
-                                        className={`text-sm ${
+                                        className={`line-clamp-3  text-sm ${
                                           selectedCourt !== null &&
                                           selectedCourt._id === value._id
                                             ? " text-slate-300 dark:text-slate-200 "
-                                            : "text-gray-500 dark:text-gray-400"
+                                            : "  text-gray-500 dark:text-gray-400 "
                                         }`}
                                       >
                                         {value.description}
@@ -369,7 +402,22 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
                       Book a court with the option to reschedule. Great for busy
                       schedules.
                     </CardDescription>
-                    <CardContent className="mt-5">Flexible</CardContent>
+                    <CardContent className="mt-5">
+                      <FlexibleBooking
+                        courts={data.data.courts}
+                        handleCourtSelection={handleCourtSelection}
+                        selectedCourt={selectedCourt}
+                        selectDay={selectDay}
+                        setSelectDay={setSelectDay}
+                        setSelectedSlots={setSelectedSlots}
+                        selectedSlots={selectedSlots}
+                        endSlot={endSlot}
+                        startSlot={startSlot}
+                        setEndSlot={setEndSlot}
+                        setStartSlot={setStartSlot}
+                        timeSlotData={SlotOfCourt}
+                      />
+                    </CardContent>
                   </Card>
                 </TabsContent>
                 <TabsContent value="single_schedule" className="py-4">
@@ -400,7 +448,7 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
                             Select Badminton Court
                           </h3>
                           <div className="grid grid-cols-2 gap-4">
-                            {data?.data?.courts.map((value: ICourt) => (
+                            {CourtData?.data?.map((value: ICourt) => (
                               <Card
                                 key={value._id}
                                 className={`cursor-pointer ${
@@ -428,7 +476,7 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
                                         {value.name}
                                       </h3>
                                       <span
-                                        className={`text-sm ${
+                                        className={`line-clamp-3 text-sm ${
                                           selectedCourt !== null &&
                                           selectedCourt._id === value._id
                                             ? " text-slate-300 dark:text-slate-200 "

@@ -18,6 +18,15 @@ import CustomTag from "@/components/CustomTag";
 import { Icons } from "@/components/icons";
 import { Loading } from "@/components/loading";
 import SpinnerIcon from "@/components/SpinnerIcon";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import AutoForm, { AutoFormSubmit } from "@/components/ui/auto-form";
 import { Button } from "@/components/ui/button";
 import {
@@ -53,7 +62,6 @@ import type { ISchedule } from "@/interfaces/schedule.interface";
 import cardimg from "@/public/assets/images/cardbank.png";
 import vnpay from "@/public/assets/images/vnpay.png";
 import { useBookingStore } from "@/stores/bookingStore";
-
 // type Props = {
 //   branchId: String;
 // };
@@ -64,20 +72,21 @@ const cardSchema = z.object({
   expDate: z.coerce.date(),
 });
 
-const orderSchema = z.object({
-  // totalCourt: z.number(),
-  paymentId: z
+const bookingTransactionSchema = z.object({
+  amount: z.number(),
+  payment: z
     .string({
       required_error: "Please select a payment method",
     })
     .min(1, "Please select a payment method"),
   // packageId: z.string(),
 });
-export type OrderSchemaType = z.infer<typeof orderSchema>;
+export type OrderSchemaType = z.infer<typeof bookingTransactionSchema>;
 export type CardSchemaType = z.infer<typeof cardSchema>;
 const ConfirmBooking = () => {
-  const [paymentType, setPaymentType] = useState("credit-card");
-  const [paymentMethod, setPaymentMethod] = useState("visa");
+  const [paymentType, setPaymentType] = useState("partial");
+  const [open, setOpen] = useState(false);
+
   const [payment, setPayment] = useState<"bank" | "tranfer">("bank");
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
   const queryClient = useQueryClient();
@@ -149,12 +158,12 @@ const ConfirmBooking = () => {
     setValue,
     getValues,
 
-    formState: { isLoading: isOrderSubmitting, errors },
+    formState: { isLoading: isBookingSubmit, errors },
   } = useForm<OrderSchemaType>({
-    resolver: zodResolver(orderSchema),
+    resolver: zodResolver(bookingTransactionSchema),
     defaultValues: {
-      // totalCourt,
-      paymentId: "",
+      amount: 0,
+      payment: "",
       // packageId: subsId,
     },
   });
@@ -163,6 +172,7 @@ const ConfirmBooking = () => {
       mutationFn: async (bookingReq: {
         booking: Omit<IBooking, "status">;
         schedule: Omit<ISchedule, "status">;
+        transaction: { amount: number; payment: string };
       }) => postBooking(bookingReq),
       onSuccess: (data) => {
         console.log(data);
@@ -178,6 +188,7 @@ const ConfirmBooking = () => {
             // });
             console.log(data.error);
           }
+          router.push("/");
 
           return toast({
             variant: "destructive",
@@ -187,28 +198,38 @@ const ConfirmBooking = () => {
         }
 
         if (data.message) {
-          return toast({
-            variant: "default",
-            className: "bg-green-600 text-white",
-            title: "Message from system",
-            description: data.message,
-          });
+          // router.push("/me/schedule");
+          // return toast({
+          //   variant: "default",
+          //   className: "bg-green-600 text-white",
+          //   title: "Message from system",
+          //   description: data.message,
+          // });
+          setOpen(true);
         }
 
-        return toast({
-          variant: "default",
-          title: "Submitted successfully",
-          description: "You can do something else now",
-        });
+        // return toast({
+        //   variant: "default",
+        //   title: "Submitted successfully",
+        //   description: "You can do something else now",
+        // });
       },
     });
   const handleBooking = async () => {
-    if (bookingData.booking && bookingData.schedule) {
-      await bookingMutation({
+    const paymentId = getValues("payment");
+    if (!paymentId) {
+      return toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: "Please choose Payment Method",
+      });
+    }
+    if (bookingData.booking && bookingData.schedule && paymentId) {
+      console.log({
         booking: {
           type: bookingData.booking.type,
           paymentType,
-          paymentMethod,
+          payment,
           totalPrice: bookingData.booking.totalPrice,
           totalHour: bookingData.booking.totalHour,
           startDate: bookingData.booking.startDate,
@@ -223,10 +244,44 @@ const ConfirmBooking = () => {
           date: bookingData.schedule?.date,
           court: bookingData.schedule.court._id,
         },
+
+        transaction: {
+          amount: bookingData.booking.totalPrice,
+          payment: getValues("payment"),
+        },
+      });
+
+      await bookingMutation({
+        booking: {
+          type: bookingData.booking.type,
+          paymentType,
+          paymentMethod: payment,
+          totalPrice: bookingData.booking.totalPrice,
+          totalHour: bookingData.booking.totalHour,
+          startDate: bookingData.booking.startDate,
+          endDate: bookingData.booking.endDate,
+          court: bookingData.booking.court._id,
+        },
+        schedule: {
+          type: bookingData.schedule.type,
+          slots: bookingData.schedule.slots,
+          startTime: bookingData.schedule?.startTime,
+          endTime: bookingData.schedule?.endTime,
+          date: bookingData.schedule?.date,
+          court: bookingData.schedule.court._id,
+        },
+
+        transaction: {
+          amount:
+            paymentType === "full"
+              ? bookingData.booking.totalPrice
+              : bookingData.booking.totalPrice / 2,
+          payment: getValues("payment"),
+        },
       });
     }
   };
-  console.log(bookingData);
+
   useEffect(() => {
     if (!bookingData.booking) {
       router.back();
@@ -368,6 +423,30 @@ const ConfirmBooking = () => {
               </div>
             </div>
           </div>
+          <div className="grid grid-cols-2 gap-6">
+            <Label htmlFor="total-hours" className="text-lg font-medium">
+              Payment Type
+            </Label>
+            <Select
+              value={paymentType}
+              onValueChange={(value) => {
+                setPaymentType(value as "partial" | "full");
+              }}
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Select a payment Type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Payment method</SelectLabel>
+                  <SelectItem value="partial">Partial</SelectItem>
+                  <SelectItem value="full" disabled>
+                    Full
+                  </SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
 
           <div className="flex w-full flex-col gap-2 rounded-md border-2 border-dashed p-2">
             <span className="flex items-center  justify-between border-b py-2 font-semibold">
@@ -441,7 +520,7 @@ const ConfirmBooking = () => {
                 ) : cardList?.data?.length ? (
                   <RadioGroup
                     onValueChange={(value) => {
-                      setValue("paymentId", value);
+                      setValue("payment", value);
                     }}
                   >
                     {cardList?.data.map((card) => (
@@ -640,6 +719,33 @@ const ConfirmBooking = () => {
           </Button>
         </CardFooter>
       </Card>
+
+      <AlertDialog open={open}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Booking Successfully You can go to the schedule to view more.
+            </AlertDialogTitle>
+            <AlertDialogDescription>hello</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction
+              onClick={() => {
+                router.push("/me/schedule");
+              }}
+            >
+              Go To Schedule
+            </AlertDialogAction>
+            <AlertDialogAction
+              onClick={() => {
+                router.push("/");
+              }}
+            >
+              Go Home
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

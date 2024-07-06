@@ -11,6 +11,7 @@ export const getMyBookingReceipt = async () => {
 export const postBooking = async (data: {
   booking: Omit<IBooking, "status">;
   schedule: Omit<ISchedule, "status">;
+  transaction: { amount: number; payment: string };
 }) => {
   return fetcher("booking", { method: "POST", body: JSON.stringify(data) });
 };
