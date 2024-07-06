@@ -264,7 +264,7 @@ export function FileUploader(props: FileUploaderProps) {
 }
 
 interface FileCardProps {
-  file: File;
+  file: File | string;
   onRemove: () => void;
   progress?: number;
 }
@@ -273,7 +273,23 @@ function FileCard({ file, progress, onRemove }: FileCardProps) {
   return (
     <div className="relative flex items-center space-x-4">
       <div className="flex flex-1 space-x-4">
-        {isFileWithPreview(file) ? (
+        {typeof file === "string" ? (
+          <Image
+            src={
+              file.includes("https://storage.googleapis.com/") &&
+              (file.includes(".png") ||
+                file.includes(".jpg") ||
+                file.includes(".jpeg"))
+                ? file
+                : FileIcon
+            }
+            alt={file}
+            width={48}
+            height={48}
+            loading="lazy"
+            className="aspect-square shrink-0 rounded-md object-cover"
+          />
+        ) : isFileWithPreview(file) ? (
           <Image
             src={
               file.type.includes("image")
@@ -291,11 +307,23 @@ function FileCard({ file, progress, onRemove }: FileCardProps) {
         ) : null}
         <div className="flex w-full flex-col gap-2">
           <div className="space-y-px">
-            <span className="line-clamp-1 text-sm font-medium text-foreground/80">
-              {file.name}
-            </span>
+            <a
+              href={
+                typeof file === "string"
+                  ? file
+                  : file?.preview
+                    ? file.preview
+                    : URL.createObjectURL(file)
+              }
+              target="_blank"
+              download={typeof file === "string" ? file : file.name}
+            >
+              <span className="line-clamp-1 text-sm font-medium text-foreground/80">
+                {typeof file === "string" ? file : file.name}
+              </span>
+            </a>
             <span className="text-xs text-muted-foreground">
-              {formatBytes(file.size)}
+              {typeof file === "string" ? "" : formatBytes(file.size)}
             </span>
           </div>
           {progress ? <Progress value={progress} /> : null}
@@ -317,6 +345,9 @@ function FileCard({ file, progress, onRemove }: FileCardProps) {
   );
 }
 
-function isFileWithPreview(file: File): file is File & { preview: string } {
+function isFileWithPreview(
+  file: File | string
+): file is File & { preview: string } {
+  if (typeof file === "string") return false;
   return "preview" in file && typeof file.preview === "string";
 }

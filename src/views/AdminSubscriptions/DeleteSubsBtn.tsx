@@ -67,7 +67,7 @@ const DeleteSubsBtn = ({ id, Trigger }: Props) => {
   };
   return (
     <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
-      <AlertDialogTrigger>{Trigger}</AlertDialogTrigger>
+      <AlertDialogTrigger className="w-full">{Trigger}</AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>

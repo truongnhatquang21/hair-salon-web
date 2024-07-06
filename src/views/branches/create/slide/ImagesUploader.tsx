@@ -13,9 +13,7 @@ import type { Steppers } from "@/hooks/useStepper";
 import { useBranchStepStore } from "@/stores/createBranchStore";
 
 const schema = z.object({
-  images: z.array(z.instanceof(File), {
-    message: "Please upload image",
-  }),
+  images: z.any(),
 });
 
 type Props = {
@@ -98,6 +96,22 @@ const ImagesUploader = ({ goBackfn, goNextFn, steppers, stepIndex }: Props) => {
         </Button> */}
       </div>
       <div className="relative flex items-center border-t p-2">
+        {/* <AutoForm
+          formSchema={schema}
+          controlForm={form}
+          fieldConfig={{
+            images: {
+              inputProps: {
+                value: initialValues.images,
+              },
+              fieldType: FileUploadFileTypeWithAccept({
+                accept: {
+                  "image/*": [".jpeg", ".png", `.jpg`],
+                },
+              }),
+            },
+          }}
+        /> */}
         <FormField
           name="images"
           control={form.control}

@@ -41,7 +41,7 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
         <aside className=" rounded-md border-r pr-3 lg:w-1/5  ">
           <SidebarNav items={sidebarNavItems} />
         </aside>
-        <div className="max-w-xl flex-1 ">{children}</div>
+        <div className=" flex-1 ">{children}</div>
       </div>
     </div>
   );

@@ -1,11 +1,11 @@
 import React from "react";
 
-import RequestBranchList from "@/views/requestedBranches/RequestBranchList";
+import OperatorList from "@/views/operator/OperatorList";
 
 type Props = {};
 
 const page = (props: Props) => {
-  return <RequestBranchList />;
+  return <OperatorList />;
 };
 
 export default page;
