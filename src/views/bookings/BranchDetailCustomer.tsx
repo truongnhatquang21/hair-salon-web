@@ -98,8 +98,8 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
     data: CourtData,
   } = useMutation({
     mutationFn: async (data: {
-      slots: ISlot[];
-      date: Date | undefined;
+      slots: string[];
+      date: string | undefined;
       branch: string;
     }) => {
       return getCourtAvailable(data);
@@ -171,19 +171,19 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
     if (selectedSlots.length !== 0) {
       getCourtAvalableMutatue({
         branch: slug,
-        slots: selectedSlots,
-        date: selectDay,
+        slots: selectedSlots.map((el) => el._id),
+        date: format(selectDay?.toString(), "yyyy-MM-dd"),
       });
     }
   }, [getCourtAvalableMutatue, selectDay, selectedSlots, slug]);
-  useEffect(() => {
-    if (selectedSlots.length !== 0) {
-      getSlotByCourtId({
-        courtId: selectedCourt?._id,
-        date: selectDay,
-      });
-    }
-  }, [getSlotByCourtId, selectDay, selectedCourt, selectedSlots, slug]);
+  // useEffect(() => {
+  //   if (selectedSlots.length !== 0 && selectedCourt?._id !== "") {
+  //     getSlotByCourtId({
+  //       courtId: selectedCourt?._id,
+  //       date: selectDay,
+  //     });
+  //   }
+  // }, [getSlotByCourtId, selectDay, selectedCourt, selectedSlots, slug]);
   if (isLoading) {
     return (
       <div className="flex min-h-[calc(100vh_-_56px)]  items-center justify-center p-5">
@@ -288,6 +288,8 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
                       <CalendarDaily
                         setSelectedSlots={setSelectedSlots}
                         setDay={setSelectDay}
+                        setEndSlot={setEndSlot}
+                        setStartSlot={setStartSlot}
                       />
                       <TimeSlot
                         selectedSlots={selectedSlots}
@@ -431,6 +433,8 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
                       <CalendarDaily
                         setSelectedSlots={setSelectedSlots}
                         setDay={setSelectDay}
+                        setEndSlot={setEndSlot}
+                        setStartSlot={setStartSlot}
                       />
                       <TimeSlot
                         selectedSlots={selectedSlots}

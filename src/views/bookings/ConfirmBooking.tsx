@@ -4,10 +4,10 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { format } from "date-fns";
 import { Eye, Plus, UsersIcon } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { format } from "path";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -188,7 +188,7 @@ const ConfirmBooking = () => {
             // });
             console.log(data.error);
           }
-          router.push("/");
+          // router.back();
 
           return toast({
             variant: "destructive",
@@ -224,7 +224,12 @@ const ConfirmBooking = () => {
         description: "Please choose Payment Method",
       });
     }
-    if (bookingData.booking && bookingData.schedule && paymentId) {
+
+    if (
+      bookingData.booking.type === "single_schedule" &&
+      bookingData.schedule &&
+      paymentId
+    ) {
       console.log({
         booking: {
           type: bookingData.booking.type,
@@ -279,9 +284,91 @@ const ConfirmBooking = () => {
           payment: getValues("payment"),
         },
       });
+    } else if (
+      bookingData.booking.type === "permanent_schedule" &&
+      bookingData.schedule &&
+      paymentId
+    ) {
+      const endDate1month = new Date(bookingData.booking.endDate);
+      endDate1month.setMonth(endDate1month.getMonth() + 1);
+
+      console.log({
+        booking: {
+          type: bookingData.booking.type,
+          paymentType,
+          payment,
+          totalPrice: bookingData.booking.totalPrice,
+          totalHour: bookingData.booking.totalHour,
+          startDate: bookingData.booking.startDate,
+          endDate: format(endDate1month.toString(), "yyyy-MM-dd"),
+          court: bookingData.booking.court._id,
+        },
+        schedule: {
+          type: bookingData.schedule.type,
+          slots: bookingData.schedule.slots,
+          startTime: bookingData.schedule?.startTime,
+          endTime: bookingData.schedule?.endTime,
+          date: bookingData.schedule?.date,
+          court: bookingData.schedule.court._id,
+        },
+
+        transaction: {
+          amount: bookingData.booking.totalPrice,
+          payment: getValues("payment"),
+        },
+      });
+      // const allDates = [];
+
+      // for (
+      //   let currentDate = moment(booking.startDate, "YYYY-MM-DD").clone();
+      //   currentDate <= moment(booking.endDate);
+      //   currentDate.add(1, "days")
+      // ) {
+      //   // Check if the current date's weekday matches the permanent slot's preferred day
+      //   if (currentDate.day() === moment(schedule.date).day()) {
+      //     // 0 = Sunday, 1 = Monday, etc.
+      //     allDates.push(new Date(currentDate.toDate()));
+      //   }
+      // }
+      await bookingMutation({
+        booking: {
+          type: bookingData.booking.type,
+          paymentType,
+          paymentMethod: payment,
+          totalPrice: bookingData.booking.totalPrice,
+          totalHour: bookingData.booking.totalHour,
+          startDate: bookingData.booking.startDate,
+          endDate: format(endDate1month.toString(), "yyyy-MM-dd"),
+          court: bookingData.booking.court._id,
+        },
+        schedule: {
+          type: bookingData.schedule.type,
+          slots: bookingData.schedule.slots,
+          startTime: bookingData.schedule?.startTime,
+          endTime: bookingData.schedule?.endTime,
+          date: bookingData.schedule?.date,
+          court: bookingData.schedule.court._id,
+        },
+
+        transaction: {
+          amount:
+            paymentType === "full"
+              ? bookingData.booking.totalPrice
+              : bookingData.booking.totalPrice / 2,
+          payment: getValues("payment"),
+        },
+      });
     }
   };
+  const getEndDate = () => {
+    if (bookingData?.booking?.type === "permanent_schedule") {
+      const endDate1month = new Date(bookingData.booking.endDate);
+      endDate1month.setMonth(endDate1month.getMonth() + 1);
+      return format(endDate1month.toString(), "yyyy-MM-dd");
+    }
 
+    return bookingData.booking?.endDate;
+  };
   useEffect(() => {
     if (!bookingData.booking) {
       router.back();
@@ -316,7 +403,7 @@ const ConfirmBooking = () => {
                 End Date
               </Label>
               <div id="end-date" className="mt-2 text-sm font-medium">
-                {bookingData.booking?.endDate}
+                {getEndDate()}
               </div>
             </div>
           </div>
@@ -363,7 +450,7 @@ const ConfirmBooking = () => {
                       {bookingData.booking?.court.name}
                     </h3>
                     <span
-                      className={`text-sm 
+                      className={`line-clamp-3 text-sm
                        text-gray-500 dark:text-gray-400
                   `}
                     >
@@ -410,7 +497,7 @@ const ConfirmBooking = () => {
                 Total Price
               </Label>
               <div id="total-price" className="mt-2 text-2xl font-bold">
-                {(bookingData?.booking?.totalPrice / 100).toFixed(2)}
+                {bookingData?.booking?.totalPrice}
                 VND
               </div>
             </div>
@@ -424,28 +511,39 @@ const ConfirmBooking = () => {
             </div>
           </div>
           <div className="grid grid-cols-2 gap-6">
-            <Label htmlFor="total-hours" className="text-lg font-medium">
-              Payment Type
-            </Label>
-            <Select
-              value={paymentType}
-              onValueChange={(value) => {
-                setPaymentType(value as "partial" | "full");
-              }}
-            >
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Select a payment Type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>Payment method</SelectLabel>
-                  <SelectItem value="partial">Partial</SelectItem>
-                  <SelectItem value="full" disabled>
-                    Full
-                  </SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+            <div className="">
+              <Label htmlFor="total-price" className="text-lg font-medium">
+                Amount
+              </Label>
+              <div id="total-price" className="mt-2 text-2xl font-bold">
+                {paymentType == "full"
+                  ? bookingData?.booking?.totalPrice
+                  : bookingData?.booking?.totalPrice / 2}
+                VND
+              </div>
+            </div>
+            <div className="">
+              <Label htmlFor="total-hours" className="text-lg font-medium">
+                Payment Type
+              </Label>
+              <Select
+                value={paymentType}
+                onValueChange={(value) => {
+                  setPaymentType(value as "partial" | "full");
+                }}
+              >
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Select a payment Type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Payment Type</SelectLabel>
+                    <SelectItem value="partial">Partial</SelectItem>
+                    <SelectItem value="full">Full</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           <div className="flex w-full flex-col gap-2 rounded-md border-2 border-dashed p-2">
@@ -723,10 +821,11 @@ const ConfirmBooking = () => {
       <AlertDialog open={open}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>
-              Booking Successfully You can go to the schedule to view more.
-            </AlertDialogTitle>
-            <AlertDialogDescription>hello</AlertDialogDescription>
+            <AlertDialogTitle>Booking Successfully!</AlertDialogTitle>
+            <AlertDialogDescription>
+              Please check your mail.
+              <br /> You can go to the schedule to view more.
+            </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogAction

@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { Eye, KeyRound, Plus, Rocket } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { z } from "zod";
 
@@ -58,7 +59,7 @@ const Account = (props: Props) => {
     queryKey: ["myProfile"],
     queryFn: async () => getProfileAPI(),
   });
-
+  const router = useRouter();
   const { toast } = useToast();
   const {
     mutateAsync: triggerChangePassword,
@@ -70,7 +71,7 @@ const Account = (props: Props) => {
     onSuccess: (data) => {
       console.log(data);
 
-      if (data.ok && !data.ok) {
+      if ((data.ok && !data.ok) || data.status === 400) {
         // if (data.error) {
         //   const errs = data.error as { [key: string]: { message: string } };
         //   Object.entries(errs).forEach(([key, value]) => {
@@ -95,6 +96,7 @@ const Account = (props: Props) => {
           description: data.message,
         });
       }
+
       return toast({
         variant: "default",
         title: "Submitted successfully",
@@ -164,6 +166,7 @@ const Account = (props: Props) => {
     try {
       await triggerChangePassword(value);
       setIsChangePasswordDialogOpen(false);
+      router.push("/sign-in");
       signOut();
     } catch (error) {
       console.log(error);
