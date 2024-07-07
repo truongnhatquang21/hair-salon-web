@@ -61,7 +61,7 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
 
   const {
     mutateAsync: getCourtAvalableMutatue,
-    isPending,
+
     data: CourtData,
   } = useMutation({
     mutationFn: async (data: {
@@ -91,7 +91,7 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
       }
     },
   });
-  console.log("data", CourtData);
+
   const handleCourtSelection = (court: ICourt) => {
     if (selectedCourt?._id === court._id) {
       setSelectedCourt(null);
@@ -101,7 +101,7 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
   };
 
   const handleBooking = async () => {
-    if (selectedCourt !== null) {
+    if (selectedCourt !== null && selectDay) {
       if (activeTab !== "flexible_schedule") {
         setBooking({
           booking: {

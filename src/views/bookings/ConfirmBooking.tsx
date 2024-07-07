@@ -122,29 +122,27 @@ const ConfirmBooking = () => {
           });
           throw new Error(data.message || data.statusText);
         }
-        if (data.message) {
-          return toast({
-            variant: "default",
-            className: "bg-green-600 text-white",
-            title: "Message from system",
-            description: data.message,
-          });
-        }
-        return toast({
-          variant: "default",
-          title: "Submitted successfully",
-          description: "You can do something else now",
-        });
+        // if (data.message) {
+        //   return toast({
+        //     variant: "default",
+        //     className: "bg-green-600 text-white",
+        //     title: "Message from system",
+        //     description: data.message,
+        //   });
+        // }
+        // return toast({
+        //   variant: "default",
+        //   title: "Submitted successfully",
+        //   description: "You can do something else now",
+        // });
       },
     });
-  console.log(dayOfPermanent);
+
   const { mutateAsync: triggerAddCard, isPending } = useMutation({
     mutationFn: async (data: CardSchemaType) => {
       return addCardAPI(data);
     },
     onSuccess: (data) => {
-      console.log(data);
-
       if (data.ok && !data.ok) {
         // if (data.error) {
         //   const errs = data.error as { [key: string]: { message: string } };
@@ -194,13 +192,7 @@ const ConfirmBooking = () => {
       bookingData: state.bookingData,
     };
   });
-  const {
-    trigger,
-    setValue,
-    getValues,
-
-    formState: { isLoading: isBookingSubmit, errors },
-  } = useForm<OrderSchemaType>({
+  const { trigger, setValue, getValues } = useForm<OrderSchemaType>({
     resolver: zodResolver(bookingTransactionSchema),
     defaultValues: {
       amount: 0,
@@ -216,20 +208,10 @@ const ConfirmBooking = () => {
         transaction: { amount: number; payment: string };
       }) => postBooking(bookingReq),
       onSuccess: (data) => {
-        console.log(data);
-
         if (!data.ok) {
           if (data.error) {
-            // const errs = data.error as { [key: string]: { message: string } };
-            // Object.entries(errs).forEach(([key, value]) => {
-            //   setError(key as keyof PackageCourtSchemaType, {
-            //     type: "manual",
-            //     message: value.message,
-            //   });
-            // });
             console.log(data.error);
           }
-          // router.back();
 
           return toast({
             variant: "destructive",
@@ -239,21 +221,8 @@ const ConfirmBooking = () => {
         }
 
         if (data.message) {
-          // router.push("/me/schedule");
-          // return toast({
-          //   variant: "default",
-          //   className: "bg-green-600 text-white",
-          //   title: "Message from system",
-          //   description: data.message,
-          // });
           setOpen(true);
         }
-
-        // return toast({
-        //   variant: "default",
-        //   title: "Submitted successfully",
-        //   description: "You can do something else now",
-        // });
       },
     });
   const handleBooking = async () => {
@@ -339,7 +308,8 @@ const ConfirmBooking = () => {
           paymentType,
           payment,
           totalPrice: bookingData.booking.totalPrice,
-          totalHour: bookingData.booking.totalHour,
+          totalHour:
+            bookingData.booking.totalHour * dayOfPermanent?.data.length,
           startDate: bookingData.booking.startDate,
           endDate: format(endDate1month.toString(), "yyyy-MM-dd"),
           court: bookingData.booking.court._id,
@@ -358,26 +328,22 @@ const ConfirmBooking = () => {
           payment: getValues("payment"),
         },
       });
-      // const allDates = [];
 
-      // for (
-      //   let currentDate = moment(booking.startDate, "YYYY-MM-DD").clone();
-      //   currentDate <= moment(booking.endDate);
-      //   currentDate.add(1, "days")
-      // ) {
-      //   // Check if the current date's weekday matches the permanent slot's preferred day
-      //   if (currentDate.day() === moment(schedule.date).day()) {
-      //     // 0 = Sunday, 1 = Monday, etc.
-      //     allDates.push(new Date(currentDate.toDate()));
-      //   }
-      // }
       await bookingMutation({
         booking: {
           type: bookingData.booking.type,
           paymentType,
           paymentMethod: payment,
-          totalPrice: bookingData.booking.totalPrice,
-          totalHour: bookingData.booking.totalHour,
+          totalPrice:
+            paymentType === "full"
+              ? bookingData.booking.totalPrice * dayOfPermanent?.data.length
+              : (bookingData.booking.totalPrice * dayOfPermanent?.data.length) /
+                2,
+          totalHour:
+            paymentType === "full"
+              ? bookingData.booking.totalHour * dayOfPermanent?.data.length
+              : (bookingData.booking.totalHour * dayOfPermanent?.data.length) /
+                2,
           startDate: bookingData.booking.startDate,
           endDate: format(endDate1month.toString(), "yyyy-MM-dd"),
           court: bookingData.booking.court._id,
@@ -394,8 +360,9 @@ const ConfirmBooking = () => {
         transaction: {
           amount:
             paymentType === "full"
-              ? bookingData.booking.totalPrice
-              : bookingData.booking.totalPrice / 2,
+              ? bookingData.booking.totalPrice * dayOfPermanent?.data.length
+              : (bookingData.booking.totalPrice * dayOfPermanent?.data.length) /
+                2,
           payment: getValues("payment"),
         },
       });
@@ -420,7 +387,7 @@ const ConfirmBooking = () => {
         endDate: format(endDate1month.toString(), "yyyy-MM-dd"),
       });
     }
-  }, [bookingData.booking, getDayOfPermanentMutate, paymentType]);
+  }, [bookingData.booking, getDayOfPermanentMutate]);
 
   useEffect(() => {
     if (!bookingData.booking) {
@@ -436,7 +403,7 @@ const ConfirmBooking = () => {
         </p>
       </div>
       <div
-        className={`grid grid-cols-2   gap-6  ${bookingData.booking?.type === "permanent_schedule" && "grid-cols-3"}`}
+        className={` gap-6     ${bookingData.booking?.type === "permanent_schedule" ? "grid grid-cols-3" : "flex justify-center"}`}
       >
         {bookingData.booking?.type === "permanent_schedule" && (
           <Card className="col-span-1  rounded-lg shadow-lg">
@@ -479,7 +446,7 @@ const ConfirmBooking = () => {
         )}
 
         <Card
-          className={` col-span-2 rounded-lg shadow-lg  ${bookingData.booking?.type === "permanent_schedule" && "col-span-2"}`}
+          className={`rounded-lg shadow-lg  ${bookingData.booking?.type === "permanent_schedule" ? "col-span-2" : "w-1/2"}`}
         >
           <CardHeader className="rounded-t-lg bg-primary px-6 py-4 text-primary-foreground">
             <CardTitle className="text-center text-2xl font-semibold">
@@ -595,7 +562,10 @@ const ConfirmBooking = () => {
                   Total Price
                 </Label>
                 <div id="total-price" className="mt-2 text-2xl font-bold">
-                  {bookingData?.booking?.totalPrice}
+                  {bookingData.booking?.type === "permanent_schedule"
+                    ? bookingData?.booking?.totalPrice *
+                      dayOfPermanent?.data?.length
+                    : bookingData?.booking?.totalPrice}
                   VND
                 </div>
               </div>
@@ -604,7 +574,10 @@ const ConfirmBooking = () => {
                   Total Hours
                 </Label>
                 <div id="total-hours" className="mt-2 text-2xl font-bold">
-                  {bookingData.booking?.totalHour}
+                  {bookingData.booking?.type === "permanent_schedule"
+                    ? bookingData?.booking?.totalHour *
+                      dayOfPermanent?.data?.length
+                    : bookingData?.booking?.totalHour}
                 </div>
               </div>
             </div>
@@ -614,9 +587,16 @@ const ConfirmBooking = () => {
                   Amount
                 </Label>
                 <div id="total-price" className="mt-2 text-2xl font-bold">
-                  {paymentType == "full"
-                    ? bookingData?.booking?.totalPrice
-                    : bookingData?.booking?.totalPrice / 2}
+                  {paymentType === "full"
+                    ? bookingData.booking?.type === "permanent_schedule"
+                      ? bookingData?.booking?.totalPrice *
+                        dayOfPermanent?.data?.length
+                      : bookingData?.booking?.totalPrice
+                    : bookingData.booking?.type === "permanent_schedule"
+                      ? (bookingData?.booking?.totalPrice *
+                          dayOfPermanent?.data?.length) /
+                        2
+                      : bookingData?.booking?.totalPrice / 2}
                   VND
                 </div>
               </div>
