@@ -70,30 +70,33 @@ export default function CustomCalendar() {
     },
   });
   console.log("schedule: ", scheduleCustomer);
-  const eventData = scheduleCustomer?.data.Pending.map((el) => {
-    const calculateStart = () => {
-      const parsedDate = new Date(el.date);
+  const eventData =
+    scheduleCustomer?.data.length == 0
+      ? []
+      : scheduleCustomer?.data.Available.map((el) => {
+          const calculateStart = () => {
+            const parsedDate = new Date(el.date);
 
-      parsedDate.setHours(...el.startTime.split(":").map(Number));
+            parsedDate.setHours(...el.startTime.split(":").map(Number));
 
-      return parsedDate;
-    };
-    const calculateEnd = () => {
-      const parsedDate = new Date(el.date);
+            return parsedDate;
+          };
+          const calculateEnd = () => {
+            const parsedDate = new Date(el.date);
 
-      parsedDate.setHours(...el.endTime.split(":").map(Number));
+            parsedDate.setHours(...el.endTime.split(":").map(Number));
 
-      return parsedDate;
-    };
-    const starTime = calculateStart();
-    const endDate = calculateEnd();
-    return {
-      id: el._id,
-      title: el.booking,
-      start: starTime,
-      end: endDate,
-    };
-  });
+            return parsedDate;
+          };
+          const starTime = calculateStart();
+          const endDate = calculateEnd();
+          return {
+            id: el._id,
+            title: el.court.name,
+            start: starTime,
+            end: endDate,
+          };
+        });
   return (
     <div className="h-[70vh]">
       {isLoading ? (

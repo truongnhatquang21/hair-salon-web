@@ -45,6 +45,8 @@ const FlexibleBooking = ({
       <CalendarDaily
         setSelectedSlots={setSelectedSlots}
         setDay={setSelectDay}
+        setEndSlot={setEndSlot}
+        setStartSlot={setStartSlot}
       />
 
       {selectDay && (

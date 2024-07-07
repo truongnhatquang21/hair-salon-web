@@ -1,8 +1,12 @@
-import { Badge } from "lucide-react";
-import { Input } from "postcss";
-import { Button } from "react-day-picker";
+"use client";
 
+import { useState } from "react";
+import { useZxing } from "react-zxing";
+
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 
 function QrCodeIcon(props) {
   return (
@@ -34,6 +38,13 @@ function QrCodeIcon(props) {
   );
 }
 const CheckInPage = () => {
+  const [result, setResult] = useState("");
+  const { ref } = useZxing({
+    onDecodeResult(result) {
+      console.log(result);
+      setResult(result.getText());
+    },
+  });
   return (
     <div className="mx-auto max-w-3xl p-6 sm:p-8 md:p-10 lg:p-12">
       <div className="flex flex-col items-center gap-6">
@@ -50,6 +61,11 @@ const CheckInPage = () => {
               <p className="text-lg font-semibold">Scan QR Code</p>
               <p className="text-muted-foreground">
                 Hold your camera up to the QR code on your receipt to check in.
+              </p>
+              <video muted ref={ref} />
+              <p>
+                <span>Last result:</span>
+                <span>{result}</span>
               </p>
             </div>
             <div className="w-full max-w-[300px]">
