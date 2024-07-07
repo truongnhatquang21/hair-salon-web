@@ -34,6 +34,7 @@ type Props = {
   field: any;
   accetp?: Accept;
   defaultValue?: File[] | string[];
+  readOnly?: boolean;
 };
 
 const FileUploaderV2 = ({
@@ -42,6 +43,7 @@ const FileUploaderV2 = ({
   label,
   accetp,
   defaultValue,
+  readOnly,
 }: Props) => {
   const [loading, setLoading] = React.useState(false);
   const { uploadFiles, progresses, uploadedFiles, isUploading } = useUploadFile(
@@ -92,20 +94,20 @@ const FileUploaderV2 = ({
             description: data.message || data.statusText,
           });
         }
-        if (data.message) {
-          return toast({
-            variant: "default",
-            className: "bg-green-600 text-white",
-            title: "Message from system",
-            description: data.message,
-          });
-        }
+        // if (data.message) {
+        //   return toast({
+        //     variant: "default",
+        //     className: "bg-green-600 text-white",
+        //     title: "Message from system",
+        //     description: data.message,
+        //   });
+        // }
 
-        return toast({
-          variant: "default",
-          title: "Submitted successfully",
-          description: "You can do something else now",
-        });
+        // return toast({
+        //   variant: "default",
+        //   title: "Submitted successfully",
+        //   description: "You can do something else now",
+        // });
       },
       onError: (error) => {
         console.error("Error while posting branch", error);
@@ -161,11 +163,12 @@ const FileUploaderV2 = ({
                       </div>
                     )}
                     <FileUploader
+                      readOnly={readOnly}
                       accept={accetp}
                       value={fieldForm.value}
                       onValueChange={uploadFileChange}
-                      maxFiles={4}
-                      maxSize={4 * 1024 * 1024}
+                      maxFiles={10}
+                      maxSize={10 * 1024 * 1024}
                       progresses={progresses}
                       // pass the onUpload function here for direct upload
                       // onUpload={uploadFiles}

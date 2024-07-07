@@ -187,7 +187,13 @@ const DetailButton = ({
       <DialogContent className=" flex h-3/5 flex-col  sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>View Details</DialogTitle>
-          <DialogDescription>View details of account</DialogDescription>
+          <DialogDescription>
+            <div className="w-full rounded-md bg-yellow-500 p-2 text-white shadow-md">
+              <b>Instruction: </b>
+              You only can view the details of this account. If you want to
+              edit, please ask the owner of this account.
+            </div>
+          </DialogDescription>
         </DialogHeader>
         <div className="w-full flex-1 overflow-auto p-2">
           <AutoForm
@@ -200,63 +206,63 @@ const DetailButton = ({
               username: {
                 inputProps: {
                   readOnly: isReadOnly,
-                  defaultValue: "--",
+                  placeholder: "manager123",
                 },
               },
               email: {
                 inputProps: {
                   readOnly: isReadOnly,
-                  defaultValue: "--",
+                  placeholder: "manager@gmail.com",
                 },
               },
               status: {
                 inputProps: {
                   readOnly: isReadOnly,
-                  defaultValue: "--",
+                  placeholder: "Select status",
                 },
               },
               role: {
                 inputProps: {
                   readOnly: isReadOnly,
-                  defaultValue: "--",
+                  placeholder: "Select role",
                 },
               },
               dob: {
                 inputProps: {
                   readOnly: isReadOnly,
-                  defaultValue: "--",
+
                   disabled: true,
                 },
               },
               firstName: {
                 inputProps: {
                   readOnly: isReadOnly,
-                  defaultValue: "--",
+                  placeholder: "Manager",
                 },
               },
               lastName: {
                 inputProps: {
                   readOnly: isReadOnly,
-                  defaultValue: "--",
+                  placeholder: "Manager",
                 },
               },
               phone: {
                 inputProps: {
                   readOnly: isReadOnly,
-                  defaultValue: "--",
+                  placeholder: "0123456789",
                 },
               },
               gender: {
                 inputProps: {
                   readOnly: isReadOnly,
-                  defaultValue: "--",
+                  placeholder: "Select gender",
                 },
               },
-              payments: {
-                inputProps: {
-                  hidden: true,
-                },
-              },
+              // payments: {
+              //   inputProps: {
+              //     hidden: true,
+              //   },
+              // },
             }}
           >
             <DialogFooter className="w-full">

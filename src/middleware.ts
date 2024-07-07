@@ -4,6 +4,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import createMiddleware from "next-intl/middleware";
 
 import { auth } from "./auth";
+import { RoleEnum } from "./types";
 // import { authOptions } from "./app/api/auth/[...nextauth]/route";
 import { AppConfig } from "./utils/AppConfig";
 
@@ -37,17 +38,140 @@ const publicPages = [
   "/subscriptions",
   "/tracking",
   "/search-all-branch",
-  // "/profile",
+];
+const commonAuthPages = [
+  "/subscriptions/order/[slug]",
+  "/subscriptions/order/[slug]/checkout",
+];
+const customerPages = [
+  ...commonAuthPages,
+  "/me/account",
+  "/me/schedule",
+  "/me/receipts",
+  "/me/history",
+];
+const adminPages = [
+  ...commonAuthPages,
+  "/dashboard",
+  "/dashboard/operators",
+  "/dashboard/managers",
+  "/dashboard/customers",
+  "/dashboard/requestedBranch",
+  "/dashboard/requestedBranch/[branchId]",
+  "/dashboard/subscriptions",
+  "/history/tracking-subscription",
+  "/dashboard/account",
+];
+const operatorPages = [
+  ...commonAuthPages,
+  "/dashboard",
+  "/dashboard/managers",
+  "/dashboard/customers",
+  "/dashboard/requestedBranch",
+  "/dashboard/requestedBranch/[branchId]",
+  "/dashboard/subscriptions",
+  "/history/tracking-subscription",
+  "/dashboard/account",
 ];
 
+const managerPages = [
+  ...commonAuthPages,
+  "/dashboard",
+  "/dashboard/branches",
+  "/dashboard/branches/[branchId]",
+  "/dashboard/branches/create",
+  "/history/tracking-subscription",
+  "/dashboard/courts",
+  "/dashboard/staffs",
+  "/dashboard/reports",
+  "/dashboard/account",
+];
+const staffPages = [
+  ...commonAuthPages,
+  "/dashboard",
+  "/dashboard/courts",
+  "/dashboard/staffs",
+  "/dashboard/reports",
+  "/dashboard/account",
+];
 const authMiddleware = auth((req) => {
   const session = req.auth;
+  const role = session?.user?.role;
 
-  if (session) {
-    return intlMiddleware(req);
+  if (role) {
+    if (role === RoleEnum.ADMIN) {
+      if (adminPages.includes(req.nextUrl.pathname)) {
+        return intlMiddleware(req);
+      }
+    } else if (role === RoleEnum.OPERATOR) {
+      if (operatorPages.includes(req.nextUrl.pathname)) {
+        return intlMiddleware(req);
+      }
+    } else if (role === RoleEnum.MANAGER) {
+      if (managerPages.includes(req.nextUrl.pathname)) {
+        return intlMiddleware(req);
+      }
+    } else if (role === RoleEnum.STAFF) {
+      if (staffPages.includes(req.nextUrl.pathname)) {
+        return intlMiddleware(req);
+      }
+    } else if (role === RoleEnum.CUSTOMER) {
+      if (customerPages.includes(req.nextUrl.pathname)) {
+        return intlMiddleware(req);
+      }
+    }
   }
 
-  return NextResponse.redirect(new URL("/sign-in", req.nextUrl));
+  const regex = {
+    requestedBranch: {
+      role: [RoleEnum.ADMIN, RoleEnum.OPERATOR],
+      regex: /^\/dashboard\/requestedBranch\/[a-zA-Z0-9]+$/,
+    },
+    branches: {
+      role: [RoleEnum.MANAGER],
+      regex: /^\/dashboard\/branches\/[a-zA-Z0-9]+$/,
+    },
+    subscriptionOrder: {
+      role: [RoleEnum.ADMIN, RoleEnum.OPERATOR, RoleEnum.MANAGER],
+      regex: /^\/subscriptions\/order\/([^/]+)$/,
+    },
+    subscriptionCheckout: {
+      role: [RoleEnum.ADMIN, RoleEnum.OPERATOR, RoleEnum.MANAGER],
+      regex: /^\/subscriptions\/order\/([^/]+)\/checkout$/,
+    },
+  };
+  const { pathname } = req.nextUrl;
+
+  switch (true) {
+    case regex.requestedBranch.regex.test(pathname): {
+      if (regex.requestedBranch.role.includes(role)) {
+        return intlMiddleware(req);
+      }
+
+      return NextResponse.redirect(new URL("/sign-in", req.nextUrl));
+    }
+    case regex.branches.regex.test(pathname): {
+      if (regex.branches.role.includes(role)) {
+        return intlMiddleware(req);
+      }
+      return NextResponse.redirect(new URL("/sign-in", req.nextUrl));
+    }
+    case regex.subscriptionOrder.regex.test(pathname): {
+      if (regex.subscriptionOrder.role.includes(role)) {
+        return intlMiddleware(req);
+      }
+      return NextResponse.redirect(new URL("/sign-in", req.nextUrl));
+    }
+    case regex.subscriptionCheckout.regex.test(pathname): {
+      if (regex.subscriptionCheckout.role.includes(role)) {
+        return intlMiddleware(req);
+      }
+      return NextResponse.redirect(new URL("/sign-in", req.nextUrl));
+    }
+    default: {
+      return intlMiddleware(req);
+    }
+  }
 });
 
 export default function middleware(req: NextRequest) {
@@ -60,7 +184,23 @@ export default function middleware(req: NextRequest) {
   if (isPublicPage) {
     return intlMiddleware(req);
   }
-  return (authMiddleware as any)(req);
+  const path = req.nextUrl.pathname;
+  const regex = {
+    badminton: /^\/badminton\/[a-zA-Z0-9]+$/,
+    article: /^\/article\/[a-zA-Z0-9]+$/,
+  };
+
+  switch (true) {
+    case regex.badminton.test(path): {
+      return intlMiddleware(req);
+    }
+    case regex.article.test(path): {
+      return intlMiddleware(req);
+    }
+    default: {
+      return (authMiddleware as any)(req);
+    }
+  }
 }
 
 export const config = {

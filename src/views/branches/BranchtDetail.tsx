@@ -149,7 +149,8 @@ const BranchDetail = ({ branchId }: Props) => {
   const disabled = useMemo(() => {
     if (
       branch?.status === BranchStatusEnum.PENDING ||
-      branch?.status === BranchStatusEnum.INACTIVE
+      branch?.status === BranchStatusEnum.INACTIVE ||
+      branch?.status === BranchStatusEnum.ACTIVE
     ) {
       return false;
     }
@@ -295,13 +296,13 @@ const BranchDetail = ({ branchId }: Props) => {
           <div className="flex w-full items-center justify-end gap-4">
             <div className="mr-auto flex items-center gap-2 text-2xl font-semibold">
               Branch Detail
-              <span className="text-xl font-semibold">{branch?.name}</span>
               <Badge
                 variant="default"
                 className="bg-yellow-500 px-4 py-2 text-xl text-white"
               >
                 {branch?.status}
               </Badge>
+              <span className="text-xl font-semibold">{branch?.name}</span>
               <span className="text-xs text-gray-400" />
             </div>
             <Button
@@ -343,15 +344,23 @@ const BranchDetail = ({ branchId }: Props) => {
           <div className="flex w-full items-center justify-end gap-4">
             <div className="mr-auto flex items-center gap-2 text-2xl font-semibold">
               Branch Detail
-              <span className="text-xl font-semibold">{branch?.name}</span>
               <Badge
                 variant="default"
                 className="bg-green-500 px-4 py-2 text-xl text-white"
               >
                 {branch?.status}
               </Badge>
+              <span className="text-xl font-semibold">{branch?.name}</span>
               <span className="text-xs text-gray-400" />
             </div>
+            <Button
+              onClick={() => handleUpdateBranchInformation(form.getValues())}
+              disabled={isHandleUpdateBranchData}
+              variant="default"
+              className="flex items-center justify-center"
+            >
+              {isHandleUpdateBranchData ? <SpinnerIcon /> : "Update"}
+            </Button>
             <AlertDialog open={acceptDialog} onOpenChange={setAcceptDialog}>
               <AlertDialogTrigger>
                 <Button className="flex items-center gap-2 " variant="default">
@@ -400,9 +409,8 @@ const BranchDetail = ({ branchId }: Props) => {
               <span className="font-medium">
                 This branch is currently active.
               </span>{" "}
-              If you want to update your branch information, please{" "}
-              <b>Inactive</b>
-              your branch first.
+              You can update your branch information or inactive your branch if
+              needed.
             </div>
           </div>
         </div>
@@ -414,13 +422,13 @@ const BranchDetail = ({ branchId }: Props) => {
           <div className="flex w-full items-center justify-end gap-4">
             <div className="mr-auto flex items-center gap-2 text-2xl font-semibold">
               Branch Detail
-              <span className="text-xl font-semibold">{branch?.name}</span>
               <Badge
                 variant="default"
                 className="bg-blue-500 px-4 py-2 text-xl text-white"
               >
                 {branch?.status}
               </Badge>
+              <span className="text-xl font-semibold">{branch?.name}</span>
               <span className="text-xs text-gray-400" />
             </div>
             <Button
@@ -488,13 +496,13 @@ const BranchDetail = ({ branchId }: Props) => {
           <div className="flex w-full items-center justify-end gap-4">
             <div className="mr-auto flex items-center gap-2 text-2xl font-semibold">
               Branch Detail
-              <span className="text-xl font-semibold">{branch?.name}</span>
               <Badge
                 variant="default"
                 className="bg-red-500 px-4 py-2 text-xl text-white"
               >
                 {branch?.status}
               </Badge>
+              <span className="text-xl font-semibold">{branch?.name}</span>
               <span className="text-xs text-gray-400" />
             </div>
           </div>
@@ -718,21 +726,23 @@ const BranchDetail = ({ branchId }: Props) => {
                   <div className="flex w-full flex-col gap-2 rounded-md border-2 border-dashed p-2">
                     <span className="flex border-b font-semibold">
                       Images
-                      <div className="ml-auto">
-                        <FileUploadModal
-                          field={{
-                            value: branch?.images,
-                            onChange: (value: string[]) =>
-                              form.setValue("images", value),
-                          }}
-                          isRequired
-                          label="Images"
-                          defaultValue={branch?.images}
-                          accetp={{
-                            "image/*": [".jpeg", ".png"],
-                          }}
-                        />
-                      </div>
+                      {!disabled && (
+                        <div className="ml-auto">
+                          <FileUploadModal
+                            field={{
+                              value: branch?.images,
+                              onChange: (value: string[]) =>
+                                form.setValue("images", value),
+                            }}
+                            isRequired
+                            label="Images"
+                            defaultValue={branch?.images}
+                            accetp={{
+                              "image/*": [".jpeg", ".png"],
+                            }}
+                          />
+                        </div>
+                      )}
                     </span>
 
                     <div className="grid  w-full grid-cols-6 gap-2">
@@ -768,24 +778,26 @@ const BranchDetail = ({ branchId }: Props) => {
                     {" "}
                     <span className="flex border-b font-semibold">
                       Licenses
-                      <div className="ml-auto">
-                        <FileUploadModal
-                          field={{
-                            value: branch.licenses,
-                            onChange: (value: string[]) => {
-                              form.setValue("licenses", value);
-                            },
-                          }}
-                          isRequired
-                          label="Licenses"
-                          defaultValue={branch?.licenses}
-                          accetp={{
-                            "image/*": [".jpeg", ".png", `.jpg`],
-                            "application/pdf": [".pdf"],
-                            "application/msword": [".doc"],
-                          }}
-                        />
-                      </div>
+                      {!disabled && (
+                        <div className="ml-auto">
+                          <FileUploadModal
+                            field={{
+                              value: branch.licenses,
+                              onChange: (value: string[]) => {
+                                form.setValue("licenses", value);
+                              },
+                            }}
+                            isRequired
+                            label="Licenses"
+                            defaultValue={branch?.licenses}
+                            accetp={{
+                              "image/*": [".jpeg", ".png", `.jpg`],
+                              "application/pdf": [".pdf"],
+                              "application/msword": [".doc"],
+                            }}
+                          />
+                        </div>
+                      )}
                     </span>
                     <div className="flex w-full flex-col gap-2">
                       {branch?.licenses.map((license, index) => (
@@ -885,10 +897,12 @@ const BranchDetail = ({ branchId }: Props) => {
                       {branch?.courts &&
                         branch?.courts.map((item: any) => (
                           <CourtDialog
+                            readOnly={disabled}
                             onSubmit={(data) => {
                               const res = editCourt(item.name, data);
                               return res;
                             }}
+                            invalidateKey={["branch", branchId]}
                             Trigger={
                               <div className="relative z-10 col-span-2 flex cursor-pointer items-center gap-4 rounded-md border-2 border-dashed p-3 shadow-sm hover:bg-accent">
                                 <Image
@@ -958,72 +972,75 @@ const BranchDetail = ({ branchId }: Props) => {
                   <div className="flex w-full flex-col gap-2 rounded-md border-2 border-dashed p-2">
                     <span className="flex items-center justify-between border-b font-semibold">
                       Slot registration
-                      <Dialog
-                        open={isDialogOpen}
-                        onOpenChange={setIsDialogOpen}
-                      >
-                        <DialogTrigger asChild>
-                          <Button className="ml-auto flex items-center gap-3">
-                            <BadgePlus /> Add slot
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className="max-h-[80%] overflow-auto sm:max-w-xl">
-                          <DialogHeader>
-                            <DialogTitle>Add new slot</DialogTitle>
-                            <DialogDescription>
-                              Fill out the form below to add a new court
-                            </DialogDescription>
-                          </DialogHeader>
-                          <div className="grid gap-4 py-4">
-                            <AutoForm
-                              onSubmit={slotCreate}
-                              formSchema={SlotSchema}
-                              fieldConfig={{
-                                startTime: {
-                                  fieldType: TimeFieldType,
-                                  // fieldType: TimePickerDemo,
-                                  description:
-                                    "Start time must be a valid time",
-                                },
-                                endTime: {
-                                  fieldType: TimeFieldType,
-                                  // fieldType: TimePickerDemo,
-                                  description: "End time must be a valid time",
-                                },
+                      {!disabled && (
+                        <Dialog
+                          open={isDialogOpen}
+                          onOpenChange={setIsDialogOpen}
+                        >
+                          <DialogTrigger asChild>
+                            <Button className="ml-auto flex items-center gap-3">
+                              <BadgePlus /> Add slot
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent className="max-h-[80%] overflow-auto sm:max-w-xl">
+                            <DialogHeader>
+                              <DialogTitle>Add new slot</DialogTitle>
+                              <DialogDescription>
+                                Fill out the form below to add a new court
+                              </DialogDescription>
+                            </DialogHeader>
+                            <div className="grid gap-4 py-4">
+                              <AutoForm
+                                onSubmit={slotCreate}
+                                formSchema={SlotSchema}
+                                fieldConfig={{
+                                  startTime: {
+                                    fieldType: TimeFieldType,
+                                    // fieldType: TimePickerDemo,
+                                    description:
+                                      "Start time must be a valid time",
+                                  },
+                                  endTime: {
+                                    fieldType: TimeFieldType,
+                                    // fieldType: TimePickerDemo,
+                                    description:
+                                      "End time must be a valid time",
+                                  },
 
-                                weekDay: {
-                                  inputProps: {
-                                    placeholder: "Week Day",
+                                  weekDay: {
+                                    inputProps: {
+                                      placeholder: "Week Day",
+                                    },
                                   },
-                                },
-                                surcharge: {
-                                  inputProps: {
-                                    placeholder: "Surcharge",
-                                    defaultValue: 0,
+                                  surcharge: {
+                                    inputProps: {
+                                      placeholder: "Surcharge",
+                                      defaultValue: 0,
+                                    },
+                                    description:
+                                      "Surcharge must be a positive number",
                                   },
-                                  description:
-                                    "Surcharge must be a positive number",
-                                },
-                              }}
-                            >
-                              <AutoFormSubmit className="w-full">
-                                <DialogFooter className="w-full">
-                                  <Button
-                                    className="flex w-full items-center justify-center"
-                                    type="submit"
-                                  >
-                                    {isHandleCreateSlot ? (
-                                      <SpinnerIcon />
-                                    ) : (
-                                      "Save Slot"
-                                    )}
-                                  </Button>
-                                </DialogFooter>
-                              </AutoFormSubmit>
-                            </AutoForm>
-                          </div>
-                        </DialogContent>
-                      </Dialog>
+                                }}
+                              >
+                                <AutoFormSubmit className="w-full">
+                                  <DialogFooter className="w-full">
+                                    <Button
+                                      className="flex w-full items-center justify-center"
+                                      type="submit"
+                                    >
+                                      {isHandleCreateSlot ? (
+                                        <SpinnerIcon />
+                                      ) : (
+                                        "Save Slot"
+                                      )}
+                                    </Button>
+                                  </DialogFooter>
+                                </AutoFormSubmit>
+                              </AutoForm>
+                            </div>
+                          </DialogContent>
+                        </Dialog>
+                      )}
                     </span>
                     <div className="flex w-full flex-col gap-2 overflow-auto">
                       <div className="flex w-full flex-col gap-2">
@@ -1039,31 +1056,37 @@ const BranchDetail = ({ branchId }: Props) => {
                                   {slotMaping[key]?.map((slot) => {
                                     return (
                                       <SlotDialog
+                                        invalidateKey={["branch", branchId]}
                                         key={
                                           slot.startTime +
                                           slot.endTime +
                                           slot.weekDay
                                         }
+                                        isViewOnly={disabled}
                                         Trigger={
                                           <Badge
                                             key={slot.startTime + slot.endTime}
                                             variant="secondary"
-                                            className="col-span-4 flex cursor-pointer items-center justify-between gap-1 py-2 transition-all duration-300 ease-in  hover:bg-gray-400"
+                                            className="col-span-4 flex cursor-pointer items-center  gap-1 py-2 transition-all duration-300 ease-in  hover:bg-gray-400"
                                           >
                                             <Hourglass className="text-sm" />
                                             <span className="text-xs">
                                               {`${slot.startTime}-${slot.endTime}`}
                                             </span>
-                                            <DeleteSubsBtn
-                                              Trigger={
-                                                <Trash className="bottom-1 right-1 z-30 ml-auto rounded-full bg-red-200 p-2 text-red-700 opacity-40 shadow-md transition-all duration-300 ease-in hover:scale-125 hover:opacity-100" />
-                                              }
-                                              invalidateKey={[
-                                                "branch",
-                                                branchId,
-                                              ]}
-                                              id={slot._id}
-                                            />
+                                            {!disabled && (
+                                              <div className="ml-auto">
+                                                <DeleteSubsBtn
+                                                  Trigger={
+                                                    <Trash className="bottom-1 right-1 z-30 ml-auto rounded-full bg-red-200 p-2 text-red-700 opacity-40 shadow-md transition-all duration-300 ease-in hover:scale-125 hover:opacity-100" />
+                                                  }
+                                                  invalidateKey={[
+                                                    "branch",
+                                                    branchId,
+                                                  ]}
+                                                  id={slot._id}
+                                                />
+                                              </div>
+                                            )}
                                           </Badge>
                                         }
                                         defaultValue={slot}

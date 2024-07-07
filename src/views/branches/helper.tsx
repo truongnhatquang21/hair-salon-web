@@ -1,6 +1,7 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
+import { format } from "date-fns";
 import { MoreHorizontal } from "lucide-react";
 import type { StaticImport } from "next/dist/shared/lib/get-img-props";
 import Image from "next/image";
@@ -72,7 +73,7 @@ export type BranchTypeInCreate = Omit<
   licenses: File[];
   images: File[];
 };
-export const columns: ColumnDef<BranchSchemaType>[] = [
+export const columns: ColumnDef<BranchSchemaType & { createdAt: string }>[] = [
   {
     accessorKey: "images",
     header: "Image",
@@ -122,6 +123,16 @@ export const columns: ColumnDef<BranchSchemaType>[] = [
     accessorKey: "status",
     header: ({ column }) => {
       return <DataTableColumnHeader column={column} title="Status" />;
+    },
+  },
+  {
+    accessorKey: "createdAt",
+    header: ({ column }) => {
+      return <DataTableColumnHeader column={column} title="Created at" />;
+    },
+    cell: ({ getValue }) => {
+      const data = getValue() as string;
+      return <span>{format(new Date(data), "Ppp")}</span>;
     },
   },
 

@@ -148,17 +148,19 @@ export const columns: ColumnDef<CreateStaffSchemaTypeWithId>[] = [
                 }
                 isView
               />
-              <BanButton
-                id={data._id}
-                Trigger={
-                  <DropdownMenuItem
-                    onSelect={(e) => e.preventDefault()}
-                    className="w-full text-destructive"
-                  >
-                    Ban this user
-                  </DropdownMenuItem>
-                }
-              />
+              {data.status === UserStatusEnum.ACTIVE && (
+                <BanButton
+                  id={data._id}
+                  Trigger={
+                    <DropdownMenuItem
+                      onSelect={(e) => e.preventDefault()}
+                      className="w-full text-destructive"
+                    >
+                      Ban this user
+                    </DropdownMenuItem>
+                  }
+                />
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </Dialog>

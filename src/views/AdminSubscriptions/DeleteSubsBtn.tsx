@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import React from "react";
 
-import { deleteSubscriptionListAPI } from "@/apiCallers/adminSubcription";
+import { toggleSubscriptionStatusAPI } from "@/apiCallers/adminSubcription";
 import SpinnerIcon from "@/components/SpinnerIcon";
 import {
   AlertDialog,
@@ -16,16 +16,22 @@ import {
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 
+import {
+  type PackageCourtSchemaTypeWithId,
+  PackageCourtStatusEnum,
+} from "./helper";
+
 type Props = {
-  id: string;
+  defalutValues: PackageCourtSchemaTypeWithId;
   Trigger: React.ReactNode;
 };
 
-const DeleteSubsBtn = ({ id, Trigger }: Props) => {
+const DeleteSubsBtn = ({ defalutValues, Trigger }: Props) => {
   const { toast } = useToast();
   const [isOpen, setIsOpen] = React.useState(false);
   const { mutateAsync, isPending } = useMutation({
-    mutationFn: async (data: string) => deleteSubscriptionListAPI(data),
+    mutationFn: async (data: PackageCourtSchemaTypeWithId) =>
+      toggleSubscriptionStatusAPI(data),
     onSuccess: (data) => {
       console.log(data);
 
@@ -56,9 +62,16 @@ const DeleteSubsBtn = ({ id, Trigger }: Props) => {
     },
   });
   const queryClient = useQueryClient();
-  const handleDelete = async (__id: string) => {
+  const handleDelete = async () => {
+    const prepareData = {
+      ...defalutValues,
+      status:
+        defalutValues.status === PackageCourtStatusEnum.ACTIVE
+          ? PackageCourtStatusEnum.INACTIVE
+          : PackageCourtStatusEnum.ACTIVE,
+    };
     try {
-      await mutateAsync(__id);
+      await mutateAsync(prepareData);
       setIsOpen(false);
       queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
     } catch (e) {
@@ -72,19 +85,19 @@ const DeleteSubsBtn = ({ id, Trigger }: Props) => {
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete your your
-            data from our servers.
+            You are toggling subscription status, please confirm your action
+            before click on the confirm button.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <Button
             disabled={isPending}
-            variant="destructive"
+            variant="default"
             className="flex items-center justify-center"
-            onClick={() => handleDelete(id)}
+            onClick={() => handleDelete()}
           >
-            {isPending ? <SpinnerIcon /> : "Delete"}
+            {isPending ? <SpinnerIcon /> : "Confirm"}
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>

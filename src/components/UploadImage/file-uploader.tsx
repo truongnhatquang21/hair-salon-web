@@ -91,10 +91,12 @@ interface FileUploaderProps extends React.HTMLAttributes<HTMLDivElement> {
    * @example disabled
    */
   disabled?: boolean;
+  readOnly?: boolean;
 }
 
 export function FileUploader(props: FileUploaderProps) {
   const {
+    readOnly,
     value: valueProp,
     onValueChange,
     onUpload,
@@ -193,7 +195,7 @@ export function FileUploader(props: FileUploaderProps) {
         maxSize={maxSize}
         maxFiles={maxFiles}
         multiple={maxFiles > 1 || multiple}
-        disabled={isDisabled}
+        disabled={isDisabled || readOnly}
       >
         {({ getRootProps, getInputProps, isDragActive }) => (
           <div
@@ -250,6 +252,7 @@ export function FileUploader(props: FileUploaderProps) {
           <div className="max-h-48 space-y-4">
             {files?.map((file, index) => (
               <FileCard
+                readOnly={readOnly}
                 key={index}
                 file={file}
                 onRemove={() => onRemove(index)}
@@ -267,8 +270,9 @@ interface FileCardProps {
   file: File | string;
   onRemove: () => void;
   progress?: number;
+  readOnly?: boolean;
 }
-function FileCard({ file, progress, onRemove }: FileCardProps) {
+function FileCard({ file, progress, onRemove, readOnly }: FileCardProps) {
   // console.log(file);
   return (
     <div className="relative flex items-center space-x-4">
@@ -329,18 +333,20 @@ function FileCard({ file, progress, onRemove }: FileCardProps) {
           {progress ? <Progress value={progress} /> : null}
         </div>
       </div>
-      <div className="flex items-center gap-2">
-        <Button
-          type="button"
-          variant="outline"
-          size="icon"
-          className="size-7"
-          onClick={onRemove}
-        >
-          <Cross2Icon className="size-4 " aria-hidden="true" />
-          <span className="sr-only">Remove file</span>
-        </Button>
-      </div>
+      {!readOnly && (
+        <div className="flex items-center gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            className="size-7"
+            onClick={onRemove}
+          >
+            <Cross2Icon className="size-4 " aria-hidden="true" />
+            <span className="sr-only">Remove file</span>
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
@@ -349,5 +355,5 @@ function isFileWithPreview(
   file: File | string
 ): file is File & { preview: string } {
   if (typeof file === "string") return false;
-  return "preview" in file && typeof file.preview === "string";
+  return file?.preview && typeof file.preview === "string";
 }

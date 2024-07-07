@@ -5,6 +5,7 @@ import { GeistSans } from "geist/font/sans";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider, useMessages } from "next-intl";
+import NextTopLoader from "nextjs-toploader";
 
 import { Toaster } from "@/components/ui/toaster";
 import Providers from "@/Contexts/TanstackProvider";
@@ -52,6 +53,7 @@ export default function RootLayout(props: {
       className={`${GeistSans.variable} ${GeistMono.variable}`}
     >
       <body>
+        <NextTopLoader color="gray" showSpinner={false} height={2} />
         <NextIntlClientProvider
           locale={props.params.locale}
           messages={messages}

@@ -11,7 +11,6 @@ import { z } from "zod";
 import { getProfileAPI } from "@/apiCallers/auth";
 import { changePasswordApi } from "@/apiCallers/login";
 import { addCardAPI, getCardListAPI } from "@/apiCallers/payment";
-import { signOut } from "@/auth";
 import { AccountAutoForm } from "@/components/Account/AccountForm";
 import { Loading } from "@/components/loading";
 import SpinnerIcon from "@/components/SpinnerIcon";
@@ -30,6 +29,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import cardimg from "@/public/assets/images/cardbank.png";
 import { RoleEnum } from "@/types";
+import { signOutServer } from "@/utils/serverActions";
 
 import {
   cardSchema,
@@ -167,7 +167,7 @@ const Account = (props: Props) => {
       await triggerChangePassword(value);
       setIsChangePasswordDialogOpen(false);
       router.push("/sign-in");
-      signOut();
+      signOutServer();
     } catch (error) {
       console.log(error);
     }

@@ -1,6 +1,7 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
+import { format } from "date-fns";
 import { MoreHorizontal } from "lucide-react";
 import type { StaticImport } from "next/dist/shared/lib/get-img-props";
 import Image from "next/image";
@@ -92,7 +93,16 @@ export const columns: ColumnDef<IBranch>[] = [
       return <DataTableColumnHeader column={column} title="Status" />;
     },
   },
-
+  {
+    accessorKey: "createdAt",
+    header: ({ column }) => {
+      return <DataTableColumnHeader column={column} title="Created At" />;
+    },
+    cell: ({ getValue }) => {
+      const data = getValue() as string;
+      return <span>{format(new Date(data), "Ppp")}</span>;
+    },
+  },
   {
     id: "actions",
     header: "Actions",

@@ -94,8 +94,8 @@ export function ReactHookFormDemo({
                     accept={accetp}
                     value={fieldForm.value}
                     onValueChange={fieldForm.onChange}
-                    maxFiles={4}
-                    maxSize={4 * 1024 * 1024}
+                    maxFiles={10}
+                    maxSize={10 * 1024 * 1024}
                     progresses={progresses}
                     // pass the onUpload function here for direct upload
                     // onUpload={uploadFiles}

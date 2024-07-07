@@ -200,24 +200,24 @@ const Confirmation = ({ goBackfn, goNextFn, steppers, stepIndex }: Props) => {
       return { ...acc, ...item.data };
     }, {} as BranchTypeInCreate);
 
-    for (const court of prepaeData.courts) {
-      console.log(court.images, "court");
+    // for (const court of prepaeData.courts) {
+    //   console.log(court.images, "court");
 
-      await triggerUploadImages(court.images)
-        .then((res) => {
-          court.images = res.data;
-        })
-        .catch((error) => {
-          console.log("error", error);
+    //   await triggerUploadImages(court.images)
+    //     .then((res) => {
+    //       court.images = res.data;
+    //     })
+    //     .catch((error) => {
+    //       console.log("error", error);
 
-          return toast({
-            title: "Error",
-            description: "Error while uploading images",
-            variant: "destructive",
-          });
-        });
-    }
-    console.log(prepaeData, "prepaeData");
+    //       return toast({
+    //         title: "Error",
+    //         description: "Error while uploading images",
+    //         variant: "destructive",
+    //       });
+    //     });
+    // }
+    // console.log(prepaeData, "prepaeData");
     await Promise.all([
       triggerUploadImages(prepaeData.images),
       triggerUploadLicense(prepaeData.licenses),
@@ -397,7 +397,11 @@ const Confirmation = ({ goBackfn, goNextFn, steppers, stepIndex }: Props) => {
                         width={20}
                         height={20}
                         alt="defaultBadminton"
-                        src={item.images[0].preview}
+                        src={
+                          typeof item.images[0] === "string"
+                            ? item.images[0]
+                            : URL.createObjectURL(item.images[0])
+                        }
                         className="size-20 rounded-md object-cover shadow-md"
                       />
                       <div className="flex flex-1 flex-col gap-1 ">

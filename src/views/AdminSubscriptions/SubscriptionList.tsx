@@ -17,7 +17,7 @@ const SubscriptionList = () => {
     <div className=" relative size-full overflow-auto">
       <DataTable
         navigation={false}
-        CreateButton={<CreateSubscriptionButton />}
+        CreateButton={<CreateSubscriptionButton isEdit={false} />}
         columns={columns}
         data={
           data?.data || ([] as (PackageCourtSchemaType & { _id: string })[])

@@ -231,11 +231,14 @@ const DetailButton = ({
                 : "Add new staff details."}
           </DialogTitle>
           <DialogDescription>
-            {isView
-              ? "View details of account"
-              : isEdit
-                ? "Update the staff details.details below."
-                : "Add new staff details."}
+            <div className="w-full rounded-md bg-yellow-500 p-2 text-white shadow-md">
+              <b>Warning:</b>
+              {isView
+                ? " You are viewing this staff details. You can't edit this. Please ask the owner to edit."
+                : isEdit
+                  ? " You are updating this staff details."
+                  : " You are adding new staff details. Please fill in the form below. After that, click the submit button to save. You can't edit this after submit. If you want to edit, please ask the owner to edit."}
+            </div>
           </DialogDescription>
         </DialogHeader>
         <div className="w-full flex-1 overflow-auto p-2">
@@ -262,19 +265,19 @@ const DetailButton = ({
               username: {
                 inputProps: {
                   readOnly: isReadOnly,
-                  placeholder: "--",
+                  placeholder: "staff123",
                 },
               },
               email: {
                 inputProps: {
                   readOnly: isReadOnly,
-                  placeholder: "--",
+                  placeholder: "staff@gmail.com",
                 },
               },
               status: {
                 inputProps: {
                   readOnly: isReadOnly,
-                  placeholder: "--",
+                  placeholder: "Select status",
                 },
               },
               role: {
@@ -288,31 +291,37 @@ const DetailButton = ({
               dob: {
                 inputProps: {
                   readOnly: isReadOnly,
-                  placeholder: "--",
+                  placeholder: "Select date of birth",
                 },
               },
               firstName: {
                 inputProps: {
                   readOnly: isReadOnly,
-                  placeholder: "--",
+                  placeholder: "Staff first name",
                 },
               },
               lastName: {
                 inputProps: {
                   readOnly: isReadOnly,
-                  placeholder: "--",
+                  placeholder: "Staff last name",
                 },
               },
               phone: {
                 inputProps: {
                   readOnly: isReadOnly,
-                  placeholder: "--",
+                  placeholder: "0123456789",
                 },
               },
               gender: {
                 inputProps: {
                   readOnly: isReadOnly,
-                  placeholder: "--",
+                  placeholder: "Select gender",
+                },
+              },
+              password: {
+                inputProps: {
+                  placeholder: "Password",
+                  type: "password",
                 },
               },
             }}
