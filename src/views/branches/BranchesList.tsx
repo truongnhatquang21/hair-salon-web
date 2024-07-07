@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
 
 import { getMyBranchListAPI } from "@/apiCallers/Branches";
 import { DataTable } from "@/components/table/DataTable";
@@ -14,12 +15,19 @@ export default function BranchesList() {
     queryFn: async () => getMyBranchListAPI(),
   });
 
+  const sortedData = useMemo(() => {
+    if (!data?.data) return [];
+    return data?.data?.sort((a, b) => {
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    });
+  }, [data?.data]);
+
   return (
     <div className=" relative size-full overflow-auto">
       <DataTable
         CreateButton={<CreateButton />}
         columns={columns}
-        data={(data?.data || []) as BranchSchemaType[]}
+        data={(sortedData || []) as BranchSchemaType[]}
         isLoading={isLoading}
       />
     </div>

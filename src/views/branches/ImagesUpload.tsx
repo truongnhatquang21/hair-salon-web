@@ -20,9 +20,10 @@ export const FieldType = ({
 );
 
 export const FileUploadFileTypeWithAccept =
-  ({ accept }: { accept: Accept }) =>
+  ({ accept, readOnly }: { accept: Accept; readOnly?: boolean }) =>
   (props: AutoFormInputComponentProps) => (
     <FileUploaderV2
+      readOnly={readOnly}
       field={props.field}
       isRequired={props.isRequired}
       label={props.label}

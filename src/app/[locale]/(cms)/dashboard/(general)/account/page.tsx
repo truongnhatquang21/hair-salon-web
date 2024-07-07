@@ -14,7 +14,7 @@ import Account from "@/views/account/Account";
 
 export default function AccountPage() {
   return (
-    <ContentLayout title="Account">
+    <ContentLayout title="Branches">
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>

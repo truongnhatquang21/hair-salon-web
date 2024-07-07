@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 
@@ -9,6 +11,9 @@ import { useStore } from "@/hooks/use-store";
 import { cn } from "@/lib/utils";
 import logo from "@/public/assets/images/logo.png";
 
+export const ClientWrapper = ({ children }: { children: React.ReactNode }) => {
+  return <div className="flex-1">{children};</div>;
+};
 export function Sidebar() {
   const sidebar = useStore(useSidebarToggle, (state) => state);
 
@@ -63,6 +68,7 @@ export function Sidebar() {
             </h1>
           </Link>
         </Button>
+
         <Menu isOpen={sidebar?.isOpen} />
       </div>
     </aside>

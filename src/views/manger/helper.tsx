@@ -30,6 +30,7 @@ const paymentSchema = z.object({
 export enum UserStatusEnum {
   ACTIVE = "Active",
   INACTIVE = "Inactive",
+  PENDING = "Pending",
 }
 export const createManagerSchema = z.object({
   username: z
@@ -143,17 +144,19 @@ export const columns: ColumnDef<CreateManagerSchemaTypeWithId>[] = [
                   </DropdownMenuItem>
                 }
               />
-              <BanButton
-                id={data._id}
-                Trigger={
-                  <DropdownMenuItem
-                    onSelect={(e) => e.preventDefault()}
-                    className="w-full text-destructive"
-                  >
-                    Ban this user
-                  </DropdownMenuItem>
-                }
-              />
+              {data.status === UserStatusEnum.ACTIVE && (
+                <BanButton
+                  id={data._id}
+                  Trigger={
+                    <DropdownMenuItem
+                      onSelect={(e) => e.preventDefault()}
+                      className="w-full text-destructive"
+                    >
+                      Ban this user
+                    </DropdownMenuItem>
+                  }
+                />
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </Dialog>

@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { DialogClose } from "@radix-ui/react-dialog";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { PlusCircleIcon } from "lucide-react";
 import React from "react";
@@ -21,9 +22,11 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
+import { cn } from "@/lib/utils";
 import { useBranchStore } from "@/stores/branchStore";
 import { CourtStatusEnum } from "@/types";
 
+import { BranchStatusEnum } from "../branches/helper";
 import { FileUploadFileTypeWithAccept } from "../branches/ImagesUpload";
 import {
   type CourtSchemaType,
@@ -186,8 +189,7 @@ const CreateCourtButton = ({
   //     form.setValue("duration", 1);
   //   }
   // }, [typePackage]);
-  console.log(defaultValues, "defaultValues?.status");
-
+  const viewOnly = selectedBranch?.status === BranchStatusEnum.DENIED;
   return (
     <Dialog
       open={openDialog || isDialogOpen}
@@ -204,12 +206,40 @@ const CreateCourtButton = ({
       <DialogContent className=" flex h-3/5 flex-col  sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>
-            {isEdit ? "Update this court " : "Add new court"}
+            {viewOnly
+              ? "View this court"
+              : isEdit
+                ? "Update this court "
+                : "Add new court"}
           </DialogTitle>
           <DialogDescription>
-            {isEdit
-              ? "Update the court details below."
-              : "Fill in the form below to create a new court."}
+            <div
+              className={cn(
+                "w-full text-white p-2 rounded-md shadow-md",
+                selectedBranch?.status === BranchStatusEnum.PENDING &&
+                  "bg-yellow-500",
+                selectedBranch?.status === BranchStatusEnum.INACTIVE &&
+                  "bg-blue-500",
+                selectedBranch?.status === BranchStatusEnum.ACTIVE &&
+                  "bg-green-500",
+                selectedBranch?.status === BranchStatusEnum.DENIED &&
+                  "bg-red-500"
+              )}
+            >
+              <h3 className="text-lg font-semibold">
+                Instructions of <b>{selectedBranch?.status}</b> branch
+              </h3>
+              <p className="text-sm">
+                {selectedBranch?.status === BranchStatusEnum.PENDING &&
+                  "This branch is pending for approval. You can create or update court but it will not be visible to public"}
+                {selectedBranch?.status === BranchStatusEnum.INACTIVE &&
+                  "This branch is inactive. You can create or update court but it will not be visible to public"}
+                {selectedBranch?.status === BranchStatusEnum.ACTIVE &&
+                  "This branch is active. You can create or update court and it will be visible to public"}
+                {selectedBranch?.status === BranchStatusEnum.DENIED &&
+                  "This branch is denied. You can't create or update court and it will not be visible to public"}
+              </p>
+            </div>
           </DialogDescription>
         </DialogHeader>
         <div className="w-full flex-1 overflow-auto p-2">
@@ -237,20 +267,24 @@ const CreateCourtButton = ({
             fieldConfig={{
               name: {
                 inputProps: {
-                  placeholder: "--",
+                  placeholder: "Court name",
                   required: true,
+                  readOnly: viewOnly,
                 },
-                description: "Name of court, e.g. 'Court 1'",
               },
               price: {
                 inputProps: {
-                  placeholder: "--",
+                  placeholder: "Price of court",
+                  required: true,
+                  readOnly: viewOnly,
                 },
               },
 
               description: {
                 inputProps: {
-                  placeholder: "--",
+                  readOnly: viewOnly,
+                  placeholder:
+                    "Type description of court, e.g. 'Standard court'",
                 },
                 fieldType: "textarea",
               },
@@ -263,6 +297,7 @@ const CreateCourtButton = ({
                   accept: {
                     "image/*": [".jpeg", ".png", `.jpg`],
                   },
+                  readOnly: viewOnly,
                 }),
               },
 
@@ -283,27 +318,34 @@ const CreateCourtButton = ({
               },
               type: {
                 inputProps: {
-                  placeholder: "--",
+                  readOnly: viewOnly,
+                  placeholder: "Type of court , e.g. 'Standard'",
                   value: form.watch("type"),
                 },
-
-                description: "Type of the court, e.g. 'Standard'",
               },
             }}
           >
             <DialogFooter className="w-full">
-              <AutoFormSubmit
-                className="w-full"
-                disabled={createMutating || editMutating}
-              >
-                <Button
-                  type="submit"
-                  className="flex w-full items-center gap-2"
+              {viewOnly ? (
+                <DialogClose className="w-full">
+                  <Button className="w-full" type="button">
+                    Close
+                  </Button>
+                </DialogClose>
+              ) : (
+                <AutoFormSubmit
+                  className="w-full"
+                  disabled={createMutating || editMutating}
                 >
-                  {(createMutating || editMutating) && <SpinnerIcon />}
-                  {isEdit ? "Update court" : "Create court"}
-                </Button>
-              </AutoFormSubmit>
+                  <Button
+                    type="submit"
+                    className="flex w-full items-center gap-2"
+                  >
+                    {(createMutating || editMutating) && <SpinnerIcon />}
+                    {isEdit ? "Update court" : "Create court"}
+                  </Button>
+                </AutoFormSubmit>
+              )}
             </DialogFooter>
           </AutoForm>
         </div>

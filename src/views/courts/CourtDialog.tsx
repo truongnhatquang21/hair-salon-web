@@ -1,9 +1,13 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import React from "react";
 import { useForm } from "react-hook-form";
 
+import { updateCourtAPI } from "@/apiCallers/courts";
 import { SelectFieldTypeWrapWithEnum } from "@/components/SelectFieldTypeComp";
+import SpinnerIcon from "@/components/SpinnerIcon";
 import AutoForm, { AutoFormSubmit } from "@/components/ui/auto-form";
+import { DependencyType } from "@/components/ui/auto-form/types";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -14,6 +18,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useToast } from "@/components/ui/use-toast";
 import { CourtStatusEnum } from "@/types";
 
 import {
@@ -21,7 +26,7 @@ import {
   type CourtType,
 } from "../branches/create/slide/CourtRegistration";
 import { FileUploadFileTypeWithAccept } from "../branches/ImagesUpload";
-import { type CourtSchemaType } from "./helper";
+import { type CourtSchemaType, type CourtSchemaTypeWithId } from "./helper";
 
 type Props = {
   disabled?: boolean;
@@ -31,9 +36,12 @@ type Props = {
   title: string;
   description: string;
   readOnly?: boolean;
+  invalidateKey?: string[];
+  isCreatingBranch?: boolean;
 };
 
 const CourtDialog = ({
+  invalidateKey,
   disabled = false,
   readOnly = false,
   Trigger,
@@ -41,6 +49,7 @@ const CourtDialog = ({
   defaultValue,
   title,
   description,
+  isCreatingBranch = false,
 }: Props) => {
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
   const form = useForm<CourtSchemaType>({
@@ -50,6 +59,64 @@ const CourtDialog = ({
     mode: "onChange",
   });
 
+  const { toast } = useToast();
+
+  const { mutateAsync: updateTrigger, isPending: isUpdating } = useMutation({
+    mutationFn: async (data: CourtSchemaTypeWithId) => {
+      return updateCourtAPI(data);
+    },
+    onSuccess: (data) => {
+      if (!data.ok) {
+        toast({
+          variant: "destructive",
+          title: "Uh oh! Something went wrong.",
+          description: data.message || data.statusText,
+        });
+
+        throw new Error(data.message || data.statusText);
+      }
+
+      if (data.message) {
+        return toast({
+          variant: "default",
+          className: "bg-green-600 text-white",
+          title: "Message from system",
+          description: data.message,
+        });
+      }
+
+      return toast({
+        variant: "default",
+        title: "Submitted successfully",
+        description: "You can do something else now",
+      });
+    },
+    onError: (e) => {
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: e.message,
+      });
+    },
+  });
+  const QueryClient = useQueryClient();
+
+  const onSubmitHandle = async (data: CourtSchemaType) => {
+    try {
+      if (!isCreatingBranch) {
+        await updateTrigger({ ...data, _id: defaultValue._id });
+      }
+      onSubmit && onSubmit({ ...data, _id: defaultValue._id });
+      if (invalidateKey) {
+        QueryClient.invalidateQueries({
+          queryKey: invalidateKey,
+        });
+      }
+      return true;
+    } catch (e) {
+      console.error(e);
+    }
+  };
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger asChild>{Trigger}</DialogTrigger>
@@ -65,12 +132,18 @@ const CourtDialog = ({
               status: defaultValue.status,
             }}
             controlForm={form}
-            onSubmit={() => {
-              const res = onSubmit
-                ? onSubmit(form.getValues() as CourtType)
-                : false;
+            onSubmit={async (data) => {
+              const res = await onSubmitHandle(data);
               if (res) setIsDialogOpen(false);
             }}
+            dependencies={[
+              {
+                sourceField: "type",
+                targetField: "status",
+                type: DependencyType.DISABLES,
+                when: () => defaultValue?.status === CourtStatusEnum.PENDING,
+              },
+            ]}
             formSchema={courtSchema}
             fieldConfig={{
               images: {
@@ -83,6 +156,7 @@ const CourtDialog = ({
                   accept: {
                     "image/*": [".jpeg", ".png", `.jpg`],
                   },
+                  readOnly,
                 }),
               },
               status: {
@@ -95,7 +169,11 @@ const CourtDialog = ({
                 },
 
                 fieldType: SelectFieldTypeWrapWithEnum(
-                  Object.values(CourtStatusEnum)
+                  Object.values(CourtStatusEnum)?.filter((item) =>
+                    defaultValue?.status === CourtStatusEnum.PENDING
+                      ? item === CourtStatusEnum.PENDING
+                      : item !== CourtStatusEnum.PENDING
+                  )
                 ),
               },
               description: {
@@ -119,10 +197,13 @@ const CourtDialog = ({
             }}
           >
             <DialogFooter className="w-full">
-              {onSubmit ? (
+              {!readOnly && onSubmit ? (
                 <AutoFormSubmit className="w-full">
-                  <Button className="w-full" type="submit">
-                    Save Court
+                  <Button
+                    className="flex w-full items-center justify-center"
+                    type="submit"
+                  >
+                    {isUpdating ? <SpinnerIcon /> : "Update"}
                   </Button>
                 </AutoFormSubmit>
               ) : (

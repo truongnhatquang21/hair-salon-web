@@ -1,6 +1,9 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import React from "react";
 
+import { updateSlotAPI } from "@/apiCallers/slot";
 import { SelectFieldTypeWrapWithEnum } from "@/components/SelectFieldTypeComp";
+import SpinnerIcon from "@/components/SpinnerIcon";
 import AutoForm, { AutoFormSubmit } from "@/components/ui/auto-form";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,6 +15,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useToast } from "@/components/ui/use-toast";
 import { WeekDayEnum } from "@/types";
 
 import { SlotSchema, type SlotSchemaType } from "./create/slide/AvailableSlot";
@@ -19,21 +23,78 @@ import { TimeFieldType } from "./create/slide/PeriodTimeField";
 
 type Props = {
   Trigger: React.ReactNode;
-  defaultValue: SlotSchemaType;
+  defaultValue: SlotSchemaType & { _id: string };
   onSubmit?: (data: SlotSchemaType) => boolean;
   title: string;
   description: string;
+  invalidateKey?: string[];
+  isViewOnly?: boolean;
 };
 
 const SlotDialog = ({
+  isViewOnly,
   Trigger,
   onSubmit,
   defaultValue,
   title,
   description,
+  invalidateKey,
 }: Props) => {
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+  const { toast } = useToast();
+  const { mutateAsync: updateTrigger, isPending: isUpdating } = useMutation({
+    mutationFn: async (data: SlotSchemaType & { _id: string }) => {
+      return updateSlotAPI(data);
+    },
+    onSuccess: (data) => {
+      if (!data.ok) {
+        toast({
+          variant: "destructive",
+          title: "Uh oh! Something went wrong.",
+          description: data.message || data.statusText,
+        });
 
+        throw new Error(data.message || data.statusText);
+      }
+
+      if (data.message) {
+        return toast({
+          variant: "default",
+          className: "bg-green-600 text-white",
+          title: "Message from system",
+          description: data.message,
+        });
+      }
+
+      return toast({
+        variant: "default",
+        title: "Submitted successfully",
+        description: "You can do something else now",
+      });
+    },
+    onError: (e) => {
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: e.message,
+      });
+    },
+  });
+  const QueryClient = useQueryClient();
+  const onSubmitHandle = async (data: SlotSchemaType) => {
+    try {
+      await updateTrigger({ ...data, _id: defaultValue._id });
+      if (invalidateKey) {
+        QueryClient.invalidateQueries({
+          queryKey: invalidateKey,
+        });
+      }
+      return true;
+    } catch (e) {
+      console.error(e);
+      return false;
+    }
+  };
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger asChild>{Trigger}</DialogTrigger>
@@ -45,8 +106,8 @@ const SlotDialog = ({
         <div className="grid gap-4 py-4">
           <AutoForm
             values={defaultValue}
-            onSubmit={(data) => {
-              const res = onSubmit ? onSubmit(data) : false;
+            onSubmit={async (data) => {
+              const res = await onSubmitHandle(data);
               if (res) setIsDialogOpen(false);
             }}
             formSchema={SlotSchema}
@@ -87,9 +148,15 @@ const SlotDialog = ({
           >
             <AutoFormSubmit className="w-full">
               <DialogFooter className="w-full">
-                {onSubmit ? (
-                  <Button className="w-full" type="submit">
-                    Save slot
+                {!isViewOnly && onSubmit ? (
+                  <Button
+                    className="flex w-full items-center justify-center"
+                    type="submit"
+                  >
+                    {
+                      // eslint-disable-next-line no-nested-ternary
+                      isUpdating ? <SpinnerIcon /> : "Update"
+                    }
                   </Button>
                 ) : (
                   <Button
