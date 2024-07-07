@@ -1,12 +1,16 @@
 /* eslint-disable no-underscore-dangle */
 import { UsersIcon } from "lucide-react";
-import type { Dispatch, SetStateAction } from "react";
+import router from "next/dist/shared/lib/router/router";
+import { type Dispatch, type SetStateAction } from "react";
+import { Button } from "react-day-picker";
 
 import CalendarDaily from "@/components/Custom/DailyCalendar";
 import CustomTag from "@/components/CustomTag";
 import { Icons } from "@/components/icons";
-import { TimeSlot } from "@/components/TimeSlot";
 import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/components/ui/use-toast";
 import type { ICourt } from "@/interfaces/court.interface";
 import type { ISlot } from "@/interfaces/slot.interface";
 
@@ -23,6 +27,7 @@ interface CalendarDailyProps {
   setEndSlot: Dispatch<SetStateAction<null>>;
   setSelectedSlots?: Dispatch<SetStateAction<[]>>;
   selectDay: Date;
+  activeTab: string;
 }
 const FlexibleBooking = ({
   setSelectedSlots,
@@ -37,8 +42,83 @@ const FlexibleBooking = ({
   endSlot,
   setEndSlot,
   selectDay,
+  activeTab,
 }: CalendarDailyProps) => {
   console.log("selectDay", selectDay);
+  const { toast } = useToast();
+
+  // const {
+  //   mutateAsync: getSlotByCourtId,
+
+  //   data: SlotOfCourt,
+  // } = useMutation({
+  //   mutationFn: async (dataReq: {
+  //     date: Date | undefined;
+  //     courtId: string | undefined;
+  //   }) => {
+  //     return getSlotsOfCourt(dataReq);
+  //   },
+  //   onSuccess: (dataRes) => {
+  //     if (!dataRes.ok) {
+  //       // if (data.error) {
+  //       //   const errs = data.error as { [key: string]: { message: string } };
+  //       //   Object.entries(errs).forEach(([key, value]) => {
+  //       //     setError(key as keyof PackageCourtSchemaType, {
+  //       //       type: "manual",
+  //       //       message: value.message,
+  //       //     });
+  //       //   });
+  //       // }
+  //       toast({
+  //         variant: "destructive",
+  //         title: "Uh oh! Something went wrong.",
+  //         description: dataRes.message || dataRes.statusText,
+  //       });
+  //       throw new Error(dataRes.message || dataRes.statusText);
+  //     }
+  //   },
+  // });
+  // console.log(SlotOfCourt);
+  // useEffect(() => {
+  //   if (selectedCourt?._id !== "" && selectedCourt) {
+  //     console.log({
+  //       courtId: selectedCourt?._id,
+  //       date: format(selectDay?.toString(), "yyyy-MM-dd"),
+  //     });
+  //     getSlotByCourtId({
+  //       courtId: selectedCourt?._id,
+  //       date: format(selectDay?.toString(), "yyyy-MM-dd"),
+  //     });
+  //   }
+  // }, [getSlotByCourtId, selectDay, selectedCourt]);
+
+  const handleBooking = async () => {
+    if (selectDay) {
+      if (activeTab === "flexible_schedule") {
+        // setBooking({
+        //   booking: {
+        //     type: activeTab,
+        //     paymentType: "haft",
+        //     paymentMethod: "vnpay",
+        //     totalPrice: calculateTotalPrice(selectedSlots, selectedCourt.price),
+        //     totalHour: selectedSlots.length,
+        //     startDate: format(selectDay.toString(), "yyyy-MM-dd"),
+        //     endDate: format(selectDay.toString(), "yyyy-MM-dd"),
+        //     court: selectedCourt,
+        //   },
+        //   schedule: {
+        //     type: "booking",
+        //     slots: selectedSlots.map((el) => el._id),
+        //     startTime: startSlot.startTime,
+        //     endTime: endSlot ? endSlot.endTime : startSlot.endTime,
+        //     date: format(selectDay.toString(), "yyyy-MM-dd"),
+        //     court: selectedCourt,
+        //   },
+        // });
+        router.push("/booking");
+      }
+    }
+  };
 
   return (
     <div>
@@ -48,7 +128,19 @@ const FlexibleBooking = ({
         setEndSlot={setEndSlot}
         setStartSlot={setStartSlot}
       />
-
+      <div className="mx-auto mt-6 max-w-2xl">
+        <Label htmlFor="hours">Hours</Label>
+        <Input
+          id="hours"
+          type="number"
+          min={0}
+          max={50}
+          minLength={0}
+          maxLength={50}
+          placeholder="Enter hours"
+          className="w-full"
+        />
+      </div>
       {selectDay && (
         <div className="mx-auto mt-6 max-w-2xl">
           <h3 className="mb-2 text-lg font-bold">Select Badminton Court</h3>
@@ -127,17 +219,18 @@ const FlexibleBooking = ({
           </div>
         </div>
       )}
-      {selectedCourt && (
-        <TimeSlot
-          selectedSlots={selectedSlots}
-          setSelectedSlots={setSelectedSlots}
-          timeSlotData={timeSlotData}
-          endSlot={endSlot}
-          startSlot={startSlot}
-          setEndSlot={setEndSlot}
-          setStartSlot={setStartSlot}
-        />
-      )}
+
+      <div className="mt-6 flex justify-end">
+        <Button
+          variant="default"
+          className="rounded-md px-6 py-2"
+          disabled={selectedCourt == null}
+          onClick={handleBooking}
+        >
+          {/* {bookingMutating && <SpinnerIcon />} */}
+          Book Selected courts
+        </Button>
+      </div>
     </div>
   );
 };

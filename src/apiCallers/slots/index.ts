@@ -7,8 +7,11 @@ export const getSlotByBranch = async (branchId: string) => {
 };
 
 export const getSlotsOfCourt = async (data: {
-  date: Date | undefined;
+  date: string | undefined;
   courtId: string | undefined;
 }) => {
-  return fetcher("schedule", { method: "POST", body: JSON.stringify(data) });
+  return fetcher("slot/get-of-court-by-date", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
 };

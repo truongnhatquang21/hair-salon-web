@@ -11,7 +11,6 @@ import { useEffect, useMemo, useState } from "react";
 
 import { getBranchByIdAPI2 } from "@/apiCallers/Branches";
 import { getCourtAvailable } from "@/apiCallers/courts";
-import { getSlotsOfCourt } from "@/apiCallers/slots";
 import BranchDetailOverview from "@/components/branchs/BranchDetailOverview";
 import CalendarDaily from "@/components/Custom/DailyCalendar";
 import CustomTag from "@/components/CustomTag";
@@ -61,40 +60,8 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
   });
 
   const {
-    mutateAsync: getSlotByCourtId,
-
-    data: SlotOfCourt,
-  } = useMutation({
-    mutationFn: async (dataReq: {
-      date: Date | undefined;
-      courtId: string | undefined;
-    }) => {
-      return getSlotsOfCourt(dataReq);
-    },
-    onSuccess: (dataRes) => {
-      if (!dataRes.ok) {
-        // if (data.error) {
-        //   const errs = data.error as { [key: string]: { message: string } };
-        //   Object.entries(errs).forEach(([key, value]) => {
-        //     setError(key as keyof PackageCourtSchemaType, {
-        //       type: "manual",
-        //       message: value.message,
-        //     });
-        //   });
-        // }
-        toast({
-          variant: "destructive",
-          title: "Uh oh! Something went wrong.",
-          description: dataRes.message || dataRes.statusText,
-        });
-        throw new Error(dataRes.message || dataRes.statusText);
-      }
-    },
-  });
-  console.log(SlotOfCourt);
-  const {
     mutateAsync: getCourtAvalableMutatue,
-    isPending,
+
     data: CourtData,
   } = useMutation({
     mutationFn: async (data: {
@@ -124,7 +91,7 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
       }
     },
   });
-  console.log("data", CourtData);
+
   const handleCourtSelection = (court: ICourt) => {
     if (selectedCourt?._id === court._id) {
       setSelectedCourt(null);
@@ -134,7 +101,7 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
   };
 
   const handleBooking = async () => {
-    if (selectedCourt !== null) {
+    if (selectedCourt !== null && selectDay) {
       if (activeTab !== "flexible_schedule") {
         setBooking({
           booking: {
@@ -176,14 +143,7 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
       });
     }
   }, [getCourtAvalableMutatue, selectDay, selectedSlots, slug]);
-  // useEffect(() => {
-  //   if (selectedSlots.length !== 0 && selectedCourt?._id !== "") {
-  //     getSlotByCourtId({
-  //       courtId: selectedCourt?._id,
-  //       date: selectDay,
-  //     });
-  //   }
-  // }, [getSlotByCourtId, selectDay, selectedCourt, selectedSlots, slug]);
+
   if (isLoading) {
     return (
       <div className="flex min-h-[calc(100vh_-_56px)]  items-center justify-center p-5">
@@ -417,7 +377,7 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
                         startSlot={startSlot}
                         setEndSlot={setEndSlot}
                         setStartSlot={setStartSlot}
-                        timeSlotData={SlotOfCourt}
+                        timeSlotData={timeSlots}
                       />
                     </CardContent>
                   </Card>
