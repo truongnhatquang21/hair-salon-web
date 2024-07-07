@@ -22,6 +22,7 @@ const intlMiddleware = createMiddleware({
 // };
 
 const publicPages = [
+  "/401",
   "/404",
   "/",
   "/sign-in",
@@ -49,6 +50,7 @@ const customerPages = [
   "/me/account",
   "/me/schedule",
   "/me/receipts",
+  "/me/booking",
   "/me/history",
 ];
 const adminPages = [
@@ -60,7 +62,6 @@ const adminPages = [
   "/dashboard/requestedBranch",
   "/dashboard/requestedBranch/[branchId]",
   "/dashboard/subscriptions",
-  "/history/tracking-subscription",
   "/dashboard/account",
 ];
 const operatorPages = [
@@ -71,7 +72,6 @@ const operatorPages = [
   "/dashboard/requestedBranch",
   "/dashboard/requestedBranch/[branchId]",
   "/dashboard/subscriptions",
-  "/history/tracking-subscription",
   "/dashboard/account",
 ];
 
@@ -81,7 +81,7 @@ const managerPages = [
   "/dashboard/branches",
   "/dashboard/branches/[branchId]",
   "/dashboard/branches/create",
-  "/history/tracking-subscription",
+  "/dashboard/history/tracking-subscription",
   "/dashboard/courts",
   "/dashboard/staffs",
   "/dashboard/reports",
@@ -99,37 +99,37 @@ const authMiddleware = auth((req) => {
   const session = req.auth;
   const role = session?.user?.role;
   console.log("role", role, req.nextUrl.pathname);
-
-  if (role) {
+  console.log(managerPages.includes(req.nextUrl.pathname), "ODOSF");
+  if (true) {
     if (adminPages.includes(req.nextUrl.pathname)) {
       if (role === RoleEnum.ADMIN) {
         return intlMiddleware(req);
       }
-      return NextResponse.redirect(new URL("/sign-in", req.nextUrl));
+      if (!role) return NextResponse.redirect(new URL("/401", req.nextUrl));
     }
     if (operatorPages.includes(req.nextUrl.pathname)) {
       if (role === RoleEnum.OPERATOR) {
         return intlMiddleware(req);
       }
-      return NextResponse.redirect(new URL("/sign-in", req.nextUrl));
+      if (!role) return NextResponse.redirect(new URL("/401", req.nextUrl));
     }
     if (managerPages.includes(req.nextUrl.pathname)) {
       if (role === RoleEnum.MANAGER) {
         return intlMiddleware(req);
       }
-      return NextResponse.redirect(new URL("/sign-in", req.nextUrl));
+      if (!role) return NextResponse.redirect(new URL("/401", req.nextUrl));
     }
     if (staffPages.includes(req.nextUrl.pathname)) {
       if (role === RoleEnum.STAFF) {
         return intlMiddleware(req);
       }
-      return NextResponse.redirect(new URL("/sign-in", req.nextUrl));
+      if (!role) return NextResponse.redirect(new URL("/401", req.nextUrl));
     }
     if (customerPages.includes(req.nextUrl.pathname)) {
       if (role === RoleEnum.CUSTOMER) {
         return intlMiddleware(req);
       }
-      return NextResponse.redirect(new URL("/sign-in", req.nextUrl));
+      if (!role) return NextResponse.redirect(new URL("/401", req.nextUrl));
     }
   }
   const regex = {
@@ -158,27 +158,29 @@ const authMiddleware = auth((req) => {
         return intlMiddleware(req);
       }
 
-      return NextResponse.redirect(new URL("/sign-in", req.nextUrl));
+      return NextResponse.redirect(new URL("/401", req.nextUrl));
     }
     case regex.branches.regex.test(pathname): {
       if (regex.branches.role.includes(role)) {
         return intlMiddleware(req);
       }
-      return NextResponse.redirect(new URL("/sign-in", req.nextUrl));
+      return NextResponse.redirect(new URL("/401", req.nextUrl));
     }
     case regex.subscriptionOrder.regex.test(pathname): {
       if (regex.subscriptionOrder.role.includes(role)) {
         return intlMiddleware(req);
       }
-      return NextResponse.redirect(new URL("/sign-in", req.nextUrl));
+      return NextResponse.redirect(new URL("/401", req.nextUrl));
     }
     case regex.subscriptionCheckout.regex.test(pathname): {
       if (regex.subscriptionCheckout.role.includes(role)) {
         return intlMiddleware(req);
       }
-      return NextResponse.redirect(new URL("/sign-in", req.nextUrl));
+      return NextResponse.redirect(new URL("/401", req.nextUrl));
     }
     default: {
+      console.log("not found in auth pages");
+
       return NextResponse.redirect(new URL("/404", req.nextUrl));
     }
   }

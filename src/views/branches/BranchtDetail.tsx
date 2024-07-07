@@ -715,6 +715,7 @@ const BranchDetail = ({ branchId }: Props) => {
                             defaultValue: "",
                             disabled,
                           },
+                          fieldType: "textarea",
                         },
                       }}
                     >

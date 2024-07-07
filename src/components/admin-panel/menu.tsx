@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Ellipsis, LogOut } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 import { getProfileAPI } from "@/apiCallers/auth";
 import { CollapseMenuButton } from "@/components/admin-panel/collapse-menu-button";
@@ -30,6 +30,7 @@ export function Menu({ isOpen }: MenuProps) {
     queryFn: async () => getProfileAPI(),
   });
   const role = profileData?.data?.role;
+  const router = useRouter();
   const menuList = getMenuList(pathname, role) || [];
   return (
     <ScrollArea className="flex-1 [&>div>div[style]]:!block">
@@ -119,8 +120,9 @@ export function Menu({ isOpen }: MenuProps) {
               <Tooltip delayDuration={100}>
                 <TooltipTrigger asChild>
                   <Button
-                    onClick={() => {
-                      signOutServer();
+                    onClick={async () => {
+                      await signOutServer();
+                      router.push("/sign-in");
                     }}
                     variant="destructive"
                     className="mt-5 h-10 w-full justify-center"
