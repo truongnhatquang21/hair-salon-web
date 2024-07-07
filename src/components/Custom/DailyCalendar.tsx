@@ -9,11 +9,15 @@ import { Button } from "../ui/button";
 interface CalendarDailyProps {
   setDay: Dispatch<SetStateAction<Date | undefined>>;
   setSelectedSlots?: Dispatch<SetStateAction<[]>>;
+  setStartSlot: Dispatch<SetStateAction<null>>;
+  setEndSlot: Dispatch<SetStateAction<null>>;
 }
 
 export default function CalendarDaily({
   setDay,
   setSelectedSlots,
+  setStartSlot,
+  setEndSlot,
 }: CalendarDailyProps) {
   const [selectedDay, setSelectedDay] = useState(new Date());
   const [currentWeek, setCurrentWeek] = useState(0);
@@ -37,6 +41,8 @@ export default function CalendarDaily({
   };
   const handleDaySelect = (day: Date): void => {
     setSelectedSlots([]);
+    setStartSlot(null);
+    setEndSlot(null);
     setSelectedDay(day);
     setDay(day);
   };

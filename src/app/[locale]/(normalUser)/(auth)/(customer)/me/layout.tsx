@@ -10,7 +10,7 @@ const sidebarNavItems = [
     href: "/me/schedule",
   },
   {
-    title: "Booking your court",
+    title: "Set Flexible Schedule",
     href: "/me/booking",
   },
   {
