@@ -6,6 +6,7 @@ import { format } from "date-fns";
 import { Info } from "lucide-react";
 import React from "react";
 
+import CustomTag from "@/components/CustomTag";
 import { EmptyComponent } from "@/components/Empty";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -35,16 +36,47 @@ const Tracking: React.FC<TrackingProps> = ({ subscriptions, isLoading }) => {
                 <span className="text-xl font-bold">
                   {subscription?.packageCourt?.name}
                 </span>
-                <small>Type: {subscription?.packageCourt?.type}</small>
+                <small className="mt-2">
+                  Type: {subscription?.packageCourt?.type}
+                </small>
               </div>
-              <small>
-                {format(new Date(subscription?.startDate), "dd/MM/yyyy")} -{" "}
-                {format(new Date(subscription?.endDate), "dd/MM/yyyy")}
-              </small>
+              <div className="flex flex-col">
+                <div className="flex justify-end">
+                  <CustomTag status={subscription?.status} />
+                </div>
+                <small className="mt-2">
+                  Purchase date:{" "}
+                  {format(new Date(subscription?.createdAt), "dd/MM/yyyy")}
+                </small>
+              </div>
             </div>
+            <Separator className="mt-2" />
             <div className="flex flex-col py-2">
               <div className="flex items-center justify-between py-2">
-                <span>Total Price</span>
+                <span>Active date</span>
+                <span>
+                  {format(new Date(subscription?.startDate), "dd/MM/yyyy")} -{" "}
+                  {format(new Date(subscription?.endDate), "dd/MM/yyyy")}
+                </span>
+              </div>
+              <div className="flex items-center justify-between py-2">
+                <span>Duration</span>
+                <span>
+                  {subscription?.duration}{" "}
+                  {subscription?.duration <= 1 ? "month" : "months"}
+                </span>
+              </div>
+              <div className="flex items-center justify-between py-2">
+                <span>Court price</span>
+                <span>{subscription?.priceEachCourt}</span>
+              </div>
+              <div className="flex items-center justify-between py-2">
+                <span>Total court</span>
+                <span>{subscription?.totalCourt}</span>
+              </div>
+
+              <div className="flex items-center justify-between py-2">
+                <span className="font-semibold">Total price</span>
                 <div className="flex items-start gap-1">
                   <span className="font-semibold">
                     {(subscription.totalPrice / 100).toFixed(2)}đ
@@ -72,7 +104,7 @@ const Tracking: React.FC<TrackingProps> = ({ subscriptions, isLoading }) => {
                               <span>{subscription.totalCourt}</span>
                             </div>
                             <div className="flex justify-between gap-5">
-                              <span>Days</span>
+                              <span>Months</span>
                               <span>{subscription?.duration}</span>
                             </div>
                             <Separator className="my-2" />

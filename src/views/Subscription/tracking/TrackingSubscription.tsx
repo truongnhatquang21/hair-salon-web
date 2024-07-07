@@ -23,7 +23,7 @@ const TrackingSubscription = () => {
 
   return (
     <div className="mx-auto my-10 flex-col items-center gap-5">
-      <div className="text-xl font-semibold">Tracking Subscriptions</div>
+      <div className="mb-2 text-xl font-semibold">Tracking Subscriptions</div>
       <Tracking
         subscriptions={
           data?.data || ([] as (IPackagePurchase & { _id: string })[])
