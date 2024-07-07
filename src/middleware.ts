@@ -22,6 +22,7 @@ const intlMiddleware = createMiddleware({
 // };
 
 const publicPages = [
+  "/404",
   "/",
   "/sign-in",
   "/sign-up",
@@ -97,31 +98,40 @@ const staffPages = [
 const authMiddleware = auth((req) => {
   const session = req.auth;
   const role = session?.user?.role;
+  console.log("role", role, req.nextUrl.pathname);
 
   if (role) {
-    if (role === RoleEnum.ADMIN) {
-      if (adminPages.includes(req.nextUrl.pathname)) {
+    if (adminPages.includes(req.nextUrl.pathname)) {
+      if (role === RoleEnum.ADMIN) {
         return intlMiddleware(req);
       }
-    } else if (role === RoleEnum.OPERATOR) {
-      if (operatorPages.includes(req.nextUrl.pathname)) {
+      return NextResponse.redirect(new URL("/sign-in", req.nextUrl));
+    }
+    if (operatorPages.includes(req.nextUrl.pathname)) {
+      if (role === RoleEnum.OPERATOR) {
         return intlMiddleware(req);
       }
-    } else if (role === RoleEnum.MANAGER) {
-      if (managerPages.includes(req.nextUrl.pathname)) {
+      return NextResponse.redirect(new URL("/sign-in", req.nextUrl));
+    }
+    if (managerPages.includes(req.nextUrl.pathname)) {
+      if (role === RoleEnum.MANAGER) {
         return intlMiddleware(req);
       }
-    } else if (role === RoleEnum.STAFF) {
-      if (staffPages.includes(req.nextUrl.pathname)) {
+      return NextResponse.redirect(new URL("/sign-in", req.nextUrl));
+    }
+    if (staffPages.includes(req.nextUrl.pathname)) {
+      if (role === RoleEnum.STAFF) {
         return intlMiddleware(req);
       }
-    } else if (role === RoleEnum.CUSTOMER) {
-      if (customerPages.includes(req.nextUrl.pathname)) {
+      return NextResponse.redirect(new URL("/sign-in", req.nextUrl));
+    }
+    if (customerPages.includes(req.nextUrl.pathname)) {
+      if (role === RoleEnum.CUSTOMER) {
         return intlMiddleware(req);
       }
+      return NextResponse.redirect(new URL("/sign-in", req.nextUrl));
     }
   }
-
   const regex = {
     requestedBranch: {
       role: [RoleEnum.ADMIN, RoleEnum.OPERATOR],
@@ -169,11 +179,10 @@ const authMiddleware = auth((req) => {
       return NextResponse.redirect(new URL("/sign-in", req.nextUrl));
     }
     default: {
-      return intlMiddleware(req);
+      return NextResponse.redirect(new URL("/404", req.nextUrl));
     }
   }
 });
-
 export default function middleware(req: NextRequest) {
   const publicPathnameRegex = RegExp(
     `^(/(${["en", "fr"].join("|")}))?(${publicPages.flatMap((p) => (p === "/" ? ["", "/"] : p)).join("|")})/?$`,
@@ -198,7 +207,11 @@ export default function middleware(req: NextRequest) {
       return intlMiddleware(req);
     }
     default: {
-      return (authMiddleware as any)(req);
+      {
+        console.log("not found in public pages");
+
+        return (authMiddleware as any)(req);
+      }
     }
   }
 }
