@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { LayoutGrid, LogOut, User } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 import { getProfileAPI } from "@/apiCallers/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -32,6 +33,7 @@ export function UserNav() {
     queryFn: async () => getProfileAPI(),
   });
 
+  const router = useRouter();
   return (
     <DropdownMenu>
       <TooltipProvider disableHoverableContent>
@@ -89,8 +91,9 @@ export function UserNav() {
         <DropdownMenuSeparator />
         <DropdownMenuItem
           className="hover:cursor-pointer"
-          onClick={() => {
-            signOutServer();
+          onClick={async () => {
+            await signOutServer();
+            router.push("/sign-in");
           }}
         >
           <LogOut className="mr-3 size-4 text-muted-foreground" />
