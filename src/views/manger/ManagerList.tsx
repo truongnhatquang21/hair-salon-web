@@ -14,8 +14,6 @@ const ManagerList = () => {
     queryFn: async () => getManagerListAPI(),
   });
 
-  console.log(data?.data, "manager list data");
-
   return (
     <div className=" relative size-full overflow-auto">
       <DataTable

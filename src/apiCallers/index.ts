@@ -63,7 +63,6 @@ export default class ApiClient<T> {
 export const fetcher = async <T>(url: string, options?: RequestInit) => {
   const session = await auth();
   const accessToken = session?.accessToken;
-  console.log(`Bearer ${accessToken}`);
 
   const res = await fetch(process.env.SERVER_URL + url, {
     headers: {
@@ -76,7 +75,8 @@ export const fetcher = async <T>(url: string, options?: RequestInit) => {
   });
 
   const result = await res.json();
-
+  console.log("result", result);
+  console.log("Response OK", res);
   const transformedResult = responseMapping<T>(result);
   transformedResult.status = res.status;
   transformedResult.ok = res.ok;

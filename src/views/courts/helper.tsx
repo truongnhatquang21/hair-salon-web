@@ -16,7 +16,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { CourtStatusEnum } from "@/types";
+import { useBranchStore } from "@/stores/branchStore";
+import { BranchStatusEnum, CourtStatusEnum } from "@/types";
 
 import CreateCourtButton from "./CreateCourtButton";
 
@@ -104,6 +105,7 @@ export const columns: ColumnDef<CourtSchemaTypeWithId>[] = [
     cell: ({ row }) => {
       const [isMenuOpen, setIsMenuOpen] = useState(false);
       const data = row.original as CourtSchemaTypeWithId;
+      const selectedBranch = useBranchStore((state) => state.branch);
       return (
         <Dialog>
           <DropdownMenu
@@ -125,7 +127,9 @@ export const columns: ColumnDef<CourtSchemaTypeWithId>[] = [
                 defaultValues={data}
                 ButtonTrigger={
                   <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                    View & Update Court
+                    {selectedBranch.status !== BranchStatusEnum.DENIED
+                      ? "View and Update"
+                      : "View"}
                   </DropdownMenuItem>
                 }
               />

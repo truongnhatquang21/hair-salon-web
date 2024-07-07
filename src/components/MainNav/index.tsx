@@ -100,12 +100,13 @@ export function MainNav({ items, session }: MainNavProps) {
             <DropdownMenuContent className="flex flex-col gap-2 px-2">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuSeparator />
-
-              <DropdownMenuItem asChild>
-                <Button variant="outline" asChild>
-                  <Link href="/me/account">Profile and settings</Link>
-                </Button>
-              </DropdownMenuItem>
+              {session.user.role === RoleEnum.CUSTOMER && (
+                <DropdownMenuItem asChild>
+                  <Button variant="outline" asChild>
+                    <Link href="/me/account">Profile and settings</Link>
+                  </Button>
+                </DropdownMenuItem>
+              )}
               {session.user.role !== RoleEnum.CUSTOMER && (
                 <DropdownMenuItem asChild>
                   <Button variant="default" asChild>

@@ -150,6 +150,8 @@ const CreateSubscriptionButton = ({
 
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
   const onSubmit: SubmitHandler<PackageCourtSchemaType> = async (values) => {
+    console.log("values", values, "render");
+
     try {
       if (isEdit) {
         const prepareData = {
@@ -160,6 +162,7 @@ const CreateSubscriptionButton = ({
         await editSubscriptionMutating(prepareData);
       } else {
         await createSubscriptionMutating(values);
+        console.log("render");
       }
       queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
       setIsDialogOpen(false);
@@ -190,9 +193,22 @@ const CreateSubscriptionButton = ({
             {isEdit ? "Update this subscription " : "Add new subscription"}
           </DialogTitle>
           <DialogDescription>
-            {isEdit
-              ? "Update the subscription details below."
-              : "Fill in the form below to create a new subscription."}
+            <div className="w-full rounded-md bg-yellow-500 p-2 text-white shadow-md">
+              {isEdit ? (
+                <span>
+                  View and Update the subscription details below. Make sure to
+                  fill in all the required fields and <b>Active</b> your
+                  subscription to make it available for the users.
+                </span>
+              ) : (
+                <span>
+                  Add new subscription details below. Make sure to fill in all
+                  the required fields. Subscription has <b>inactive</b> status
+                  by default. After you create the subscription, you can
+                  activate it to make it available for the users.
+                </span>
+              )}
+            </div>
           </DialogDescription>
         </DialogHeader>
         <div className="w-full flex-1 overflow-auto p-2">

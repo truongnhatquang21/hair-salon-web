@@ -1,8 +1,10 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import { LayoutGrid, LogOut, User } from "lucide-react";
 import Link from "next/link";
 
+import { getProfileAPI } from "@/apiCallers/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,7 +24,14 @@ import {
 } from "@/components/ui/tooltip";
 import { signOutServer } from "@/utils/serverActions";
 
+import { Badge } from "../ui/badge";
+
 export function UserNav() {
+  const { data: profileData } = useQuery({
+    queryKey: ["myProfile"],
+    queryFn: async () => getProfileAPI(),
+  });
+
   return (
     <DropdownMenu>
       <TooltipProvider disableHoverableContent>
@@ -34,8 +43,14 @@ export function UserNav() {
                 className="relative size-8 rounded-full"
               >
                 <Avatar className="size-8">
-                  <AvatarImage src="#" alt="Avatar" />
-                  <AvatarFallback className="bg-transparent">JD</AvatarFallback>
+                  <AvatarImage
+                    alt="Avatar"
+                    src="https://github.com/shadcn.png"
+                  />
+                  <AvatarFallback className="bg-transparent capitalize">
+                    {profileData?.data?.firstName?.charAt(0) +
+                      profileData?.data?.lastName?.charAt(1)}
+                  </AvatarFallback>
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
@@ -47,9 +62,12 @@ export function UserNav() {
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <span className="text-sm font-medium leading-none">John Doe</span>
+            <span className="text-sm font-medium leading-none">
+              {`${profileData?.data?.firstName} ${profileData?.data?.lastName}`}
+            </span>
             <span className="text-xs leading-none text-muted-foreground">
-              johndoe@example.com
+              {profileData?.data?.email}{" "}
+              <Badge>{profileData?.data?.role}</Badge>
             </span>
           </div>
         </DropdownMenuLabel>
@@ -62,7 +80,7 @@ export function UserNav() {
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem className="hover:cursor-pointer" asChild>
-            <Link href="/account" className="flex items-center">
+            <Link href="/dashboard/account" className="flex items-center">
               <User className="mr-3 size-4 text-muted-foreground" />
               Account
             </Link>

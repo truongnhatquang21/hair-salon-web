@@ -1,9 +1,11 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import { Ellipsis, LogOut } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import { getProfileAPI } from "@/apiCallers/auth";
 import { CollapseMenuButton } from "@/components/admin-panel/collapse-menu-button";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -23,14 +25,18 @@ interface MenuProps {
 
 export function Menu({ isOpen }: MenuProps) {
   const pathname = usePathname();
-
-  const menuList = getMenuList(pathname);
+  const { data: profileData } = useQuery({
+    queryKey: ["myProfile"],
+    queryFn: async () => getProfileAPI(),
+  });
+  const role = profileData?.data?.role;
+  const menuList = getMenuList(pathname, role) || [];
   return (
     <ScrollArea className="flex-1 [&>div>div[style]]:!block">
       <nav className="mt-6 size-full">
         <ul className="flex h-[calc(100vh-48px-36px-16px-32px)] flex-col items-start space-y-1 px-2 lg:h-[calc(100vh-32px-40px-32px)]">
           <div className="flex w-full flex-1 flex-col items-start overflow-auto  ">
-            {menuList.map(({ groupLabel, menus }) => (
+            {menuList?.map(({ groupLabel, menus }) => (
               <li
                 className={cn("w-full", groupLabel ? "pt-5" : "")}
                 key={groupLabel}

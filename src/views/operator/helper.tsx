@@ -132,23 +132,26 @@ export const columns: ColumnDef<CreateOperaterSchemaTypeWithId>[] = [
               <DropdownMenuSeparator />
               <DetailButton
                 defaultValues={data}
+                isView
                 ButtonTrigger={
                   <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                     View Details
                   </DropdownMenuItem>
                 }
               />
-              <BanButton
-                id={data._id}
-                Trigger={
-                  <DropdownMenuItem
-                    onSelect={(e) => e.preventDefault()}
-                    className="w-full text-destructive"
-                  >
-                    Ban this user
-                  </DropdownMenuItem>
-                }
-              />
+              {data.status === UserStatusEnum.ACTIVE && (
+                <BanButton
+                  id={data._id}
+                  Trigger={
+                    <DropdownMenuItem
+                      onSelect={(e) => e.preventDefault()}
+                      className="w-full text-destructive"
+                    >
+                      Ban this user
+                    </DropdownMenuItem>
+                  }
+                />
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </Dialog>

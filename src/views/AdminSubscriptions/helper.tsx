@@ -184,7 +184,7 @@ export const columns: ColumnDef<PackageCourtSchemaTypeWithId>[] = [
               />
 
               <DeleteSubsBtn
-                id={data._id}
+                defalutValues={data}
                 Trigger={
                   <DropdownMenuItem
                     onSelect={(e) => e.preventDefault()}

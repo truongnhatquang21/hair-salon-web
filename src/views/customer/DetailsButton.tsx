@@ -8,6 +8,7 @@ import { useForm } from "react-hook-form";
 
 import { postCourtAPI, updateCourtAPI } from "@/apiCallers/courts";
 import AutoForm from "@/components/ui/auto-form";
+import { DependencyType } from "@/components/ui/auto-form/types";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -193,14 +194,27 @@ const DetailButton = ({
       <DialogContent className=" flex h-3/5 flex-col  sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>View Details</DialogTitle>
-          <DialogDescription>View details of account</DialogDescription>
+          <DialogDescription>
+            <div className="w-full rounded-md bg-yellow-500 p-2 text-white shadow-md">
+              <b>Instruction: </b>
+              You only can view the details of this account. If you want to
+              edit, please ask the owner of this account.
+            </div>
+          </DialogDescription>
         </DialogHeader>
         <div className="w-full flex-1 overflow-auto p-2">
           <AutoForm
             controlForm={form}
             values={defaultValues || form.getValues()}
             // onSubmit={onSubmit}
-
+            dependencies={[
+              {
+                targetField: "payments",
+                sourceField: "role",
+                type: DependencyType.HIDES,
+                when: () => true,
+              },
+            ]}
             formSchema={createCustomerSchema}
             fieldConfig={{
               username: {
