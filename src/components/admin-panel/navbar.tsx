@@ -31,7 +31,7 @@ export function Navbar({ title }: NavbarProps) {
   const selectedBranch = useBranchStore();
   const branches = data?.data;
   useEffect(() => {
-    if (branches && branches.length > 0 && !selectedBranch.branch) {
+    if (branches && branches?.length > 0 && !selectedBranch?.branch) {
       selectedBranch.setBranch(branches[0]);
     }
   }, [
@@ -40,6 +40,7 @@ export function Navbar({ title }: NavbarProps) {
     selectedBranch.setBranch,
     selectedBranch,
   ]);
+  console.log(data, "my branch");
 
   return (
     <header className="sticky top-0 z-10 w-full bg-background/95 shadow backdrop-blur supports-[backdrop-filter]:bg-background/60 dark:shadow-secondary">
@@ -58,11 +59,13 @@ export function Navbar({ title }: NavbarProps) {
               <SelectValue placeholder="Select branch" />
             </SelectTrigger>
             <SelectContent>
-              {branches?.map((branch) => (
-                <SelectItem value={branch._id} key={branch._id}>
-                  {branch.name}
-                </SelectItem>
-              ))}
+              {branches?.length
+                ? branches?.map((branch) => (
+                    <SelectItem value={branch._id} key={branch._id}>
+                      {branch.name}
+                    </SelectItem>
+                  ))
+                : ""}
             </SelectContent>
           </Select>
         </div>

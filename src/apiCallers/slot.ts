@@ -20,3 +20,10 @@ export const postSlotAPI = async (
     body: JSON.stringify(data),
   });
 };
+
+export const updateSlotAPI = async (slot: SlotSchemaType & { _id: string }) => {
+  return fetcher(`slot/${slot._id}`, {
+    method: "PUT",
+    body: JSON.stringify(slot),
+  });
+};

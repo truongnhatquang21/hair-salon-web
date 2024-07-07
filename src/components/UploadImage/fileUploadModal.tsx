@@ -5,7 +5,6 @@ import { useMutation } from "@tanstack/react-query";
 import * as React from "react";
 import type { Accept } from "react-dropzone";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 import { z } from "zod";
 
 import { UploadedFilesCard } from "@/_components/uploaded-files-card";
@@ -22,10 +21,9 @@ import {
 } from "@/components/ui/form";
 import { FileUploader } from "@/components/UploadImage/file-uploader";
 import { useUploadFile } from "@/hooks/use-upload-file";
-import { getErrorMessage } from "@/lib/handle-error";
-import label from "../ui/auto-form/common/label";
-import { useToast } from "../ui/use-toast";
+
 import SpinnerIcon from "../SpinnerIcon";
+import { useToast } from "../ui/use-toast";
 
 const schema = z.object({
   images: z.any(),
@@ -147,7 +145,6 @@ const FileUploadModal = ({
       return;
     }
     field.onChange([]);
-    return;
   };
   return (
     <Dialog>
@@ -170,9 +167,9 @@ const FileUploadModal = ({
                       )}
                     </FormLabel>
                     <FormControl>
-                      <div className="w-full h-full relative ">
+                      <div className="relative size-full ">
                         {isUploadingFile && (
-                          <div className="w-full h-full flex items-center justify-center absolute inset-0 z-10">
+                          <div className="absolute inset-0 z-10 flex size-full items-center justify-center">
                             <SpinnerIcon />
                           </div>
                         )}
@@ -180,7 +177,7 @@ const FileUploadModal = ({
                           accept={accetp}
                           value={fieldForm.value}
                           onValueChange={uploadFileChange}
-                          maxFiles={4}
+                          maxFiles={10}
                           maxSize={4 * 1024 * 1024}
                           progresses={progresses}
                           // pass the onUpload function here for direct upload

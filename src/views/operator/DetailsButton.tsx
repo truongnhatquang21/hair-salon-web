@@ -223,11 +223,14 @@ const DetailButton = ({
                 : "Add new operator details."}
           </DialogTitle>
           <DialogDescription>
-            {isView
-              ? "View details of account"
-              : isEdit
-                ? "Update the operator details.details below."
-                : "Add new operator details."}
+            <div className="w-full rounded-md bg-yellow-500 p-2 text-white shadow-md">
+              <b>Warning:</b>
+              {isView
+                ? " You are viewing this operator details. You can't edit this. Please ask the owner to edit."
+                : isEdit
+                  ? " You are updating this operator details."
+                  : " You are adding new operator details. Please fill in the form below. After that, click the submit button to save. You can't edit this after submit. If you want to edit, please ask the owner to edit."}
+            </div>
           </DialogDescription>
         </DialogHeader>
         <div className="w-full flex-1 overflow-auto p-2">
@@ -301,6 +304,13 @@ const DetailButton = ({
                 inputProps: {
                   readOnly: isReadOnly,
                   placeholder: "Select gender",
+                },
+              },
+              password: {
+                inputProps: {
+                  readOnly: isReadOnly,
+                  type: "password",
+                  placeholder: "Password",
                 },
               },
             }}

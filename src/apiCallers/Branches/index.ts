@@ -30,7 +30,13 @@ export type BranchSchemaTypeWithId = BranchSchemaType & {
   _id: string;
 };
 export const getBranchListAPI = async () => {
-  return fetcher<BranchSchemaTypeWithId>("branch");
+  console.log("getBranchListAPI");
+
+  return fetcher<
+    BranchSchemaTypeWithId & {
+      createdAt: string;
+    }
+  >("branch");
 };
 
 export const postBranchListAPI = async (data: BranchSchemaType) => {
@@ -90,7 +96,9 @@ export const updateInformationBranchAPI = async (
 };
 
 export const getMyBranchListAPI = async () => {
-  return fetcher<BranchSchemaTypeWithId[]>("branch/get-my-branchs");
+  return fetcher<BranchSchemaTypeWithId & { createdAt: string }[]>(
+    "branch/get-my-branchs"
+  );
 };
 
 export const handleRequestBranchAPI = async (data: {

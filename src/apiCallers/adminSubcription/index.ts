@@ -24,8 +24,6 @@ export const postSubscriptionListAPI = async (data: PackageCourtSchemaType) => {
 export const putSubscriptionListAPI = async (
   data: PackageCourtSchemaTypeWithId
 ) => {
-  console.log("updateSubscriptionListAPI", data);
-
   return fetcher(`package-court/${data._id}`, {
     body: JSON.stringify(data),
     method: "PUT",
@@ -36,5 +34,14 @@ export const deleteSubscriptionListAPI = async (id: string) => {
 
   return fetcher(`package-court/${id}`, {
     method: "DELETE",
+  });
+};
+
+export const toggleSubscriptionStatusAPI = async (
+  data: PackageCourtSchemaTypeWithId
+) => {
+  return fetcher(`package-court/${data._id}`, {
+    body: JSON.stringify(data),
+    method: "PUT",
   });
 };

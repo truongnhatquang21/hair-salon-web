@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { PlusCircleIcon } from "lucide-react";
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import type { SubmitHandler } from "react-hook-form";
 import { useForm } from "react-hook-form";
 
@@ -48,8 +48,10 @@ type Props = {
   openDialog?: boolean;
   setOpenDialog?: (value: boolean) => void;
   isView?: boolean;
+  selectedCourt?: string;
 };
 const DetailButton = ({
+  selectedCourt,
   ButtonTrigger,
   isEdit,
   defaultValues,
@@ -72,6 +74,13 @@ const DetailButton = ({
     mode: "onChange",
   });
   const { setError } = form;
+  useEffect(() => {
+    if (!isEdit && !isView)
+      form.setValue(
+        "court",
+        selectedCourt === "all" ? "" : selectedCourt || ""
+      );
+  }, [selectedCourt]);
 
   const selectedBranch = useBranchStore((state) => state.branch);
   const { data, isLoading } = useQuery({
@@ -231,7 +240,7 @@ const DetailButton = ({
   //   }
   // }, [typePackage]);
   const isReadOnly = isView;
-  console.log(defaultValues, "dsaif");
+
   return (
     <Dialog
       open={openDialog || isDialogOpen}

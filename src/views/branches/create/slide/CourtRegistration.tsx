@@ -39,7 +39,7 @@ import { useBranchStepStore } from "@/stores/createBranchStore";
 import { CourtStatusEnum } from "@/types";
 import CourtDialog from "@/views/courts/CourtDialog";
 
-import { FieldType } from "../../ImagesUpload";
+import { FileUploadFileTypeWithAccept } from "../../ImagesUpload";
 
 type Props = {
   stepIndex: number;
@@ -116,7 +116,6 @@ const CourRegistration = ({
   };
 
   const onSubmit: SubmitHandler<SchemaType> = async (data) => {
-    console.log(data.courts.length, "data");
     if (!data.courts || data.courts.length === 0) {
       toast({
         title: "Error",
@@ -295,7 +294,11 @@ const CourRegistration = ({
                   formSchema={courtSchema}
                   fieldConfig={{
                     images: {
-                      fieldType: FieldType,
+                      fieldType: FileUploadFileTypeWithAccept({
+                        accept: {
+                          "image/*": [".jpeg", ".png", `.jpg`],
+                        },
+                      }),
                     },
                     status: {
                       inputProps: {
@@ -360,6 +363,7 @@ const CourRegistration = ({
           form?.watch("courts").map((item: CourtType) => {
             return (
               <CourtDialog
+                isCreatingBranch
                 onSubmit={(data) => {
                   const res = editCourt(item.name, data);
                   return res;
@@ -378,7 +382,11 @@ const CourRegistration = ({
                       width={20}
                       height={20}
                       alt="defaultBadminton"
-                      src={URL.createObjectURL(item.images[0])}
+                      src={
+                        typeof item.images[0] === "string"
+                          ? item.images[0]
+                          : URL.createObjectURL(item.images[0])
+                      }
                       className="size-20 rounded-md object-cover shadow-md"
                     />
                     <div className="flex flex-1 flex-col gap-1 ">

@@ -1,4 +1,5 @@
 import type { ColumnDef } from "@tanstack/react-table";
+import { format } from "date-fns";
 import { MoreHorizontal } from "lucide-react";
 import { useState } from "react";
 import { z } from "zod";
@@ -42,14 +43,15 @@ export type CreateReportSchemaTypeWithId = Omit<
   _id: string;
   creator: CreateCustomerSchemaTypeWithId;
   court: CourtSchemaTypeWithId;
+  createdAt: string;
 };
 export const columns: ColumnDef<CreateReportSchemaTypeWithId>[] = [
   {
-    accessorKey: "creator",
+    accessorFn: (data) => data.creator.email,
     id: "name",
     cell: ({ getValue }) => {
-      const data = getValue() as CreateCustomerSchemaTypeWithId;
-      return <span>{data?.email || "--"}</span>;
+      const data = getValue() as string;
+      return <span>{data || "--"}</span>;
     },
     header: ({ column }) => {
       return <DataTableColumnHeader column={column} title="Creator" />;
@@ -93,7 +95,16 @@ export const columns: ColumnDef<CreateReportSchemaTypeWithId>[] = [
       return <DataTableColumnHeader column={column} title="Status" />;
     },
   },
-
+  {
+    accessorKey: "createdAt",
+    header: ({ column }) => {
+      return <DataTableColumnHeader column={column} title="Created At" />;
+    },
+    cell: ({ getValue }) => {
+      const data = getValue() as string;
+      return <span>{format(new Date(data), "Ppp")}</span>;
+    },
+  },
   {
     id: "actions",
     header: "Actions",
@@ -120,7 +131,7 @@ export const columns: ColumnDef<CreateReportSchemaTypeWithId>[] = [
                 defaultValues={data}
                 ButtonTrigger={
                   <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                    View Details
+                    View and Update Details
                   </DropdownMenuItem>
                 }
                 isEdit
