@@ -104,7 +104,7 @@ const Tracking: React.FC<TrackingProps> = ({ subscriptions, isLoading }) => {
                               <span>{subscription.totalCourt}</span>
                             </div>
                             <div className="flex justify-between gap-5">
-                              <span>Days</span>
+                              <span>Months</span>
                               <span>{subscription?.duration}</span>
                             </div>
                             <Separator className="my-2" />
