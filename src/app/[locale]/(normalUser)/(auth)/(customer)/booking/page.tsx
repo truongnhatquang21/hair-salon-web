@@ -8,7 +8,7 @@ import ConfirmBooking from "@/views/bookings/ConfirmBooking";
 const page = () => {
   return (
     <BookingDataStoreProvider>
-      <div className="mx-auto max-w-2xl p-6 sm:p-8">
+      <div className="mx-auto max-w-6xl p-6 sm:p-8">
         <ConfirmBooking />
       </div>
     </BookingDataStoreProvider>

@@ -62,6 +62,8 @@ import type { ISchedule } from "@/interfaces/schedule.interface";
 import cardimg from "@/public/assets/images/cardbank.png";
 import vnpay from "@/public/assets/images/vnpay.png";
 import { useBookingStore } from "@/stores/bookingStore";
+
+import { getDayOfPermanent } from "../../apiCallers/schedule/index";
 // type Props = {
 //   branchId: String;
 // };
@@ -97,6 +99,45 @@ const ConfirmBooking = () => {
     queryKey: ["cardList"],
     queryFn: async () => getCardListAPI(),
   });
+  const { mutateAsync: getDayOfPermanentMutate, data: dayOfPermanent } =
+    useMutation({
+      mutationFn: async (dataREQ: { startDate: string; endDate: string }) => {
+        return getDayOfPermanent(dataREQ);
+      },
+      onSuccess: (data) => {
+        if (data.ok && !data.ok) {
+          // if (data.error) {
+          //   const errs = data.error as { [key: string]: { message: string } };
+          //   Object.entries(errs).forEach(([key, value]) => {
+          //     setError(key as keyof PackageCourtSchemaType, {
+          //       type: "manual",
+          //       message: value.message,
+          //     });
+          //   });
+          // }
+          toast({
+            variant: "destructive",
+            title: "Uh oh! Something went wrong.",
+            description: data.message || data.statusText,
+          });
+          throw new Error(data.message || data.statusText);
+        }
+        if (data.message) {
+          return toast({
+            variant: "default",
+            className: "bg-green-600 text-white",
+            title: "Message from system",
+            description: data.message,
+          });
+        }
+        return toast({
+          variant: "default",
+          title: "Submitted successfully",
+          description: "You can do something else now",
+        });
+      },
+    });
+  console.log(dayOfPermanent);
   const { mutateAsync: triggerAddCard, isPending } = useMutation({
     mutationFn: async (data: CardSchemaType) => {
       return addCardAPI(data);
@@ -226,13 +267,13 @@ const ConfirmBooking = () => {
     }
 
     if (
-      bookingData.booking.type === "single_schedule" &&
+      bookingData?.booking?.type === "single_schedule" &&
       bookingData.schedule &&
       paymentId
     ) {
       console.log({
         booking: {
-          type: bookingData.booking.type,
+          type: bookingData?.booking.type,
           paymentType,
           payment,
           totalPrice: bookingData.booking.totalPrice,
@@ -285,7 +326,7 @@ const ConfirmBooking = () => {
         },
       });
     } else if (
-      bookingData.booking.type === "permanent_schedule" &&
+      bookingData?.booking?.type === "permanent_schedule" &&
       bookingData.schedule &&
       paymentId
     ) {
@@ -370,349 +411,406 @@ const ConfirmBooking = () => {
     return bookingData.booking?.endDate;
   };
   useEffect(() => {
+    if (bookingData.booking?.type === "permanent_schedule") {
+      const endDate1month = new Date(bookingData.booking.endDate);
+      endDate1month.setMonth(endDate1month.getMonth() + 1);
+
+      getDayOfPermanentMutate({
+        startDate: bookingData.booking?.startDate,
+        endDate: format(endDate1month.toString(), "yyyy-MM-dd"),
+      });
+    }
+  }, [bookingData.booking, getDayOfPermanentMutate, paymentType]);
+
+  useEffect(() => {
     if (!bookingData.booking) {
       router.back();
     }
   }, [bookingData.booking, router]);
   return (
-    <div className="space-y-8">
+    <div className="w-fit space-y-8">
       <div className="text-center">
         <h1 className="text-4xl font-bold">Confirm Booking</h1>
         <p className="text-lg text-muted-foreground">
           Review your badminton court booking details.
         </p>
       </div>
-      <Card className="rounded-lg shadow-lg">
-        <CardHeader className="rounded-t-lg bg-primary px-6 py-4 text-primary-foreground">
-          <CardTitle className="text-center text-2xl font-semibold">
-            Booking Details
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="grid gap-6 p-6">
-          <div className="grid grid-cols-2 gap-6">
-            <div>
-              <Label htmlFor="start-date" className="text-lg font-medium">
-                Start Date
-              </Label>
-              <div id="start-date" className="mt-2 text-sm font-medium">
-                {bookingData.booking?.startDate}
+      <div
+        className={`grid grid-cols-2   gap-6  ${bookingData.booking?.type === "permanent_schedule" && "grid-cols-3"}`}
+      >
+        {bookingData.booking?.type === "permanent_schedule" && (
+          <Card className="col-span-1  rounded-lg shadow-lg">
+            <CardHeader className="rounded-t-lg bg-primary px-6 py-4 text-primary-foreground">
+              <CardTitle className="text-center text-2xl font-semibold">
+                Schedule
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="max-h-[88vh] overflow-y-auto p-0">
+              {dayOfPermanent?.data.map((el, id) => {
+                return (
+                  <Card className="grid w-full max-w-md gap-6 p-6" key={id}>
+                    <div className="flex items-center justify-between">
+                      <div className="grid gap-1">
+                        <div className="text-2xl font-semibold">
+                          {" "}
+                          {bookingData.booking?.court.name}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="grid gap-4">
+                      <div className="flex items-center justify-between">
+                        <div className="text-muted-foreground">Date</div>
+                        <div>{format(el, "yyyy-MM-dd")}</div>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="text-muted-foreground">Start Time</div>
+                        <div>{bookingData.schedule?.startTime}</div>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="text-muted-foreground">End Time</div>
+                        <div>{bookingData.schedule?.endTime}</div>
+                      </div>
+                    </div>
+                  </Card>
+                );
+              })}
+            </CardContent>
+          </Card>
+        )}
+
+        <Card
+          className={` col-span-2 rounded-lg shadow-lg  ${bookingData.booking?.type === "permanent_schedule" && "col-span-2"}`}
+        >
+          <CardHeader className="rounded-t-lg bg-primary px-6 py-4 text-primary-foreground">
+            <CardTitle className="text-center text-2xl font-semibold">
+              Booking Details
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-6 p-6">
+            <div className="grid grid-cols-2 gap-6">
+              <div>
+                <Label htmlFor="start-date" className="text-lg font-medium">
+                  Start Date
+                </Label>
+                <div id="start-date" className="mt-2 text-sm font-medium">
+                  {bookingData.booking?.startDate}
+                </div>
+              </div>
+              <div>
+                <Label htmlFor="end-date" className="text-lg font-medium">
+                  End Date
+                </Label>
+                <div id="end-date" className="mt-2 text-sm font-medium">
+                  {getEndDate()}
+                </div>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-6">
+              <div>
+                <Label htmlFor="start-time" className="text-lg font-medium">
+                  Start Time
+                </Label>
+                <div id="start-time" className="mt-2 text-sm font-medium">
+                  {bookingData.schedule?.startTime}
+                </div>
+              </div>
+              <div>
+                <Label htmlFor="end-time" className="text-lg font-medium">
+                  End Time
+                </Label>
+                <div id="start-time" className="mt-2 text-sm font-medium">
+                  {bookingData.schedule?.endTime}
+                </div>
               </div>
             </div>
             <div>
-              <Label htmlFor="end-date" className="text-lg font-medium">
-                End Date
+              <Label htmlFor="court" className="text-lg font-medium">
+                Court
               </Label>
-              <div id="end-date" className="mt-2 text-sm font-medium">
-                {getEndDate()}
-              </div>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-6">
-            <div>
-              <Label htmlFor="start-time" className="text-lg font-medium">
-                Start Time
-              </Label>
-              <div id="start-time" className="mt-2 text-sm font-medium">
-                {bookingData.schedule?.startTime}
-              </div>
-            </div>
-            <div>
-              <Label htmlFor="end-time" className="text-lg font-medium">
-                End Time
-              </Label>
-              <div id="start-time" className="mt-2 text-sm font-medium">
-                {bookingData.schedule?.endTime}
-              </div>
-            </div>
-          </div>
-          <div>
-            <Label htmlFor="court" className="text-lg font-medium">
-              Court
-            </Label>
-            <Card
-              key={bookingData.booking?.court._id}
-              className={`
+              <Card
+                key={bookingData.booking?.court._id}
+                className={`
    
                  cursor-pointer
               hover:bg-muted`}
-            >
-              <CardContent className="grid gap-4 overflow-hidden p-5">
-                <div className="flex items-center gap-4">
-                  <div
-                    className={`cursor-pointer rounded-lg border-white object-cover 
+              >
+                <CardContent className="grid gap-4 overflow-hidden p-5">
+                  <div className="flex items-center gap-4">
+                    <div
+                      className={`cursor-pointer rounded-lg border-white object-cover 
                        p-2 text-white 
                     `}
-                  >
-                    <Icons.BadmintonCourt className="rounded-lg object-cover" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold">
-                      {bookingData.booking?.court.name}
-                    </h3>
-                    <span
-                      className={`line-clamp-3 text-sm
+                    >
+                      <Icons.BadmintonCourt className="rounded-lg object-cover" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold">
+                        {bookingData.booking?.court.name}
+                      </h3>
+                      <span
+                        className={`line-clamp-3 text-sm
                        text-gray-500 dark:text-gray-400
                   `}
-                    >
-                      {bookingData.booking?.court.description}
-                    </span>
+                      >
+                        {bookingData.booking?.court.description}
+                      </span>
+                    </div>
                   </div>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                    <CustomTag status={bookingData.booking?.court.status} />
-                  </div>
-                  <div
-                    className={`flex items-center gap-2 text-sm 
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                      <CustomTag status={bookingData.booking?.court.status} />
+                    </div>
+                    <div
+                      className={`flex items-center gap-2 text-sm 
                         text-gray-500 dark:text-gray-400
                     `}
-                  >
-                    <UsersIcon className="size-4" />
-                    <span>type: {bookingData.booking?.court.type}</span>
+                    >
+                      <UsersIcon className="size-4" />
+                      <span>type: {bookingData.booking?.court.type}</span>
+                    </div>
                   </div>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div
-                    className={`flex items-center gap-2 text-sm 
+                  <div className="flex items-center justify-between">
+                    <div
+                      className={`flex items-center gap-2 text-sm 
                     text-gray-500 dark:text-gray-400
                     `}
-                  >
-                    {/* <DollarSignIcon className="size-4" /> */}
-                    <span>
-                      {" "}
-                      {(bookingData?.booking?.court.price / 100).toFixed(2)}
-                      VND/slot
-                    </span>
-                  </div>
-                  {/* <Button variant="outline" size="sm">
+                    >
+                      {/* <DollarSignIcon className="size-4" /> */}
+                      <span>
+                        {" "}
+                        {(bookingData?.booking?.court.price / 100).toFixed(2)}
+                        VND/slot
+                      </span>
+                    </div>
+                    {/* <Button variant="outline" size="sm">
                         Book Now
                       </Button> */}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-          <div className="grid grid-cols-2 gap-6">
-            <div>
-              <Label htmlFor="total-price" className="text-lg font-medium">
-                Total Price
-              </Label>
-              <div id="total-price" className="mt-2 text-2xl font-bold">
-                {bookingData?.booking?.totalPrice}
-                VND
-              </div>
-            </div>
-            <div>
-              <Label htmlFor="total-hours" className="text-lg font-medium">
-                Total Hours
-              </Label>
-              <div id="total-hours" className="mt-2 text-2xl font-bold">
-                {bookingData.booking?.totalHour}
-              </div>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-6">
-            <div className="">
-              <Label htmlFor="total-price" className="text-lg font-medium">
-                Amount
-              </Label>
-              <div id="total-price" className="mt-2 text-2xl font-bold">
-                {paymentType == "full"
-                  ? bookingData?.booking?.totalPrice
-                  : bookingData?.booking?.totalPrice / 2}
-                VND
-              </div>
-            </div>
-            <div className="">
-              <Label htmlFor="total-hours" className="text-lg font-medium">
-                Payment Type
-              </Label>
-              <Select
-                value={paymentType}
-                onValueChange={(value) => {
-                  setPaymentType(value as "partial" | "full");
-                }}
-              >
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Select a payment Type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Payment Type</SelectLabel>
-                    <SelectItem value="partial">Partial</SelectItem>
-                    <SelectItem value="full">Full</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          <div className="flex w-full flex-col gap-2 rounded-md border-2 border-dashed p-2">
-            <span className="flex items-center  justify-between border-b py-2 font-semibold">
-              Payment method
-              {payment === "bank" && (
-                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                  <DialogTrigger asChild>
-                    <Button
-                      className="flex items-center gap-1"
-                      variant="secondary"
-                    >
-                      <Plus />
-                      Add new card
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="flex max-h-[50%] flex-col overflow-auto sm:max-w-xl">
-                    <DialogHeader>
-                      <DialogTitle>Add new card</DialogTitle>
-                      <DialogDescription>
-                        Fill out the form below to add a new court
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="relative flex-1 gap-4 overflow-auto p-2">
-                      <AutoForm
-                        formSchema={cardSchema}
-                        onSubmit={onAddCardSubmit}
-                      >
-                        <AutoFormSubmit className="w-full">
-                          <DialogFooter className="w-full">
-                            <Button
-                              className="w-full"
-                              type="submit"
-                              disabled={isPending}
-                            >
-                              {isPending ? <SpinnerIcon /> : "Save"}
-                            </Button>
-                          </DialogFooter>
-                        </AutoFormSubmit>
-                      </AutoForm>
-                    </div>
-                  </DialogContent>
-                </Dialog>
-              )}
-              <Select
-                value={payment}
-                onValueChange={(value) => {
-                  setPayment(value as "bank" | "tranfer");
-                }}
-              >
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Select a payment method" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Payment method</SelectLabel>
-                    <SelectItem value="bank">Bank</SelectItem>
-                    <SelectItem value="tranfer" disabled>
-                      Tranfer money
-                    </SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </span>
-
-            {payment === "bank" ? (
-              <div className="flex max-h-[600px] w-full flex-col gap-2 overflow-auto p-2">
-                {isCardListLoading ? (
-                  <div className="flex size-full justify-center p-2">
-                    <Loading />
                   </div>
-                ) : cardList?.data?.length ? (
-                  <RadioGroup
-                    onValueChange={(value) => {
-                      setValue("payment", value);
-                    }}
-                  >
-                    {cardList?.data.map((card) => (
-                      <div
-                        className="flex items-center space-x-2"
-                        key={card._id}
-                      >
-                        <RadioGroupItem value={card._id} id={card._id} />
-                        <Label
-                          htmlFor={card._id}
-                          className="flex w-full items-center gap-2"
-                        >
-                          <div className="flex w-full items-center gap-2  rounded-md border-2 p-2">
-                            <Image
-                              src={cardimg}
-                              alt="img"
-                              className="size-20 rounded-md border object-contain p-1 shadow-md"
-                            />
-                            <div className="flex flex-col">
-                              <span className="text-xl font-bold">
-                                {card.accountBank}
-                              </span>
-                              <span className="text-base font-semibold">
-                                {card.accountName}
-                              </span>
-                              <span className="text-sm">
-                                {card.accountNumber.slice(0, 4)} **** ****{" "}
-                              </span>
-                              <span className="text-sm">
-                                {format(new Date(card.expDate), "MM/yyyy")}
-                              </span>
-                            </div>
-                            <Dialog>
-                              <DialogTrigger asChild>
-                                <Eye className="ml-auto cursor-pointer" />
-                              </DialogTrigger>
-                              <DialogContent className="flex max-h-[50%] flex-col overflow-auto sm:max-w-xl">
-                                <DialogHeader>
-                                  <DialogTitle>
-                                    <span>{card.accountBank}</span>
-                                    <span className="text-sm font-normal">
-                                      / {card.accountNumber}
-                                    </span>
-                                    <span />
-                                  </DialogTitle>
-                                  <DialogDescription>
-                                    View card details
-                                  </DialogDescription>
-                                </DialogHeader>
-                                <div className="relative flex-1 gap-4 overflow-auto p-2">
-                                  <AutoForm
-                                    formSchema={cardSchema}
-                                    values={{
-                                      accountNumber: card.accountNumber,
-                                      accountName: card.accountName,
-                                      accountBank: card.accountBank,
-                                      expDate: card.expDate,
-                                    }}
-                                    fieldConfig={{
-                                      accountNumber: {
-                                        inputProps: {
-                                          readOnly: true,
-                                          placeholder: "--",
-                                        },
-                                      },
-                                      accountName: {
-                                        inputProps: {
-                                          readOnly: true,
-                                          placeholder: "--",
-                                        },
-                                      },
-                                      accountBank: {
-                                        inputProps: {
-                                          readOnly: true,
-                                          placeholder: "--",
-                                        },
-                                      },
-                                      expDate: {
-                                        inputProps: {
-                                          readOnly: true,
-                                          placeholder: "--",
-                                        },
-                                      },
-                                    }}
-                                  />
-                                </div>
-                              </DialogContent>
-                            </Dialog>
-                          </div>
-                        </Label>
-                      </div>
-                    ))}
+                </CardContent>
+              </Card>
+            </div>
+            <div className="grid grid-cols-2 gap-6">
+              <div>
+                <Label htmlFor="total-price" className="text-lg font-medium">
+                  Total Price
+                </Label>
+                <div id="total-price" className="mt-2 text-2xl font-bold">
+                  {bookingData?.booking?.totalPrice}
+                  VND
+                </div>
+              </div>
+              <div>
+                <Label htmlFor="total-hours" className="text-lg font-medium">
+                  Total Hours
+                </Label>
+                <div id="total-hours" className="mt-2 text-2xl font-bold">
+                  {bookingData.booking?.totalHour}
+                </div>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-6">
+              <div className="">
+                <Label htmlFor="total-price" className="text-lg font-medium">
+                  Amount
+                </Label>
+                <div id="total-price" className="mt-2 text-2xl font-bold">
+                  {paymentType == "full"
+                    ? bookingData?.booking?.totalPrice
+                    : bookingData?.booking?.totalPrice / 2}
+                  VND
+                </div>
+              </div>
+              <div className="">
+                <Label htmlFor="total-hours" className="text-lg font-medium">
+                  Payment Type
+                </Label>
+                <Select
+                  value={paymentType}
+                  onValueChange={(value) => {
+                    setPaymentType(value as "partial" | "full");
+                  }}
+                >
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Select a payment Type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Payment Type</SelectLabel>
+                      <SelectItem value="partial">Partial</SelectItem>
+                      <SelectItem value="full">Full</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
 
-                    {/* <div className="flex items-center space-x-2">
+            <div className="flex w-full flex-col gap-2 rounded-md border-2 border-dashed p-2">
+              <span className="flex items-center  justify-between border-b py-2 font-semibold">
+                Payment method
+                {payment === "bank" && (
+                  <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button
+                        className="flex items-center gap-1"
+                        variant="secondary"
+                      >
+                        <Plus />
+                        Add new card
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="flex max-h-[50%] flex-col overflow-auto sm:max-w-xl">
+                      <DialogHeader>
+                        <DialogTitle>Add new card</DialogTitle>
+                        <DialogDescription>
+                          Fill out the form below to add a new court
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="relative flex-1 gap-4 overflow-auto p-2">
+                        <AutoForm
+                          formSchema={cardSchema}
+                          onSubmit={onAddCardSubmit}
+                        >
+                          <AutoFormSubmit className="w-full">
+                            <DialogFooter className="w-full">
+                              <Button
+                                className="w-full"
+                                type="submit"
+                                disabled={isPending}
+                              >
+                                {isPending ? <SpinnerIcon /> : "Save"}
+                              </Button>
+                            </DialogFooter>
+                          </AutoFormSubmit>
+                        </AutoForm>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                )}
+                <Select
+                  value={payment}
+                  onValueChange={(value) => {
+                    setPayment(value as "bank" | "tranfer");
+                  }}
+                >
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Select a payment method" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Payment method</SelectLabel>
+                      <SelectItem value="bank">Bank</SelectItem>
+                      <SelectItem value="tranfer" disabled>
+                        Tranfer money
+                      </SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </span>
+
+              {payment === "bank" ? (
+                <div className="flex max-h-[600px] w-full flex-col gap-2 overflow-auto p-2">
+                  {isCardListLoading ? (
+                    <div className="flex size-full justify-center p-2">
+                      <Loading />
+                    </div>
+                  ) : cardList?.data?.length ? (
+                    <RadioGroup
+                      onValueChange={(value) => {
+                        setValue("payment", value);
+                      }}
+                    >
+                      {cardList?.data.map((card) => (
+                        <div
+                          className="flex items-center space-x-2"
+                          key={card._id}
+                        >
+                          <RadioGroupItem value={card._id} id={card._id} />
+                          <Label
+                            htmlFor={card._id}
+                            className="flex w-full items-center gap-2"
+                          >
+                            <div className="flex w-full items-center gap-2  rounded-md border-2 p-2">
+                              <Image
+                                src={cardimg}
+                                alt="img"
+                                className="size-20 rounded-md border object-contain p-1 shadow-md"
+                              />
+                              <div className="flex flex-col">
+                                <span className="text-xl font-bold">
+                                  {card.accountBank}
+                                </span>
+                                <span className="text-base font-semibold">
+                                  {card.accountName}
+                                </span>
+                                <span className="text-sm">
+                                  {card.accountNumber.slice(0, 4)} **** ****{" "}
+                                </span>
+                                <span className="text-sm">
+                                  {format(new Date(card.expDate), "MM/yyyy")}
+                                </span>
+                              </div>
+                              <Dialog>
+                                <DialogTrigger asChild>
+                                  <Eye className="ml-auto cursor-pointer" />
+                                </DialogTrigger>
+                                <DialogContent className="flex max-h-[50%] flex-col overflow-auto sm:max-w-xl">
+                                  <DialogHeader>
+                                    <DialogTitle>
+                                      <span>{card.accountBank}</span>
+                                      <span className="text-sm font-normal">
+                                        / {card.accountNumber}
+                                      </span>
+                                      <span />
+                                    </DialogTitle>
+                                    <DialogDescription>
+                                      View card details
+                                    </DialogDescription>
+                                  </DialogHeader>
+                                  <div className="relative flex-1 gap-4 overflow-auto p-2">
+                                    <AutoForm
+                                      formSchema={cardSchema}
+                                      values={{
+                                        accountNumber: card.accountNumber,
+                                        accountName: card.accountName,
+                                        accountBank: card.accountBank,
+                                        expDate: card.expDate,
+                                      }}
+                                      fieldConfig={{
+                                        accountNumber: {
+                                          inputProps: {
+                                            readOnly: true,
+                                            placeholder: "--",
+                                          },
+                                        },
+                                        accountName: {
+                                          inputProps: {
+                                            readOnly: true,
+                                            placeholder: "--",
+                                          },
+                                        },
+                                        accountBank: {
+                                          inputProps: {
+                                            readOnly: true,
+                                            placeholder: "--",
+                                          },
+                                        },
+                                        expDate: {
+                                          inputProps: {
+                                            readOnly: true,
+                                            placeholder: "--",
+                                          },
+                                        },
+                                      }}
+                                    />
+                                  </div>
+                                </DialogContent>
+                              </Dialog>
+                            </div>
+                          </Label>
+                        </div>
+                      ))}
+
+                      {/* <div className="flex items-center space-x-2">
                       <RadioGroupItem value="option-one" id="option-one" />
                       <Label
                         htmlFor="option-one"
@@ -754,70 +852,70 @@ const ConfirmBooking = () => {
                         </div>
                       </Label>
                     </div> */}
+                    </RadioGroup>
+                  ) : (
+                    <div className="flex w-full justify-center text-sm">
+                      No card found
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="flex w-full flex-col gap-2">
+                  <RadioGroup defaultValue="option-one">
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="option-two" id="option-two" />
+                      <Label
+                        htmlFor="option-two"
+                        className="flex w-full items-center gap-2"
+                      >
+                        <div className="flex w-full items-center gap-2  rounded-md border-2 p-2">
+                          <Image
+                            src={vnpay}
+                            alt="img"
+                            className="size-20 rounded-md border object-contain p-1 shadow-md"
+                          />
+                          <div className="flex flex-col">
+                            <span className="text-xl font-semibold">VNPay</span>
+                            <span className="text-sm">Bookminton</span>
+                          </div>
+                        </div>
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="option-one" id="option-one" />
+                      <Label
+                        htmlFor="option-one"
+                        className="flex w-full items-center gap-2"
+                      >
+                        <div className="flex w-full items-center gap-2  rounded-md border-2 p-2">
+                          <Image
+                            src={vnpay}
+                            alt="img"
+                            className="size-20 rounded-md border object-contain p-1 shadow-md"
+                          />
+                          <div className="flex flex-col">
+                            <span className="text-xl font-semibold">VNpay</span>
+                            <span className="text-sm">Bookminton</span>
+                          </div>
+                        </div>
+                      </Label>
+                    </div>
                   </RadioGroup>
-                ) : (
-                  <div className="flex w-full justify-center text-sm">
-                    No card found
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="flex w-full flex-col gap-2">
-                <RadioGroup defaultValue="option-one">
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="option-two" id="option-two" />
-                    <Label
-                      htmlFor="option-two"
-                      className="flex w-full items-center gap-2"
-                    >
-                      <div className="flex w-full items-center gap-2  rounded-md border-2 p-2">
-                        <Image
-                          src={vnpay}
-                          alt="img"
-                          className="size-20 rounded-md border object-contain p-1 shadow-md"
-                        />
-                        <div className="flex flex-col">
-                          <span className="text-xl font-semibold">VNPay</span>
-                          <span className="text-sm">Bookminton</span>
-                        </div>
-                      </div>
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="option-one" id="option-one" />
-                    <Label
-                      htmlFor="option-one"
-                      className="flex w-full items-center gap-2"
-                    >
-                      <div className="flex w-full items-center gap-2  rounded-md border-2 p-2">
-                        <Image
-                          src={vnpay}
-                          alt="img"
-                          className="size-20 rounded-md border object-contain p-1 shadow-md"
-                        />
-                        <div className="flex flex-col">
-                          <span className="text-xl font-semibold">VNpay</span>
-                          <span className="text-sm">Bookminton</span>
-                        </div>
-                      </div>
-                    </Label>
-                  </div>
-                </RadioGroup>
-              </div>
-            )}
-          </div>
-        </CardContent>
-        <CardFooter className="rounded-b-lg bg-primary px-6 py-4 text-primary-foreground">
-          <Button
-            onClick={handleBooking}
-            className="w-full rounded-md bg-primary-foreground px-4 py-2 font-medium text-primary shadow-sm transition-colors hover:bg-slate-300"
-          >
-            {bookingMutating && <SpinnerIcon />}
-            Confirm Booking
-          </Button>
-        </CardFooter>
-      </Card>
-
+                </div>
+              )}
+            </div>
+          </CardContent>
+          <CardFooter className="rounded-b-lg bg-primary px-6 py-4 text-primary-foreground">
+            <Button
+              onClick={handleBooking}
+              className="w-full rounded-md bg-primary-foreground px-4 py-2 font-medium text-primary shadow-sm transition-colors hover:bg-slate-300"
+            >
+              {bookingMutating && <SpinnerIcon />}
+              Confirm Booking
+            </Button>
+          </CardFooter>
+        </Card>
+      </div>
       <AlertDialog open={open}>
         <AlertDialogContent>
           <AlertDialogHeader>

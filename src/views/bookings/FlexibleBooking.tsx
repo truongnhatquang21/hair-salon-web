@@ -1,12 +1,12 @@
 /* eslint-disable no-underscore-dangle */
 import { UsersIcon } from "lucide-react";
-import type { Dispatch, SetStateAction } from "react";
+import { type Dispatch, type SetStateAction } from "react";
 
 import CalendarDaily from "@/components/Custom/DailyCalendar";
 import CustomTag from "@/components/CustomTag";
 import { Icons } from "@/components/icons";
-import { TimeSlot } from "@/components/TimeSlot";
 import { Card, CardContent } from "@/components/ui/card";
+import { useToast } from "@/components/ui/use-toast";
 import type { ICourt } from "@/interfaces/court.interface";
 import type { ISlot } from "@/interfaces/slot.interface";
 
@@ -39,7 +39,52 @@ const FlexibleBooking = ({
   selectDay,
 }: CalendarDailyProps) => {
   console.log("selectDay", selectDay);
+  const { toast } = useToast();
 
+  // const {
+  //   mutateAsync: getSlotByCourtId,
+
+  //   data: SlotOfCourt,
+  // } = useMutation({
+  //   mutationFn: async (dataReq: {
+  //     date: Date | undefined;
+  //     courtId: string | undefined;
+  //   }) => {
+  //     return getSlotsOfCourt(dataReq);
+  //   },
+  //   onSuccess: (dataRes) => {
+  //     if (!dataRes.ok) {
+  //       // if (data.error) {
+  //       //   const errs = data.error as { [key: string]: { message: string } };
+  //       //   Object.entries(errs).forEach(([key, value]) => {
+  //       //     setError(key as keyof PackageCourtSchemaType, {
+  //       //       type: "manual",
+  //       //       message: value.message,
+  //       //     });
+  //       //   });
+  //       // }
+  //       toast({
+  //         variant: "destructive",
+  //         title: "Uh oh! Something went wrong.",
+  //         description: dataRes.message || dataRes.statusText,
+  //       });
+  //       throw new Error(dataRes.message || dataRes.statusText);
+  //     }
+  //   },
+  // });
+  // console.log(SlotOfCourt);
+  // useEffect(() => {
+  //   if (selectedCourt?._id !== "" && selectedCourt) {
+  //     console.log({
+  //       courtId: selectedCourt?._id,
+  //       date: format(selectDay?.toString(), "yyyy-MM-dd"),
+  //     });
+  //     getSlotByCourtId({
+  //       courtId: selectedCourt?._id,
+  //       date: format(selectDay?.toString(), "yyyy-MM-dd"),
+  //     });
+  //   }
+  // }, [getSlotByCourtId, selectDay, selectedCourt]);
   return (
     <div>
       <CalendarDaily
@@ -126,17 +171,6 @@ const FlexibleBooking = ({
             ))}
           </div>
         </div>
-      )}
-      {selectedCourt && (
-        <TimeSlot
-          selectedSlots={selectedSlots}
-          setSelectedSlots={setSelectedSlots}
-          timeSlotData={timeSlotData}
-          endSlot={endSlot}
-          startSlot={startSlot}
-          setEndSlot={setEndSlot}
-          setStartSlot={setStartSlot}
-        />
       )}
     </div>
   );
