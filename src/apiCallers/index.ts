@@ -76,8 +76,7 @@ export const fetcher = async <T>(url: string, options?: RequestInit) => {
   });
 
   const result = await res.json();
-  console.log("result", result);
-  console.log("Response OK", res.ok);
+
   const transformedResult = responseMapping<T>(result);
   transformedResult.status = res.status;
   transformedResult.ok = res.ok;

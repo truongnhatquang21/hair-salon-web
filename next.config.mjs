@@ -5,7 +5,7 @@ import "./src/libs/Env.mjs";
 import withNextIntl from "next-intl/plugin";
 
 const nextConfig = {
-  reactStrictMode: true,
+  reactStrictMode: false,
   images: {
     domains: ["babolat.com.vn"],
     remotePatterns: [

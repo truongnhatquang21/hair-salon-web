@@ -1,4 +1,6 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
+import { useForm } from "react-hook-form";
 
 import { SelectFieldTypeWrapWithEnum } from "@/components/SelectFieldTypeComp";
 import AutoForm, { AutoFormSubmit } from "@/components/ui/auto-form";
@@ -18,7 +20,8 @@ import {
   courtSchema,
   type CourtType,
 } from "../branches/create/slide/CourtRegistration";
-import { FieldType } from "../branches/ImagesUpload";
+import { FileUploadFileTypeWithAccept } from "../branches/ImagesUpload";
+import { type CourtSchemaType } from "./helper";
 
 type Props = {
   disabled?: boolean;
@@ -27,7 +30,7 @@ type Props = {
   onSubmit?: (data: CourtType) => boolean;
   title: string;
   description: string;
-  readonly?: boolean;
+  readOnly?: boolean;
 };
 
 const CourtDialog = ({
@@ -40,6 +43,12 @@ const CourtDialog = ({
   description,
 }: Props) => {
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+  const form = useForm<CourtSchemaType>({
+    defaultValues: defaultValue || {},
+    resolver: zodResolver(courtSchema),
+    shouldFocusError: true,
+    mode: "onChange",
+  });
 
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -51,9 +60,15 @@ const CourtDialog = ({
         </DialogHeader>
         <div className="relative w-full flex-1 gap-4 overflow-auto p-2">
           <AutoForm
-            values={defaultValue}
-            onSubmit={(data) => {
-              const res = onSubmit ? onSubmit(data as CourtType) : false;
+            values={{
+              ...defaultValue,
+              status: defaultValue.status,
+            }}
+            controlForm={form}
+            onSubmit={() => {
+              const res = onSubmit
+                ? onSubmit(form.getValues() as CourtType)
+                : false;
               if (res) setIsDialogOpen(false);
             }}
             formSchema={courtSchema}
@@ -64,7 +79,11 @@ const CourtDialog = ({
                   readOnly,
                   value: defaultValue.images,
                 },
-                fieldType: FieldType,
+                fieldType: FileUploadFileTypeWithAccept({
+                  accept: {
+                    "image/*": [".jpeg", ".png", `.jpg`],
+                  },
+                }),
               },
               status: {
                 inputProps: {
@@ -72,6 +91,7 @@ const CourtDialog = ({
                   readOnly: true,
                   placeholder: "Select Court Status",
                   value: defaultValue.status,
+                  // defaultValue: defaultValue.status,
                 },
 
                 fieldType: SelectFieldTypeWrapWithEnum(

@@ -14,8 +14,6 @@ export default function BranchesList() {
     queryFn: async () => getMyBranchListAPI(),
   });
 
-  console.log(data?.data, "oadso");
-
   return (
     <div className=" relative size-full overflow-auto">
       <DataTable

@@ -1,3 +1,5 @@
+import type { ISlot } from "@/interfaces/slot.interface";
+
 export const getBaseUrl = () => {
   if (process.env.NEXT_PUBLIC_APP_URL) {
     return process.env.NEXT_PUBLIC_APP_URL;
@@ -10,7 +12,7 @@ export const getBaseUrl = () => {
   return "http://localhost:3000";
 };
 
-export function getThu(date: Date): string {
+export function getThu(date: Date | undefined): string {
   const day = date?.getDay();
 
   let thu: string;
@@ -48,4 +50,15 @@ export function getThu(date: Date): string {
   }
 
   return thu;
+}
+
+export function calculateTotalPrice(
+  slots: ISlot[],
+  courtPrice: number
+): number {
+  let sum = 0;
+  for (const slot of slots) {
+    sum += (1 + slot.surcharge) * courtPrice;
+  }
+  return sum;
 }

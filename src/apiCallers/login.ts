@@ -3,6 +3,9 @@
 import { toast } from "@/components/ui/use-toast";
 import { responseMapping } from "@/lib/error";
 import { Env } from "@/libs/Env.mjs";
+import type { ChangePasswordSchemaType } from "@/views/account/Account";
+
+import { fetcher } from ".";
 
 export interface IResponseToken {
   message: string;
@@ -66,4 +69,11 @@ export const getProfileApi = async (accessToken: string) => {
   transformedResult.ok = response.ok;
 
   return result;
+};
+
+export const changePasswordApi = async (data: ChangePasswordSchemaType) => {
+  return fetcher("user/reset-password", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
 };

@@ -1,9 +1,11 @@
 import React from "react";
 
+import CustomCalendar from "@/views/schedule/CalendarCustom";
+
 type Props = {};
 
 const SchedulePage = (props: Props) => {
-  return <div>SchedulePage</div>;
+  return <CustomCalendar />;
 };
 
 export default SchedulePage;

@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 
 import { getBranchListAPI } from "@/apiCallers/Branches";
+import { Loading } from "@/components/loading";
 import type IBadminton from "@/types/badminton";
 
 const PopularBadmintonPlaces = () => {
@@ -16,7 +17,11 @@ const PopularBadmintonPlaces = () => {
   });
 
   if (isLoading) {
-    return <p>{t("loading")}</p>; // Display loading state
+    return (
+      <div className="flex min-h-[calc(100vh_-_56px)]  items-center justify-center p-5">
+        <Loading />
+      </div>
+    );
   }
 
   if (isError) {
@@ -38,7 +43,7 @@ const PopularBadmintonPlaces = () => {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4">
         {badminton?.map((bad: IBadminton) => (
           <div key={bad._id} className="overflow-hidden rounded-sm shadow-lg">
-            <Link href={`/badminton/${bad._id}`}>
+            <Link href={`/branch/${bad._id}`}>
               <div className="relative h-48 w-full">
                 <Image
                   src={bad.images[0] ?? ""}

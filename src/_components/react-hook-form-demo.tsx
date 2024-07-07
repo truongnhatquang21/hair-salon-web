@@ -31,7 +31,7 @@ type Props = {
   isRequired: boolean;
   field: any;
   accetp?: Accept;
-  defaultValue?: File[];
+  defaultValue?: File[] | string[];
 };
 export function ReactHookFormDemo({
   field,
@@ -40,8 +40,6 @@ export function ReactHookFormDemo({
   accetp,
   defaultValue,
 }: Props) {
-  console.log("reack hook form demo", field.value);
-
   const [loading, setLoading] = React.useState(false);
   const { uploadFiles, progresses, uploadedFiles, isUploading } = useUploadFile(
     "imageUploader",
@@ -54,8 +52,6 @@ export function ReactHookFormDemo({
   });
 
   function onSubmit(input: Schema) {
-    console.log(input, "images data rhf");
-
     setLoading(true);
 
     toast.promise(uploadFiles(input.images), {
@@ -74,6 +70,8 @@ export function ReactHookFormDemo({
   React.useEffect(() => {
     field.onChange(form.watch("images"));
   }, [form.watch("images")]);
+
+  console.log(form.watch("images"), "watch images");
 
   return (
     <Form {...form}>

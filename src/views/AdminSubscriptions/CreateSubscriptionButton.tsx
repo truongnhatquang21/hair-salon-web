@@ -30,7 +30,11 @@ import type {
   PackageCourtSchemaType,
   PackageCourtSchemaTypeWithId,
 } from "./helper";
-import { createPackageCourtSchema, PackageEnum } from "./helper";
+import {
+  createPackageCourtSchema,
+  PackageCourtStatusEnum,
+  PackageEnum,
+} from "./helper";
 
 type Props = {
   ButtonTrigger?: React.ReactNode;
@@ -152,8 +156,7 @@ const CreateSubscriptionButton = ({
           ...values,
           _id: defaultValues?._id,
         };
-        console.log(prepareData, "odsao");
-
+        console.log(prepareData, "oasdo");
         await editSubscriptionMutating(prepareData);
       } else {
         await createSubscriptionMutating(values);
@@ -227,6 +230,12 @@ const CreateSubscriptionButton = ({
               //   targetField: "duration",
               //   when: (type: PackageEnum) => type === PackageEnum.Custom,
               // },
+              {
+                sourceField: "type",
+                targetField: "status",
+                type: DependencyType.HIDES,
+                when: () => !isEdit,
+              },
             ]}
             fieldConfig={{
               name: {
@@ -269,6 +278,17 @@ const CreateSubscriptionButton = ({
                 fieldType: "textarea",
                 description:
                   "Description of the package, e.g. 'This is a sample package'",
+              },
+              status: {
+                description: "Status of the package",
+                inputProps: {
+                  placeholder: "Select status of package",
+                  value: form.watch("status"),
+                  defaultValue: "inactive",
+                },
+                fieldType: SelectFieldTypeWrapWithEnum(
+                  Object.values(PackageCourtStatusEnum)
+                ),
               },
               type: {
                 inputProps: {

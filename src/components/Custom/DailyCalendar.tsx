@@ -8,7 +8,7 @@ import { Button } from "../ui/button";
 
 interface CalendarDailyProps {
   setDay: Dispatch<SetStateAction<Date | undefined>>;
-  setSelectedSlots: Dispatch<SetStateAction<string[]>>;
+  setSelectedSlots?: Dispatch<SetStateAction<[]>>;
 }
 
 export default function CalendarDaily({
