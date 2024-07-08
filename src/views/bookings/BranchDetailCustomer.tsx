@@ -59,38 +59,36 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
     queryFn: async () => getBranchByIdAPI2(slug),
   });
 
-  const {
-    mutateAsync: getCourtAvalableMutatue,
-
-    data: CourtData,
-  } = useMutation({
-    mutationFn: async (data: {
-      slots: string[];
-      date: string | undefined;
-      branch: string;
-    }) => {
-      return getCourtAvailable(data);
-    },
-    onSuccess: (dataRes) => {
-      if (!dataRes.ok) {
-        // if (data.error) {
-        //   const errs = data.error as { [key: string]: { message: string } };
-        //   Object.entries(errs).forEach(([key, value]) => {
-        //     setError(key as keyof PackageCourtSchemaType, {
-        //       type: "manual",
-        //       message: value.message,
-        //     });
-        //   });
-        // }
-        toast({
-          variant: "destructive",
-          title: "Uh oh! Something went wrong.",
-          description: dataRes.message || dataRes.statusText,
-        });
-        throw new Error(dataRes.message || dataRes.statusText);
-      }
-    },
-  });
+  const { mutateAsync: getCourtAvalableMutatue, data: CourtData } = useMutation(
+    {
+      mutationFn: async (data: {
+        slots: string[];
+        date: string | undefined;
+        branch: string;
+      }) => {
+        return getCourtAvailable(data);
+      },
+      onSuccess: (dataRes) => {
+        if (!dataRes.ok) {
+          // if (data.error) {
+          //   const errs = data.error as { [key: string]: { message: string } };
+          //   Object.entries(errs).forEach(([key, value]) => {
+          //     setError(key as keyof PackageCourtSchemaType, {
+          //       type: "manual",
+          //       message: value.message,
+          //     });
+          //   });
+          // }
+          toast({
+            variant: "destructive",
+            title: "Uh oh! Something went wrong.",
+            description: dataRes.message || dataRes.statusText,
+          });
+          throw new Error(dataRes.message || dataRes.statusText);
+        }
+      },
+    }
+  );
 
   const handleCourtSelection = (court: ICourt) => {
     if (selectedCourt?._id === court._id) {

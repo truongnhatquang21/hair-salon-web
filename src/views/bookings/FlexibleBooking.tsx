@@ -78,51 +78,6 @@ const FlexibleBooking = ({
     },
   });
 
-  // const {
-  //   mutateAsync: getSlotByCourtId,
-
-  //   data: SlotOfCourt,
-  // } = useMutation({
-  //   mutationFn: async (dataReq: {
-  //     date: Date | undefined;
-  //     courtId: string | undefined;
-  //   }) => {
-  //     return getSlotsOfCourt(dataReq);
-  //   },
-  //   onSuccess: (dataRes) => {
-  //     if (!dataRes.ok) {
-  //       // if (data.error) {
-  //       //   const errs = data.error as { [key: string]: { message: string } };
-  //       //   Object.entries(errs).forEach(([key, value]) => {
-  //       //     setError(key as keyof PackageCourtSchemaType, {
-  //       //       type: "manual",
-  //       //       message: value.message,
-  //       //     });
-  //       //   });
-  //       // }
-  //       toast({
-  //         variant: "destructive",
-  //         title: "Uh oh! Something went wrong.",
-  //         description: dataRes.message || dataRes.statusText,
-  //       });
-  //       throw new Error(dataRes.message || dataRes.statusText);
-  //     }
-  //   },
-  // });
-  // console.log(SlotOfCourt);
-  // useEffect(() => {
-  //   if (selectedCourt?._id !== "" && selectedCourt) {
-  //     console.log({
-  //       courtId: selectedCourt?._id,
-  //       date: format(selectDay?.toString(), "yyyy-MM-dd"),
-  //     });
-  //     getSlotByCourtId({
-  //       courtId: selectedCourt?._id,
-  //       date: format(selectDay?.toString(), "yyyy-MM-dd"),
-  //     });
-  //   }
-  // }, [getSlotByCourtId, selectDay, selectedCourt]);
-
   const handleBooking = async () => {
     const isValid = form.getValues();
 

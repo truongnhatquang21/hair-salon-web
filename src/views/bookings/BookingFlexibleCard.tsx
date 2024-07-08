@@ -1,10 +1,12 @@
 import Image from "next/image";
 import React from "react";
 
+import CustomTag from "@/components/CustomTag";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import type IBookingReceipt from "@/types/BookingReceipt";
 
-import CustomTag from "../CustomTag";
-import { Separator } from "../ui/separator";
+import SetScheduleBtn from "../schedule/SetScheduleBtn";
 
 type Props = {
   booking: IBookingReceipt;
@@ -57,7 +59,10 @@ const BookingFlexibleCard: React.FC<Props> = ({ booking, invalidateKey }) => {
       <Separator className="my-2" />
       <div className="flex justify-between">
         <p className="flex gap-2">
-          <span className="opacity-80">{booking?.totalHour} hours</span>
+          <span className="opacity-80">
+            <span className="text-xl font-bold">Total Hour:</span>{" "}
+            {booking?.totalHour} hours
+          </span>
         </p>
         <p className="flex gap-2">
           <strong>Total price:</strong>{" "}
@@ -69,16 +74,26 @@ const BookingFlexibleCard: React.FC<Props> = ({ booking, invalidateKey }) => {
       <Separator className="my-2" />
       <div className="flex justify-between gap-2">
         <p className="flex gap-2">
-          <strong>Payment method:</strong>{" "}
+          {/* <strong>Payment method:</strong>{" "}
           <div>
             {booking?.paymentMethod === "vnpay"
               ? "VNPay"
               : booking?.paymentMethod}
-          </div>
+          </div> */}
         </p>
         <p className="flex gap-2">
-          <strong>Payment type:</strong>
-          <div>{booking?.paymentType}</div>
+          <SetScheduleBtn
+            invalidateKey={invalidateKey}
+            defalutValues={booking}
+            Trigger={
+              <Button
+                // variant=""
+                className="flex w-full justify-center"
+              >
+                Set Schedule
+              </Button>
+            }
+          />
         </p>
       </div>
     </>
