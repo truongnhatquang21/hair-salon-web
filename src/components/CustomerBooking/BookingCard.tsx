@@ -8,9 +8,10 @@ import { Separator } from "../ui/separator";
 
 type Props = {
   booking: IBookingReceipt;
+  invalidateKey?: string[];
 };
 
-const BookingCard: React.FC<Props> = ({ booking }) => {
+const BookingCard: React.FC<Props> = ({ booking, invalidateKey }) => {
   return (
     <>
       <div className="flex w-full justify-between align-middle">
