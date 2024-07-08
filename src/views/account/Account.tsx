@@ -192,6 +192,13 @@ const Account = (props: Props) => {
   };
 
   const onAddCardSubmit = async (value: CardSchemaType) => {
+    if (new Date(value.expDate) < new Date()) {
+      return toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: "Your card has expired",
+      });
+    }
     try {
       await triggerAddCard(value);
       setIsDialogOpen(false);
@@ -345,10 +352,10 @@ const Account = (props: Props) => {
                             className="size-20 rounded-md border object-contain p-1 shadow-md"
                           />
                           <div className="flex flex-col">
-                            <span className="text-xl font-bold">
+                            <span className="text-xl font-bold capitalize">
                               {card.accountBank}
                             </span>
-                            <span className="text-base font-semibold">
+                            <span className="text-base font-semibold capitalize">
                               {card.accountName}
                             </span>
                             <span className="text-sm">
