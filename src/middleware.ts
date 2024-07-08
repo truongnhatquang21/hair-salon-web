@@ -39,7 +39,7 @@ const publicPages = [
   "/end-user-license-agreement",
   "/subscriptions",
   "/tracking",
-  "/search-all-branch",
+  "/search",
 ];
 const commonAuthPages = [
   "/subscriptions/order/[slug]",
