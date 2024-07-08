@@ -39,10 +39,12 @@ const publicPages = [
   "/end-user-license-agreement",
   "/subscriptions",
   "/tracking",
-  "/search-all-branch",
+  "/search",
 ];
 const commonAuthPages = [
   "/subscriptions/order/[slug]",
+  "/branch/[slug]",
+  "/booking",
   "/subscriptions/order/[slug]/checkout",
 ];
 const customerPages = [
@@ -199,6 +201,7 @@ export default function middleware(req: NextRequest) {
   const regex = {
     badminton: /^\/badminton\/[a-zA-Z0-9]+$/,
     article: /^\/article\/[a-zA-Z0-9]+$/,
+    branch: /^\/branch\/[a-zA-Z0-9]+$/,
   };
 
   switch (true) {
@@ -206,6 +209,9 @@ export default function middleware(req: NextRequest) {
       return intlMiddleware(req);
     }
     case regex.article.test(path): {
+      return intlMiddleware(req);
+    }
+    case regex.branch.test(path): {
       return intlMiddleware(req);
     }
     default: {

@@ -15,7 +15,12 @@ export const postBooking = async (data: {
 }) => {
   return fetcher("booking", { method: "POST", body: JSON.stringify(data) });
 };
-
+export const postBookingFlexible = async (data: {
+  booking: Omit<IBooking, "status">;
+  transaction: { amount: number; payment: string };
+}) => {
+  return fetcher("booking", { method: "POST", body: JSON.stringify(data) });
+};
 export const getMyBookingReceiptByStatus = async (status: string = "") => {
   const endpoint = status
     ? `booking/GetBookingByStatus/${status}`
