@@ -31,7 +31,6 @@ interface CalendarDailyProps {
   courts: ICourt[];
   selectedCourt: ICourt | null;
   handleCourtSelection: (court: ICourt) => void;
-
   setStartSlot: Dispatch<SetStateAction<null>>;
   startSlot: string | null;
   endSlot: string | null;
@@ -55,7 +54,6 @@ const FlexibleBooking = ({
   courts,
   selectedCourt,
   handleCourtSelection,
-
   setStartSlot,
   selectedSlots,
   startSlot,
