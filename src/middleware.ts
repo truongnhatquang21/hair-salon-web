@@ -97,7 +97,6 @@ const staffPages = [
   "/dashboard/check-in",
   "/dashboard",
   "/dashboard/courts",
-  "/dashboard/staffs",
   "/dashboard/reports",
   "/dashboard/account",
   "/dashboard/schedule",
