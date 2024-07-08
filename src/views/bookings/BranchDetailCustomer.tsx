@@ -101,7 +101,7 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
   };
 
   const handleBooking = async () => {
-    if (selectedCourt !== null && selectDay) {
+    if (selectedCourt !== null) {
       if (activeTab !== "flexible_schedule") {
         setBooking({
           booking: {
@@ -377,7 +377,7 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
                         startSlot={startSlot}
                         setEndSlot={setEndSlot}
                         setStartSlot={setStartSlot}
-                        timeSlotData={timeSlots}
+                        activeTab={activeTab}
                       />
                     </CardContent>
                   </Card>

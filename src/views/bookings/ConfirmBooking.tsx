@@ -12,7 +12,7 @@ import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { postBooking } from "@/apiCallers/customerBooking";
+import { postBooking, postBookingFlexible } from "@/apiCallers/customerBooking";
 import { addCardAPI, getCardListAPI } from "@/apiCallers/payment";
 import CustomTag from "@/components/CustomTag";
 import { Icons } from "@/components/icons";
@@ -86,7 +86,7 @@ const bookingTransactionSchema = z.object({
 export type OrderSchemaType = z.infer<typeof bookingTransactionSchema>;
 export type CardSchemaType = z.infer<typeof cardSchema>;
 const ConfirmBooking = () => {
-  const [paymentType, setPaymentType] = useState("partial");
+  const [paymentType, setPaymentType] = useState("full");
   const [open, setOpen] = useState(false);
 
   const [payment, setPayment] = useState<"bank" | "tranfer">("bank");
@@ -225,6 +225,34 @@ const ConfirmBooking = () => {
         }
       },
     });
+
+  const {
+    mutateAsync: bookingMutationFlexible,
+    isPending: bookingMutatingFlexible,
+  } = useMutation({
+    mutationFn: async (bookingReq: {
+      booking: Omit<IBooking, "status">;
+      transaction: { amount: number; payment: string };
+    }) => postBookingFlexible(bookingReq),
+    onSuccess: (data) => {
+      if (!data.ok) {
+        if (data.error) {
+          console.log(data.error);
+        }
+
+        return toast({
+          variant: "destructive",
+          title: "Uh oh! Something went wrong.",
+          description: data.message || data.statusText,
+        });
+      }
+
+      if (data.message) {
+        setOpen(true);
+      }
+    },
+  });
+
   const handleBooking = async () => {
     const paymentId = getValues("payment");
     if (!paymentId) {
@@ -340,10 +368,7 @@ const ConfirmBooking = () => {
               : (bookingData.booking.totalPrice * dayOfPermanent?.data.length) /
                 2,
           totalHour:
-            paymentType === "full"
-              ? bookingData.booking.totalHour * dayOfPermanent?.data.length
-              : (bookingData.booking.totalHour * dayOfPermanent?.data.length) /
-                2,
+            bookingData.booking.totalHour * dayOfPermanent?.data.length,
           startDate: bookingData.booking.startDate,
           endDate: format(endDate1month.toString(), "yyyy-MM-dd"),
           court: bookingData.booking.court._id,
@@ -356,7 +381,6 @@ const ConfirmBooking = () => {
           date: bookingData.schedule?.date,
           court: bookingData.schedule.court._id,
         },
-
         transaction: {
           amount:
             paymentType === "full"
@@ -366,10 +390,37 @@ const ConfirmBooking = () => {
           payment: getValues("payment"),
         },
       });
+    } else if (
+      bookingData?.booking?.type === "flexible_schedule" &&
+      paymentId
+    ) {
+      console.log(bookingData?.booking?.type);
+      const endDate1month = new Date(bookingData.booking.endDate);
+      endDate1month.setMonth(endDate1month.getMonth() + 1);
+
+      await bookingMutationFlexible({
+        booking: {
+          type: bookingData.booking.type,
+          paymentType,
+          paymentMethod: payment,
+          totalPrice: bookingData.booking.totalPrice,
+          totalHour: bookingData.booking.totalHour,
+          startDate: bookingData.booking.startDate,
+          endDate: format(endDate1month.toString(), "yyyy-MM-dd"),
+          court: bookingData.booking.court._id,
+        },
+        transaction: {
+          amount: bookingData.booking.totalPrice,
+          payment: getValues("payment"),
+        },
+      });
     }
   };
   const getEndDate = () => {
-    if (bookingData?.booking?.type === "permanent_schedule") {
+    if (
+      bookingData?.booking?.type !== "single_schedule" &&
+      bookingData.booking
+    ) {
       const endDate1month = new Date(bookingData.booking.endDate);
       endDate1month.setMonth(endDate1month.getMonth() + 1);
       return format(endDate1month.toString(), "yyyy-MM-dd");
@@ -472,24 +523,28 @@ const ConfirmBooking = () => {
                 </div>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-6">
-              <div>
-                <Label htmlFor="start-time" className="text-lg font-medium">
-                  Start Time
-                </Label>
-                <div id="start-time" className="mt-2 text-sm font-medium">
-                  {bookingData.schedule?.startTime}
+
+            {bookingData?.booking?.type !== "flexible_schedule" && (
+              <div className="grid grid-cols-2 gap-6">
+                <div>
+                  <Label htmlFor="start-time" className="text-lg font-medium">
+                    Start Time
+                  </Label>
+                  <div id="start-time" className="mt-2 text-sm font-medium">
+                    {bookingData.schedule?.startTime}
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="end-time" className="text-lg font-medium">
+                    End Time
+                  </Label>
+                  <div id="start-time" className="mt-2 text-sm font-medium">
+                    {bookingData.schedule?.endTime}
+                  </div>
                 </div>
               </div>
-              <div>
-                <Label htmlFor="end-time" className="text-lg font-medium">
-                  End Time
-                </Label>
-                <div id="start-time" className="mt-2 text-sm font-medium">
-                  {bookingData.schedule?.endTime}
-                </div>
-              </div>
-            </div>
+            )}
+
             <div>
               <Label htmlFor="court" className="text-lg font-medium">
                 Court
@@ -616,7 +671,14 @@ const ConfirmBooking = () => {
                   <SelectContent>
                     <SelectGroup>
                       <SelectLabel>Payment Type</SelectLabel>
-                      <SelectItem value="partial">Partial</SelectItem>
+                      <SelectItem
+                        value="partial"
+                        disabled={
+                          bookingData?.booking?.type === "flexible_schedule"
+                        }
+                      >
+                        Partial
+                      </SelectItem>
                       <SelectItem value="full">Full</SelectItem>
                     </SelectGroup>
                   </SelectContent>
@@ -890,7 +952,7 @@ const ConfirmBooking = () => {
               onClick={handleBooking}
               className="w-full rounded-md bg-primary-foreground px-4 py-2 font-medium text-primary shadow-sm transition-colors hover:bg-slate-300"
             >
-              {bookingMutating && <SpinnerIcon />}
+              {(bookingMutating || bookingMutatingFlexible) && <SpinnerIcon />}
               Confirm Booking
             </Button>
           </CardFooter>
