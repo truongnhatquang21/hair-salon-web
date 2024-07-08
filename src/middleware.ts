@@ -40,6 +40,7 @@ const publicPages = [
   "/subscriptions",
   "/tracking",
   "/search",
+  "/checkIn",
 ];
 const commonAuthPages = [
   "/subscriptions/order/[slug]",
@@ -79,6 +80,7 @@ const operatorPages = [
 
 const managerPages = [
   ...commonAuthPages,
+  "/dashboard/check-in",
   "/dashboard",
   "/dashboard/branches",
   "/dashboard/branches/[branchId]",
@@ -88,14 +90,17 @@ const managerPages = [
   "/dashboard/staffs",
   "/dashboard/reports",
   "/dashboard/account",
+  "/dashboard/schedule",
 ];
 const staffPages = [
   ...commonAuthPages,
+  "/dashboard/check-in",
   "/dashboard",
   "/dashboard/courts",
   "/dashboard/staffs",
   "/dashboard/reports",
   "/dashboard/account",
+  "/dashboard/schedule",
 ];
 const authMiddleware = auth((req) => {
   const session = req.auth;
@@ -151,6 +156,10 @@ const authMiddleware = auth((req) => {
       role: [RoleEnum.ADMIN, RoleEnum.OPERATOR, RoleEnum.MANAGER],
       regex: /^\/subscriptions\/order\/([^/]+)\/checkout$/,
     },
+    checkIn: {
+      role: [RoleEnum.STAFF, RoleEnum.MANAGER],
+      regex: /^\/dashboard\/check-in\/[a-zA-Z0-9]+$/,
+    },
   };
   const { pathname } = req.nextUrl;
 
@@ -180,6 +189,12 @@ const authMiddleware = auth((req) => {
       }
       return NextResponse.redirect(new URL("/401", req.nextUrl));
     }
+    case regex.checkIn.regex.test(pathname): {
+      if (regex.checkIn.role.includes(role)) {
+        return intlMiddleware(req);
+      }
+      return NextResponse.redirect(new URL("/401", req.nextUrl));
+    }
     default: {
       console.log("not found in auth pages");
 
@@ -193,6 +208,7 @@ export default function middleware(req: NextRequest) {
     "i"
   );
   const isPublicPage = publicPathnameRegex.test(req.nextUrl.pathname);
+  console.log(req.nextUrl.pathname, "req.nextUrl.pathname");
 
   if (isPublicPage) {
     return intlMiddleware(req);

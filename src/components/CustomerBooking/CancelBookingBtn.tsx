@@ -150,6 +150,13 @@ const CancelBookingBtn = ({ defalutValues, Trigger, invalidateKey }: Props) => {
   };
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
   const onAddCardSubmit = async (value: CardSchemaType) => {
+    if (new Date(value.expDate) < new Date()) {
+      return toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: "Expired date must be greater than today",
+      });
+    }
     try {
       await triggerAddCard(value);
       setIsDialogOpen(false);
@@ -169,7 +176,7 @@ const CancelBookingBtn = ({ defalutValues, Trigger, invalidateKey }: Props) => {
     if (!paymentId && availableCard?.length) {
       setPaymentId(availableCard[0]._id);
     }
-  }, [paymentId, setPaymentId, cardList?.data]);
+  }, [paymentId, setPaymentId, availableCard]);
 
   return (
     <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
@@ -249,10 +256,10 @@ const CancelBookingBtn = ({ defalutValues, Trigger, invalidateKey }: Props) => {
                             className="size-20 rounded-md border object-contain p-1 shadow-md"
                           />
                           <div className="flex flex-col">
-                            <span className="text-xl font-bold">
+                            <span className="text-xl font-bold capitalize">
                               {card.accountBank}
                             </span>
-                            <span className="text-base font-semibold">
+                            <span className="text-base font-semibold capitalize">
                               {card.accountName}
                             </span>
                             <span className="text-sm">

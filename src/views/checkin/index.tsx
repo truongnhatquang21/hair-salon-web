@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { useZxing } from "react-zxing";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 
 function QrCodeIcon(props) {
@@ -39,42 +39,57 @@ function QrCodeIcon(props) {
 }
 const CheckInPage = () => {
   const [result, setResult] = useState("");
+  const router = useRouter();
   const { ref } = useZxing({
-    onDecodeResult(result) {
-      console.log(result);
-      setResult(result.getText());
+    onDecodeResult(res) {
+      setResult(new URL(res.toString()).pathname.split("/").pop());
     },
   });
+  useEffect(() => {
+    if (result) {
+      router.push(`/dashboard/check-in/${result}`);
+    }
+  }, [router, result]);
   return (
-    <div className="mx-auto max-w-3xl p-6 sm:p-8 md:p-10 lg:p-12">
-      <div className="flex flex-col items-center gap-6">
+    <div className="mx-auto h-full">
+      <div className="flex h-full flex-col items-center gap-6">
         <div className="text-center">
-          <h1 className="text-3xl font-bold">Badminton Court Check-In</h1>
+          <h1 className="text-2xl font-bold">Badminton Court Check-In</h1>
           <p className="text-muted-foreground">
             Scan QR codes to check in and view court availability.
           </p>
         </div>
-        <Card className="w-full">
-          <CardContent className="flex flex-col items-center gap-6">
-            <div className="flex flex-col items-center gap-2">
+        <Card className="w-full flex-1 p-2">
+          <CardContent className="flex h-full flex-col items-center gap-6">
+            <div className="flex h-full flex-col items-center gap-2">
               <QrCodeIcon className="size-16" />
-              <p className="text-lg font-semibold">Scan QR Code</p>
               <p className="text-muted-foreground">
                 Hold your camera up to the QR code on your receipt to check in.
               </p>
-              <video muted ref={ref} />
+              <video ref={ref} className="size-80 rounded-md" />
               <p>
-                <span>Last result:</span>
                 <span>{result}</span>
               </p>
             </div>
             <div className="w-full max-w-[300px]">
-              <Input type="text" placeholder="Scan QR Code" className="pl-12" />
+              <Input
+                type="text"
+                placeholder="Scan QR Code"
+                className="pl-12"
+                readOnly
+                value={result}
+              />
+              {result && (
+                <Button
+                  onClick={() => router.push(`/dashboard/check-in/${result}`)}
+                >
+                  Go to Check In
+                </Button>
+              )}
             </div>
-            <Button className="w-full">Confirm Check-In</Button>
           </CardContent>
         </Card>
-        <div className="grid w-full grid-cols-1 gap-6 sm:grid-cols-2">
+        {/* <div className="grid w-full grid-cols-1 gap-6 sm:grid-cols-2">
           <Card>
             <CardHeader>
               <CardTitle>Court Availability</CardTitle>
@@ -113,7 +128,7 @@ const CheckInPage = () => {
               </div>
             </CardContent>
           </Card>
-        </div>
+        </div> */}
       </div>
     </div>
   );

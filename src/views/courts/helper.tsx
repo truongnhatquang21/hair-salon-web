@@ -18,8 +18,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useBranchStore } from "@/stores/branchStore";
 import { BranchStatusEnum, CourtStatusEnum } from "@/types";
-
+import {
+  formatToVND,
+  PricingCard,
+} from "@/app/[locale]/(normalUser)/(auth)/subscriptions/page";
 import CreateCourtButton from "./CreateCourtButton";
+import { format } from "date-fns";
+import React from "react";
 
 export const createCourtObject = z.object({
   name: z
@@ -82,17 +87,21 @@ export const columns: ColumnDef<CourtSchemaTypeWithId>[] = [
   {
     accessorKey: "price",
     header: ({ column }) => {
-      return <DataTableColumnHeader column={column} title="price" />;
+      return <DataTableColumnHeader column={column} title="Price" />;
+    },
+    cell: ({ getValue }) => {
+      const data = getValue() as number;
+      return <span>{formatToVND(data)}</span>;
     },
   },
   {
     accessorKey: "status",
     header: ({ column }) => {
-      return <DataTableColumnHeader column={column} title="status" />;
+      return <DataTableColumnHeader column={column} title="Status" />;
     },
   },
   {
-    accessorKey: "description",
+    accessorKey: "Description",
     header: ({ column }) => {
       return <DataTableColumnHeader column={column} title="Description" />;
     },

@@ -1,9 +1,9 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import type { Session } from "next-auth";
 import * as React from "react";
 
@@ -14,6 +14,7 @@ import { RoleEnum } from "@/types";
 import type { NavItem } from "@/types/nav";
 import { signOutServer } from "@/utils/serverActions";
 
+import SpinnerIcon from "../SpinnerIcon";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
@@ -32,11 +33,17 @@ interface MainNavProps {
 }
 export function MainNav({ items, session }: MainNavProps) {
   const pathname = usePathname();
-  const { data: profileData } = useQuery({
+  const { data: profileData, isLoading: isProfileLoading } = useQuery({
     queryKey: ["myProfile"],
     queryFn: async () => getProfileAPI(),
   });
-  console.log("profileData", profileData, session, "sdaf");
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  React.useEffect(() => {
+    if (!profileData?.ok && !profileData?.data && !session?.user) {
+      router.push("/sign-in");
+    }
+  }, [profileData?.data]);
   return (
     <div className=" flex items-center gap-6 rounded-md  border-b  px-4 shadow-sm backdrop-blur-md md:gap-10">
       <Link
@@ -77,7 +84,11 @@ export function MainNav({ items, session }: MainNavProps) {
           )}
         </nav>
       ) : null}
-      {!session?.user ? (
+      {isProfileLoading ? (
+        <span className="ml-auto">
+          <SpinnerIcon />
+        </span>
+      ) : !profileData?.data?.role ? (
         <div className="ml-auto flex items-center gap-2">
           <Button
             asChild
@@ -138,8 +149,12 @@ export function MainNav({ items, session }: MainNavProps) {
                 <Button
                   variant="destructive"
                   className="w-full"
-                  onClick={() => {
-                    signOutServer();
+                  onClick={async () => {
+                    await signOutServer();
+                    await queryClient.invalidateQueries({
+                      queryKey: ["myProfile"],
+                    });
+                    router.push("/sign-in");
                   }}
                 >
                   Sign Out
