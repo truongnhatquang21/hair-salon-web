@@ -143,6 +143,20 @@ export function getMenuList(pathname: string, role: RoleEnum): Group[] {
           groupLabel: "Branch management",
           menus: [
             {
+              href: "/dashboard/schedule",
+              label: "Schedule",
+              active: pathname.includes("/dashboard/schedule"),
+              icon: LayoutGrid,
+              submenus: [],
+            },
+            {
+              href: "/dashboard/check-in",
+              label: "Check-in",
+              active: pathname.includes("/dashboard/check-in"),
+              icon: LayoutGrid,
+              submenus: [],
+            },
+            {
               href: "/dashboard/courts",
               label: "Courts",
               active: pathname.includes("/dashboard/courts"),
@@ -295,6 +309,20 @@ export function getMenuList(pathname: string, role: RoleEnum): Group[] {
         {
           groupLabel: "Branch management",
           menus: [
+            {
+              href: "/dashboard/schedule",
+              label: "Schedule",
+              active: pathname.includes("/dashboard/schedule"),
+              icon: LayoutGrid,
+              submenus: [],
+            },
+            {
+              href: "/dashboard/check-in",
+              label: "Check in",
+              active: pathname.includes("/dashboard/check-in"),
+              icon: LayoutGrid,
+              submenus: [],
+            },
             {
               href: "/dashboard/courts",
               label: "Courts",

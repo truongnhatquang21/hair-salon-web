@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -38,7 +38,7 @@ export function MainNav({ items, session }: MainNavProps) {
     queryFn: async () => getProfileAPI(),
   });
   const router = useRouter();
-
+  const queryClient = useQueryClient();
   React.useEffect(() => {
     if (!profileData?.ok && !profileData?.data && !session?.user) {
       router.push("/sign-in");
@@ -85,7 +85,9 @@ export function MainNav({ items, session }: MainNavProps) {
         </nav>
       ) : null}
       {isProfileLoading ? (
-        <SpinnerIcon />
+        <span className="ml-auto">
+          <SpinnerIcon />
+        </span>
       ) : !profileData?.data?.role ? (
         <div className="ml-auto flex items-center gap-2">
           <Button
@@ -147,8 +149,12 @@ export function MainNav({ items, session }: MainNavProps) {
                 <Button
                   variant="destructive"
                   className="w-full"
-                  onClick={() => {
-                    signOutServer();
+                  onClick={async () => {
+                    await signOutServer();
+                    await queryClient.invalidateQueries({
+                      queryKey: ["myProfile"],
+                    });
+                    router.push("/sign-in");
                   }}
                 >
                   Sign Out
