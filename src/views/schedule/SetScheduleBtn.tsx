@@ -226,10 +226,9 @@ const SetScheduleBtn = ({ defalutValues, Trigger, invalidateKey }: Props) => {
       <AlertDialog open={isDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Booking Successfully!</AlertDialogTitle>
+            <AlertDialogTitle>Schedule Successfully!</AlertDialogTitle>
             <AlertDialogDescription>
-              Please check your mail.
-              <br /> You can go to the schedule to view more.
+              You can go to the schedule to view more.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

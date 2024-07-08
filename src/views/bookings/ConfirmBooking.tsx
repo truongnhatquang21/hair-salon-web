@@ -176,6 +176,13 @@ const ConfirmBooking = () => {
     },
   });
   const onAddCardSubmit = async (value: CardSchemaType) => {
+    if (new Date(value.expDate) < new Date()) {
+      return toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: "Card is expired",
+      });
+    }
     try {
       await triggerAddCard(value);
       setIsDialogOpen(false);
