@@ -5,10 +5,11 @@ import { format } from "date-fns";
 import { Eye, KeyRound, Plus, Rocket } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { z } from "zod";
 
 import { getProfileAPI } from "@/apiCallers/auth";
+import { getCourtListAPI } from "@/apiCallers/courts";
 import { changePasswordApi } from "@/apiCallers/login";
 import { addCardAPI, getCardListAPI } from "@/apiCallers/payment";
 import { AccountAutoForm } from "@/components/Account/AccountForm";
@@ -111,6 +112,23 @@ const Account = (props: Props) => {
       });
     },
   });
+
+  const { data: courtsData } = useQuery({
+    queryKey: ["courts"],
+    queryFn: async () => getCourtListAPI(),
+  });
+
+  const availableCourts = useMemo(() => {
+    if (!profileData?.data?.maxCourt) {
+      return 0;
+    }
+    if (profileData.data.maxCourt) {
+      return (
+        profileData.data.maxCourt - (courtsData?.data?.length as number) || 0
+      );
+    }
+    return 0;
+  }, [profileData?.data?.maxCourt, courtsData?.data?.length]);
   const { mutateAsync: triggerAddCard, isPending } = useMutation({
     mutationFn: async (data: CardSchemaType) => {
       return addCardAPI(data);
@@ -166,14 +184,25 @@ const Account = (props: Props) => {
     try {
       await triggerChangePassword(value);
       setIsChangePasswordDialogOpen(false);
-      router.push("/sign-in");
-      signOutServer();
+      await signOutServer();
+
+      await queryClient.invalidateQueries({
+        queryKey: ["myProfile"],
+      });
+      await router.push("/sign-in");
     } catch (error) {
       console.log(error);
     }
   };
 
   const onAddCardSubmit = async (value: CardSchemaType) => {
+    if (new Date(value.expDate) < new Date()) {
+      return toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: "Your card has expired",
+      });
+    }
     try {
       await triggerAddCard(value);
       setIsDialogOpen(false);
@@ -258,6 +287,12 @@ const Account = (props: Props) => {
               </DialogContent>
             </Dialog>
           </div>
+          {profileData?.data?.role === RoleEnum.MANAGER && (
+            <div className="mb-2 flex items-center justify-start gap-2  rounded-md border-b-2 bg-gray-500 p-2 font-bold text-white shadow-sm">
+              <b className="text-2xl">{availableCourts}</b> Available courts in
+              your current plan
+            </div>
+          )}
           {profileData?.data?.role === RoleEnum.CUSTOMER ||
           profileData?.data?.role === RoleEnum.MANAGER ? (
             <>
@@ -321,10 +356,10 @@ const Account = (props: Props) => {
                             className="size-20 rounded-md border object-contain p-1 shadow-md"
                           />
                           <div className="flex flex-col">
-                            <span className="text-xl font-bold">
+                            <span className="text-xl font-bold capitalize">
                               {card.accountBank}
                             </span>
-                            <span className="text-base font-semibold">
+                            <span className="text-base font-semibold capitalize">
                               {card.accountName}
                             </span>
                             <span className="text-sm">

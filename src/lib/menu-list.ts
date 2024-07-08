@@ -87,15 +87,15 @@ export function getMenuList(pathname: string, role: RoleEnum): Group[] {
               icon: LayoutGrid,
               submenus: [],
             },
-            {
-              href: "/dashboard/history/tracking-subscription",
-              label: "History",
-              active: pathname.includes(
-                "/dashboard/history/tracking-subscription"
-              ),
-              icon: LayoutGrid,
-              submenus: [],
-            },
+            // {
+            //   href: "/dashboard/history/tracking-subscription",
+            //   label: "History",
+            //   active: pathname.includes(
+            //     "/dashboard/history/tracking-subscription"
+            //   ),
+            //   icon: LayoutGrid,
+            //   submenus: [],
+            // },
           ],
         },
         {
@@ -161,6 +161,20 @@ export function getMenuList(pathname: string, role: RoleEnum): Group[] {
               href: "/dashboard/reports",
               label: "Reports",
               active: pathname.includes("/dashboard/reports"),
+              icon: LayoutGrid,
+              submenus: [],
+            },
+          ],
+        },
+        {
+          groupLabel: "Subscriptions Management",
+          menus: [
+            {
+              href: "/dashboard/history/tracking-subscription",
+              label: "History",
+              active: pathname.includes(
+                "/dashboard/history/tracking-subscription"
+              ),
               icon: LayoutGrid,
               submenus: [],
             },
@@ -237,15 +251,15 @@ export function getMenuList(pathname: string, role: RoleEnum): Group[] {
               icon: LayoutGrid,
               submenus: [],
             },
-            {
-              href: "/dashboard/history/tracking-subscription",
-              label: "History",
-              active: pathname.includes(
-                "/dashboard/history/tracking-subscription"
-              ),
-              icon: LayoutGrid,
-              submenus: [],
-            },
+            // {
+            //   href: "/dashboard/history/tracking-subscription",
+            //   label: "History",
+            //   active: pathname.includes(
+            //     "/dashboard/history/tracking-subscription"
+            //   ),
+            //   icon: LayoutGrid,
+            //   submenus: [],
+            // },
           ],
         },
         {

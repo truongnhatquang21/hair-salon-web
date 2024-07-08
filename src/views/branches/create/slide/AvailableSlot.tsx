@@ -105,7 +105,6 @@ const AvailableSlot = ({ steppers, goBackfn, goNextFn, stepIndex }: Props) => {
     }
   };
   const onSubmit: SubmitHandler<FormSchemaType> = async (data) => {
-    console.log(data.slots.length, "data");
     if (!data.slots || data.slots.length === 0) {
       toast({
         title: "Error",
@@ -400,6 +399,7 @@ const AvailableSlot = ({ steppers, goBackfn, goNextFn, stepIndex }: Props) => {
                     {slotMaping[key]?.map((slot) => {
                       return (
                         <SlotDialog
+                          isCreateBranch
                           key={slot.startTime + slot.endTime + slot.weekDay}
                           Trigger={
                             <Badge

@@ -5,6 +5,7 @@ import { MoreHorizontal } from "lucide-react";
 import { useState } from "react";
 import { z } from "zod";
 
+import { formatToVND } from "@/app/[locale]/(normalUser)/(auth)/subscriptions/page";
 import { DataTableColumnHeader } from "@/components/table/ColumnHeader";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
@@ -83,7 +84,7 @@ export const columns: ColumnDef<PackageCourtSchemaTypeWithId>[] = [
     accessorKey: "totalPrice",
     cell: ({ getValue }) => {
       const data = getValue() as number;
-      return <span>{data || "-"}</span>;
+      return <span>{data ? formatToVND(data) : "-"}</span>;
     },
     header: ({ column }) => {
       return <DataTableColumnHeader column={column} title="Total price" />;
@@ -93,7 +94,7 @@ export const columns: ColumnDef<PackageCourtSchemaTypeWithId>[] = [
     accessorKey: "priceEachCourt",
     cell: ({ getValue }) => {
       const data = getValue() as number;
-      return <span>{data || "-"}</span>;
+      return <span>{data ? formatToVND(data) : "-"}</span>;
     },
     header: ({ column }) => {
       return <DataTableColumnHeader column={column} title="Price/ court" />;
@@ -124,7 +125,7 @@ export const columns: ColumnDef<PackageCourtSchemaTypeWithId>[] = [
     accessorKey: "description",
     cell: ({ getValue }) => {
       const data = getValue() as string;
-      return <span>{data || "-"}</span>;
+      return <span className="">{`${data.slice(0, 100)}...` || "-"}</span>;
     },
     header: ({ column }) => {
       return <DataTableColumnHeader column={column} title="Description" />;

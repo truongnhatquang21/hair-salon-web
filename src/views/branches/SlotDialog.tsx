@@ -29,9 +29,11 @@ type Props = {
   description: string;
   invalidateKey?: string[];
   isViewOnly?: boolean;
+  isCreateBranch?: boolean;
 };
 
 const SlotDialog = ({
+  isCreateBranch = false,
   isViewOnly,
   Trigger,
   onSubmit,
@@ -83,7 +85,9 @@ const SlotDialog = ({
   const QueryClient = useQueryClient();
   const onSubmitHandle = async (data: SlotSchemaType) => {
     try {
-      await updateTrigger({ ...data, _id: defaultValue._id });
+      if (!isCreateBranch)
+        await updateTrigger({ ...data, _id: defaultValue._id });
+      onSubmit && onSubmit({ ...data, _id: defaultValue._id });
       if (invalidateKey) {
         QueryClient.invalidateQueries({
           queryKey: invalidateKey,
@@ -114,6 +118,7 @@ const SlotDialog = ({
             fieldConfig={{
               startTime: {
                 fieldType: TimeFieldType,
+                label: "Start time",
                 inputProps: {
                   value: defaultValue.startTime,
                 },
@@ -122,6 +127,7 @@ const SlotDialog = ({
               },
               endTime: {
                 fieldType: TimeFieldType,
+                label: "End time",
                 inputProps: { value: defaultValue.endTime },
                 // fieldType: TimePickerDemo,
                 description: "End time must be a valid time",

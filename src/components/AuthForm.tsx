@@ -207,7 +207,7 @@ export function UserAuthForm({
             username: data?.username || (data.email as string),
           });
         }
-        router.push("auth/sign-in");
+        router.push("/sign-in");
       }
       if (type === "sign-in") {
         const rest = await signInMutate({

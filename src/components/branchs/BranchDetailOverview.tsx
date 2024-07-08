@@ -214,7 +214,7 @@ const BranchDetailOverview: FC<BranchDetailOverviewProps> = ({ data }) => {
                     <div className="flex items-center gap-4">
                       <Icons.BadmintonCourt className="rounded-lg object-cover" />
                       {/* <Image src={} alt="Court Image" width={80} height={80} /> */}
-                      <div>
+                      <div className="w-full">
                         <h3 className="font-semibold">{court.name}</h3>
                         <span className="line-clamp-3  text-sm  text-gray-500 dark:text-gray-400">
                           {court.description}

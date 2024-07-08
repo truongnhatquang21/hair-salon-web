@@ -22,6 +22,8 @@ const intlMiddleware = createMiddleware({
 // };
 
 const publicPages = [
+  "/401",
+  "/404",
   "/",
   "/sign-in",
   "/sign-up",
@@ -37,10 +39,12 @@ const publicPages = [
   "/end-user-license-agreement",
   "/subscriptions",
   "/tracking",
-  "/search-all-branch",
+  "/search",
 ];
 const commonAuthPages = [
   "/subscriptions/order/[slug]",
+  "/branch/[slug]",
+  "/booking",
   "/subscriptions/order/[slug]/checkout",
 ];
 const customerPages = [
@@ -48,6 +52,7 @@ const customerPages = [
   "/me/account",
   "/me/schedule",
   "/me/receipts",
+  "/me/booking",
   "/me/history",
 ];
 const adminPages = [
@@ -59,7 +64,6 @@ const adminPages = [
   "/dashboard/requestedBranch",
   "/dashboard/requestedBranch/[branchId]",
   "/dashboard/subscriptions",
-  "/history/tracking-subscription",
   "/dashboard/account",
 ];
 const operatorPages = [
@@ -70,7 +74,6 @@ const operatorPages = [
   "/dashboard/requestedBranch",
   "/dashboard/requestedBranch/[branchId]",
   "/dashboard/subscriptions",
-  "/history/tracking-subscription",
   "/dashboard/account",
 ];
 
@@ -80,7 +83,7 @@ const managerPages = [
   "/dashboard/branches",
   "/dashboard/branches/[branchId]",
   "/dashboard/branches/create",
-  "/history/tracking-subscription",
+  "/dashboard/history/tracking-subscription",
   "/dashboard/courts",
   "/dashboard/staffs",
   "/dashboard/reports",
@@ -97,31 +100,40 @@ const staffPages = [
 const authMiddleware = auth((req) => {
   const session = req.auth;
   const role = session?.user?.role;
-
-  if (role) {
-    if (role === RoleEnum.ADMIN) {
-      if (adminPages.includes(req.nextUrl.pathname)) {
+  console.log("role", role, req.nextUrl.pathname);
+  console.log(managerPages.includes(req.nextUrl.pathname), "ODOSF");
+  if (true) {
+    if (adminPages.includes(req.nextUrl.pathname)) {
+      if (role === RoleEnum.ADMIN) {
         return intlMiddleware(req);
       }
-    } else if (role === RoleEnum.OPERATOR) {
-      if (operatorPages.includes(req.nextUrl.pathname)) {
+      if (!role) return NextResponse.redirect(new URL("/401", req.nextUrl));
+    }
+    if (operatorPages.includes(req.nextUrl.pathname)) {
+      if (role === RoleEnum.OPERATOR) {
         return intlMiddleware(req);
       }
-    } else if (role === RoleEnum.MANAGER) {
-      if (managerPages.includes(req.nextUrl.pathname)) {
+      if (!role) return NextResponse.redirect(new URL("/401", req.nextUrl));
+    }
+    if (managerPages.includes(req.nextUrl.pathname)) {
+      if (role === RoleEnum.MANAGER) {
         return intlMiddleware(req);
       }
-    } else if (role === RoleEnum.STAFF) {
-      if (staffPages.includes(req.nextUrl.pathname)) {
+      if (!role) return NextResponse.redirect(new URL("/401", req.nextUrl));
+    }
+    if (staffPages.includes(req.nextUrl.pathname)) {
+      if (role === RoleEnum.STAFF) {
         return intlMiddleware(req);
       }
-    } else if (role === RoleEnum.CUSTOMER) {
-      if (customerPages.includes(req.nextUrl.pathname)) {
+      if (!role) return NextResponse.redirect(new URL("/401", req.nextUrl));
+    }
+    if (customerPages.includes(req.nextUrl.pathname)) {
+      if (role === RoleEnum.CUSTOMER) {
         return intlMiddleware(req);
       }
+      if (!role) return NextResponse.redirect(new URL("/401", req.nextUrl));
     }
   }
-
   const regex = {
     requestedBranch: {
       role: [RoleEnum.ADMIN, RoleEnum.OPERATOR],
@@ -148,38 +160,40 @@ const authMiddleware = auth((req) => {
         return intlMiddleware(req);
       }
 
-      return NextResponse.redirect(new URL("/sign-in", req.nextUrl));
+      return NextResponse.redirect(new URL("/401", req.nextUrl));
     }
     case regex.branches.regex.test(pathname): {
       if (regex.branches.role.includes(role)) {
         return intlMiddleware(req);
       }
-      return NextResponse.redirect(new URL("/sign-in", req.nextUrl));
+      return NextResponse.redirect(new URL("/401", req.nextUrl));
     }
     case regex.subscriptionOrder.regex.test(pathname): {
       if (regex.subscriptionOrder.role.includes(role)) {
         return intlMiddleware(req);
       }
-      return NextResponse.redirect(new URL("/sign-in", req.nextUrl));
+      return NextResponse.redirect(new URL("/401", req.nextUrl));
     }
     case regex.subscriptionCheckout.regex.test(pathname): {
       if (regex.subscriptionCheckout.role.includes(role)) {
         return intlMiddleware(req);
       }
-      return NextResponse.redirect(new URL("/sign-in", req.nextUrl));
+      return NextResponse.redirect(new URL("/401", req.nextUrl));
     }
     default: {
-      return intlMiddleware(req);
+      console.log("not found in auth pages");
+
+      return NextResponse.redirect(new URL("/404", req.nextUrl));
     }
   }
 });
-
 export default function middleware(req: NextRequest) {
   const publicPathnameRegex = RegExp(
     `^(/(${["en", "fr"].join("|")}))?(${publicPages.flatMap((p) => (p === "/" ? ["", "/"] : p)).join("|")})/?$`,
     "i"
   );
   const isPublicPage = publicPathnameRegex.test(req.nextUrl.pathname);
+  console.log(req.nextUrl.pathname, "req.nextUrl.pathname");
 
   if (isPublicPage) {
     return intlMiddleware(req);
@@ -188,6 +202,7 @@ export default function middleware(req: NextRequest) {
   const regex = {
     badminton: /^\/badminton\/[a-zA-Z0-9]+$/,
     article: /^\/article\/[a-zA-Z0-9]+$/,
+    branch: /^\/branch\/[a-zA-Z0-9]+$/,
   };
 
   switch (true) {
@@ -197,8 +212,15 @@ export default function middleware(req: NextRequest) {
     case regex.article.test(path): {
       return intlMiddleware(req);
     }
+    case regex.branch.test(path): {
+      return intlMiddleware(req);
+    }
     default: {
-      return (authMiddleware as any)(req);
+      {
+        console.log("not found in public pages");
+
+        return (authMiddleware as any)(req);
+      }
     }
   }
 }

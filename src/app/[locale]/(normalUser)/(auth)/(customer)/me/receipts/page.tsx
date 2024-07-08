@@ -36,7 +36,10 @@ const Receipt: React.FC<Props> = () => {
         <StatusFilter currentStatus={status} onStatusChange={setStatus} />
       </div>
       {bookings?.length > 0 ? (
-        <BookingReceipt bookings={bookings} />
+        <BookingReceipt
+          invalidateKey={["bookingReceipts", status]}
+          bookings={bookings}
+        />
       ) : (
         <EmptyComponent
           title="No Booking History Found"

@@ -1,3 +1,4 @@
+import { Copy } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { TimePickerDemo } from "@/components/time-picker/TimePicker";
@@ -10,20 +11,40 @@ export const PeriodTimeFieldType = ({
   fieldConfigItem,
   fieldProps,
 }: AutoFormInputComponentProps) => {
+  const MIDNIGHT_DATE: Date = new Date(
+    new Date().getFullYear(),
+    new Date().getMonth(),
+    new Date().getDate(),
+    0,
+    0,
+    0,
+    0
+  );
+  Copy;
+  const ELEVEN_PM_DATE: Date = new Date(
+    new Date().getFullYear(),
+    new Date().getMonth(),
+    new Date().getDate(),
+    23,
+    0,
+    0,
+    0
+  );
+
   const initialValue = fieldConfigItem.inputProps?.value || field.value;
   const [startDate, setStartDate] = useState<Date | undefined>(
     initialValue
       ? new Date(
           `${new Date().toISOString().slice(0, 10)}T${initialValue.toString().split("-")[0]}:00`
         )
-      : new Date()
+      : MIDNIGHT_DATE
   );
   const [endDate, setEndDate] = useState<Date | undefined>(
     initialValue || field.value
       ? new Date(
           `${new Date().toISOString().slice(0, 10)}T${initialValue.toString().split("-")[1]}:00`
         )
-      : new Date()
+      : ELEVEN_PM_DATE
   );
   useEffect(() => {
     if (initialValue) {
@@ -90,12 +111,22 @@ export const TimeFieldType = ({
   fieldConfigItem,
   fieldProps,
 }: AutoFormInputComponentProps) => {
+  const MIDNIGHT_DATE: Date = new Date(
+    new Date().getFullYear(),
+    new Date().getMonth(),
+    new Date().getDate(),
+    0,
+    0,
+    0,
+    0
+  );
+
   const [startDate, setStartDate] = useState<Date | undefined>(
     fieldConfigItem.inputProps?.value
       ? new Date(
           `${new Date().toISOString().slice(0, 10)}T${fieldConfigItem.inputProps?.value}:00`
         )
-      : new Date()
+      : MIDNIGHT_DATE
   );
   useEffect(() => {
     if (startDate) {
@@ -114,7 +145,7 @@ export const TimeFieldType = ({
       <div className="flex items-center justify-between gap-2">
         <div className="flex flex-1 items-center gap-2 rounded-md border-2 border-dashed p-2">
           <span className="flex items-center gap-1 text-sm font-medium">
-            Start time <span className="text-sm text-destructive">*</span>
+            {label} <span className="text-sm text-destructive">*</span>
           </span>
           <TimePickerDemo
             disabled={fieldConfigItem.inputProps?.disabled}

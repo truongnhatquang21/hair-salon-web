@@ -6,7 +6,7 @@ import { format } from "date-fns";
 import { BanknoteIcon, Eye, Plus } from "lucide-react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
@@ -16,7 +16,10 @@ import {
   type PurchasedOrderType,
 } from "@/apiCallers/package";
 import { addCardAPI, getCardListAPI } from "@/apiCallers/payment";
-import { PricingCard } from "@/app/[locale]/(normalUser)/(auth)/subscriptions/page";
+import {
+  formatToVND,
+  PricingCard,
+} from "@/app/[locale]/(normalUser)/(auth)/subscriptions/page";
 import { Loading } from "@/components/loading";
 import SpinnerIcon from "@/components/SpinnerIcon";
 import { subscriptionFormSchema } from "@/components/Subscription/SubcriptionForm";
@@ -90,6 +93,7 @@ const CheckoutSubcription = ({ subsId }: Props) => {
   const searchParams = useSearchParams();
 
   const totalCourt = Number(searchParams.get("totalCourt"));
+
   const router = useRouter();
 
   useEffect(() => {
@@ -148,9 +152,24 @@ const CheckoutSubcription = ({ subsId }: Props) => {
     queryFn: async () => getCardListAPI(),
   });
 
+  const availableCard = useMemo(() => {
+    if (cardList?.data) {
+      return cardList.data.filter(
+        (card) => new Date(card.expDate) > new Date()
+      );
+    }
+    return [];
+  }, [cardList?.data]);
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
   const queryClient = useQueryClient();
   const onAddCardSubmit = async (value: CardSchemaType) => {
+    if (new Date(value.expDate) < new Date()) {
+      return toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: "Card is expired",
+      });
+    }
     try {
       await triggerAddCard(value);
       setIsDialogOpen(false);
@@ -242,6 +261,11 @@ const CheckoutSubcription = ({ subsId }: Props) => {
     }
   };
 
+  useEffect(() => {
+    if (!getValues("paymentId") && availableCard?.length) {
+      setValue("paymentId", availableCard[0]._id);
+    }
+  }, [availableCard, getValues, setValue]);
   return (
     <>
       <div className="size-full">
@@ -306,14 +330,19 @@ const CheckoutSubcription = ({ subsId }: Props) => {
                 </div>
                 {subscription.data?.type === PackageEnum.Custom && (
                   <h3 className="text-center text-3xl font-bold">
-                    Total: $
-                    {(subscription.data.priceEachCourt || 0) *
-                      Number(searchParams.get("totalCourt"))}
+                    Total:{" "}
+                    {formatToVND(
+                      (subscription.data.priceEachCourt || 0) *
+                        Number(
+                          searchParams.get("totalCourt") *
+                            subscription.data.duration || 0
+                        )
+                    )}
                   </h3>
                 )}
                 {subscription.data?.type === PackageEnum.Standard && (
                   <h3 className="text-center text-3xl font-bold">
-                    Total: ${subscription.data.totalPrice}
+                    Total: {formatToVND(subscription.data.totalPrice || 0)}
                   </h3>
                 )}
               </div>
@@ -386,13 +415,13 @@ const CheckoutSubcription = ({ subsId }: Props) => {
                       <div className="flex size-full justify-center p-2">
                         <Loading />
                       </div>
-                    ) : cardList?.data?.length ? (
+                    ) : availableCard?.length ? (
                       <RadioGroup
                         onValueChange={(value) => {
                           setValue("paymentId", value);
                         }}
                       >
-                        {cardList?.data.map((card) => (
+                        {availableCard?.map((card) => (
                           <div
                             className="flex items-center space-x-2"
                             key={card._id}
@@ -409,10 +438,10 @@ const CheckoutSubcription = ({ subsId }: Props) => {
                                   className="size-20 rounded-md border object-contain p-1 shadow-md"
                                 />
                                 <div className="flex flex-col">
-                                  <span className="text-xl font-bold">
+                                  <span className="text-xl font-bold capitalize">
                                     {card.accountBank}
                                   </span>
-                                  <span className="text-base font-semibold">
+                                  <span className="text-base font-semibold capitalize">
                                     {card.accountName}
                                   </span>
                                   <span className="text-sm">

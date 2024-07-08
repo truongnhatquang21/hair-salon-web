@@ -6,6 +6,7 @@ import { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
+import { formatToVND } from "@/app/[locale]/(normalUser)/(auth)/subscriptions/page";
 import AutoForm from "@/components/ui/auto-form";
 
 import { Button } from "../ui/button";
@@ -83,7 +84,7 @@ export function SubscriptionAutoForm({
       Alternatively, you can not pass a submit button
       to create auto-saving forms etc.
       */}
-      <h3 className="text-3xl font-bold">${totalPrice}</h3>
+      <h3 className="text-3xl font-bold">{formatToVND(totalPrice)}</h3>
       <Button className="w-full">Continue</Button>
 
       {/*

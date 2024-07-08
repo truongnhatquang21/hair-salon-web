@@ -1,18 +1,22 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import type { Session } from "next-auth";
 import * as React from "react";
 
+import { getProfileAPI } from "@/apiCallers/auth";
 import { cn } from "@/lib/utils";
 import logo from "@/public/assets/images/logo.png";
 import { RoleEnum } from "@/types";
 import type { NavItem } from "@/types/nav";
 import { signOutServer } from "@/utils/serverActions";
 
+import SpinnerIcon from "../SpinnerIcon";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import {
   DropdownMenu,
@@ -29,7 +33,17 @@ interface MainNavProps {
 }
 export function MainNav({ items, session }: MainNavProps) {
   const pathname = usePathname();
+  const { data: profileData, isLoading: isProfileLoading } = useQuery({
+    queryKey: ["myProfile"],
+    queryFn: async () => getProfileAPI(),
+  });
+  const router = useRouter();
 
+  React.useEffect(() => {
+    if (!profileData?.ok && !profileData?.data && !session?.user) {
+      router.push("/sign-in");
+    }
+  }, [profileData?.data]);
   return (
     <div className=" flex items-center gap-6 rounded-md  border-b  px-4 shadow-sm backdrop-blur-md md:gap-10">
       <Link
@@ -70,7 +84,9 @@ export function MainNav({ items, session }: MainNavProps) {
           )}
         </nav>
       ) : null}
-      {!session?.user ? (
+      {isProfileLoading ? (
+        <SpinnerIcon />
+      ) : !profileData?.data?.role ? (
         <div className="ml-auto flex items-center gap-2">
           <Button
             asChild
@@ -98,9 +114,22 @@ export function MainNav({ items, session }: MainNavProps) {
               </Avatar>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="flex flex-col gap-2 px-2">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuLabel className="font-normal">
+                <div className="flex flex-col space-y-1">
+                  <span className="text-sm font-medium leading-none">
+                    {`${profileData?.data?.firstName} ${profileData?.data?.lastName}`}
+                  </span>
+                  <span className="flex flex-col items-center gap-2 text-xs leading-none text-muted-foreground">
+                    {profileData?.data?.email}{" "}
+                    <Badge className="flex w-full justify-center text-center">
+                      {profileData?.data?.role}
+                    </Badge>
+                  </span>
+                </div>
+              </DropdownMenuLabel>
+
               <DropdownMenuSeparator />
-              {session.user.role === RoleEnum.CUSTOMER && (
+              {profileData?.data?.role === RoleEnum.CUSTOMER && (
                 <DropdownMenuItem asChild>
                   <Button variant="outline" asChild>
                     <Link href="/me/account">Profile and settings</Link>
