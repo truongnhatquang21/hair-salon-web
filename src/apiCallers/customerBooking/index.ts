@@ -27,3 +27,16 @@ export const getMyBookingReceiptByStatus = async (status: string = "") => {
     : "booking/MyBooking";
   return fetcher(endpoint);
 };
+
+export const cancelBookingAPI = async ({
+  bookingId,
+  paymentId,
+}: {
+  bookingId: string;
+  paymentId: string;
+}) => {
+  return fetcher(`booking/cancel/${bookingId}`, {
+    method: "POST",
+    body: JSON.stringify({ paymentId }),
+  });
+};

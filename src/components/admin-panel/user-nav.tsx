@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { LayoutGrid, LogOut, User } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -32,7 +32,7 @@ export function UserNav() {
     queryKey: ["myProfile"],
     queryFn: async () => getProfileAPI(),
   });
-
+  const queryClient = useQueryClient();
   const router = useRouter();
   return (
     <DropdownMenu>
@@ -93,6 +93,9 @@ export function UserNav() {
           className="hover:cursor-pointer"
           onClick={async () => {
             await signOutServer();
+            await queryClient.invalidateQueries({
+              queryKey: ["myProfile"],
+            });
             router.push("/sign-in");
           }}
         >
