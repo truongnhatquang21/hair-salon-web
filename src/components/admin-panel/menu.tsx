@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Ellipsis, LogOut } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -31,6 +31,7 @@ export function Menu({ isOpen }: MenuProps) {
   });
   const role = profileData?.data?.role;
   const router = useRouter();
+  const queryClient = useQueryClient();
   const menuList = getMenuList(pathname, role) || [];
   return (
     <ScrollArea className="flex-1 [&>div>div[style]]:!block">
@@ -122,6 +123,9 @@ export function Menu({ isOpen }: MenuProps) {
                   <Button
                     onClick={async () => {
                       await signOutServer();
+                      await queryClient.invalidateQueries({
+                        queryKey: ["myProfile"],
+                      });
                       router.push("/sign-in");
                     }}
                     variant="destructive"

@@ -16,7 +16,10 @@ import {
   type PurchasedOrderType,
 } from "@/apiCallers/package";
 import { addCardAPI, getCardListAPI } from "@/apiCallers/payment";
-import { PricingCard } from "@/app/[locale]/(normalUser)/(auth)/subscriptions/page";
+import {
+  formatToVND,
+  PricingCard,
+} from "@/app/[locale]/(normalUser)/(auth)/subscriptions/page";
 import { Loading } from "@/components/loading";
 import SpinnerIcon from "@/components/SpinnerIcon";
 import { subscriptionFormSchema } from "@/components/Subscription/SubcriptionForm";
@@ -90,6 +93,7 @@ const CheckoutSubcription = ({ subsId }: Props) => {
   const searchParams = useSearchParams();
 
   const totalCourt = Number(searchParams.get("totalCourt"));
+
   const router = useRouter();
 
   useEffect(() => {
@@ -306,14 +310,19 @@ const CheckoutSubcription = ({ subsId }: Props) => {
                 </div>
                 {subscription.data?.type === PackageEnum.Custom && (
                   <h3 className="text-center text-3xl font-bold">
-                    Total: $
-                    {(subscription.data.priceEachCourt || 0) *
-                      Number(searchParams.get("totalCourt"))}
+                    Total:{" "}
+                    {formatToVND(
+                      (subscription.data.priceEachCourt || 0) *
+                        Number(
+                          searchParams.get("totalCourt") *
+                            subscription.data.duration || 0
+                        )
+                    )}
                   </h3>
                 )}
                 {subscription.data?.type === PackageEnum.Standard && (
                   <h3 className="text-center text-3xl font-bold">
-                    Total: ${subscription.data.totalPrice}
+                    Total: {formatToVND(subscription.data.totalPrice || 0)}
                   </h3>
                 )}
               </div>

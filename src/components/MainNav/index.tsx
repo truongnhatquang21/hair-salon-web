@@ -36,6 +36,7 @@ export function MainNav({ items, session }: MainNavProps) {
     queryKey: ["myProfile"],
     queryFn: async () => getProfileAPI(),
   });
+  console.log("profileData", profileData, session, "sdaf");
   return (
     <div className=" flex items-center gap-6 rounded-md  border-b  px-4 shadow-sm backdrop-blur-md md:gap-10">
       <Link
@@ -119,7 +120,7 @@ export function MainNav({ items, session }: MainNavProps) {
               </DropdownMenuLabel>
 
               <DropdownMenuSeparator />
-              {session.user.role === RoleEnum.CUSTOMER && (
+              {profileData?.data?.role === RoleEnum.CUSTOMER && (
                 <DropdownMenuItem asChild>
                   <Button variant="outline" asChild>
                     <Link href="/me/account">Profile and settings</Link>

@@ -20,6 +20,17 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { PackageEnum } from "@/views/AdminSubscriptions/helper";
 
+export function formatToVND(amount: number): string {
+  const formatter = new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  });
+
+  return formatter.format(amount);
+}
+
 type PricingSwitchProps = {
   onSwitch: (value: string) => void;
 };
@@ -106,28 +117,29 @@ export const PricingCard = ({
     >
       <div>
         <CardHeader className="pb-8 pt-4">
-          <div className="flex size-full items-center justify-between">
+          <div className="flex size-full flex-col-reverse items-center justify-between gap-2 border-b-2 border-dashed pb-2">
             <CardTitle className="text-lg text-zinc-700 dark:text-zinc-300">
               {name}
             </CardTitle>
             {type === PackageEnum.Standard && (
               <div
                 className={cn(
-                  "min-w-[120px] h-[20px] px-2.5 rounded-xl  text-xs py-1 bg-gradient-to-r from-green-400 to-blue-400 text-black dark:bg-zinc-800 dark:text-white font-bold flex items-center gap-1",
+                  "w-full  justify-center h-[30px] shadow-md px-2.5 rounded-xl  text-xs py-1 bg-gradient-to-r from-green-400 to-blue-400 text-black dark:bg-zinc-800 dark:text-white font-bold flex items-center gap-1",
                   {
                     "bg-gradient-to-r from-orange-400 to-rose-400 dark:text-black  ":
                       maxCourt >= 10,
                   }
                 )}
               >
-                <span className="text-xl text-white">{maxCourt}</span>Court
+                <span className="text-xl text-white">{maxCourt}</span>Court -
+                Standard
                 {maxCourt > 1 ? "s" : ""}
               </div>
             )}
             {type === PackageEnum.Custom && (
               <div
                 className={cn(
-                  "min-w-[120px] h-[20px] px-2.5 rounded-xl  text-xs py-0.5 bg-gradient-to-r from-green-400 to-blue-400 text-black dark:bg-zinc-800 dark:text-white font-bold flex items-center gap-1",
+                  "w-full h-[30px] justify-center px-2.5 rounded-xl  text-xs py-0.5 bg-gradient-to-r from-green-400 to-blue-400 text-black dark:bg-zinc-800 dark:text-white font-bold flex items-center gap-1",
                   {
                     "bg-gradient-to-r from-yellow-400 to-purple-400 dark:text-black  ":
                       true,
@@ -139,12 +151,12 @@ export const PricingCard = ({
             )}
           </div>
 
-          <div className="flex gap-0.5">
-            <h3 className="text-3xl font-bold">
-              {totalPrice && `$ ${totalPrice}`}
+          <div className="flex justify-center gap-0.5">
+            <h3 className="text-xl font-bold">
+              {totalPrice && `${formatToVND(totalPrice)}`}
               {priceEachCourt && !totalPrice && (
                 <span>
-                  $ {priceEachCourt}
+                  {formatToVND(priceEachCourt)}
                   <span className="text-base font-normal">/court</span>
                 </span>
               )}
