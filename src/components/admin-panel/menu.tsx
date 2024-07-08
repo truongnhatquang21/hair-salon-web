@@ -123,10 +123,11 @@ export function Menu({ isOpen }: MenuProps) {
                   <Button
                     onClick={async () => {
                       await signOutServer();
+
                       await queryClient.invalidateQueries({
                         queryKey: ["myProfile"],
                       });
-                      router.push("/sign-in");
+                      await router.push("/sign-in");
                     }}
                     variant="destructive"
                     className="mt-5 h-10 w-full justify-center"
