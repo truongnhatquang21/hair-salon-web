@@ -14,12 +14,14 @@ export const TimeSlot = ({
   endSlot,
   setSelectedSlots,
   selectedSlots,
+  title = "Book a Badminton Court",
 }: {
   timeSlotData: ISlot[];
   setStartSlot: Dispatch<SetStateAction<null>>;
   startSlot: string | null;
   endSlot: string | null;
   selectedSlots: string[] | null;
+  title: string;
   setEndSlot: Dispatch<SetStateAction<null>>;
   setSelectedSlots: Dispatch<SetStateAction<[]>>;
 }) => {
@@ -27,41 +29,7 @@ export const TimeSlot = ({
 
   const timeSlots = useMemo(() => {
     const slots = [] as any[];
-    // const timeSlotData = [
-    //   {
-    //     _id: "66819bee99b486f35b652aa6",
-    //     weekDay: "Saturday",
-    //     startTime: "11:00",
-    //     endTime: "12:00",
-    //     surcharge: 0,
-    //     branch: "66819bee99b486f35b652a4e",
-    //     __v: 0,
-    //     createdAt: "2024-06-30T17:54:54.390Z",
-    //     updatedAt: "2024-06-30T17:54:54.390Z",
-    //   },
-    //   {
-    //     _id: "66819bee99b486f35b652aa7",
-    //     weekDay: "Saturday",
-    //     startTime: "12:00",
-    //     endTime: "13:00",
-    //     surcharge: 0,
-    //     branch: "66819bee99b486f35b652a4e",
-    //     __v: 0,
-    //     createdAt: "2024-06-30T17:54:54.390Z",
-    //     updatedAt: "2024-06-30T17:54:54.390Z",
-    //   },
-    //   {
-    //     _id: "66819bee99b486f35b652aa8",
-    //     weekDay: "Saturday",
-    //     startTime: "13:00",
-    //     endTime: "14:00",
-    //     surcharge: 0,
-    //     branch: "66819bee99b486f35b652a4e",
-    //     __v: 0,
-    //     createdAt: "2024-06-30T17:54:54.390Z",
-    //     updatedAt: "2024-06-30T17:54:54.390Z",
-    //   },
-    // ];
+
     if (timeSlotData.length !== 0) {
       for (const slot of timeSlotData) {
         const startTime = new Date(
@@ -129,9 +97,9 @@ export const TimeSlot = ({
   return (
     <div className="p-6 sm:p-10">
       <div className="mx-auto max-w-2xl">
-        <h2 className="mb-6 text-2xl font-bold">Book a Badminton Court</h2>
+        <h2 className="mb-6 text-2xl font-bold">{title}</h2>
 
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
           {timeSlots.length !== 0 ? (
             timeSlots.map((slot) => (
               <Button

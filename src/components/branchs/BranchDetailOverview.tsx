@@ -7,7 +7,9 @@ import type { FC } from "react";
 
 import type { IBranch } from "@/interfaces/branch.interface";
 import type { ICourt } from "@/interfaces/court.interface";
+import { CourtStatusEnum } from "@/types";
 
+import { EmptyComponent } from "../Empty";
 import { Icons } from "../icons";
 import { Badge } from "../ui/badge";
 import {
@@ -207,47 +209,59 @@ const BranchDetailOverview: FC<BranchDetailOverviewProps> = ({ data }) => {
             </div> */}
           </div>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {data.data.courts.map((court: ICourt) => {
-              return (
-                <Card key={court._id}>
-                  <CardContent className="grid gap-4 overflow-hidden p-5">
-                    <div className="flex items-center gap-4">
-                      <Icons.BadmintonCourt className="rounded-lg object-cover" />
-                      {/* <Image src={} alt="Court Image" width={80} height={80} /> */}
-                      <div className="w-full">
-                        <h3 className="font-semibold">{court.name}</h3>
-                        <span className="line-clamp-3  text-sm  text-gray-500 dark:text-gray-400">
-                          {court.description}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                        <Badge
-                          variant="solid"
-                          className="bg-yellow-500 text-white"
-                        >
-                          {court.status}
-                        </Badge>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                        <UsersIcon className="size-4" />
-                        <span>type: {court.type}</span>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                        <DollarSignIcon className="size-4" />
-                        <span>{court.price}/hr</span>
-                      </div>
-                      {/* <Button variant="outline" size="sm">
-                        Book Now
-                      </Button> */}
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
+            {data.data.courts.filter(
+              (el) => el.status === CourtStatusEnum.INUSE
+            ).length === 0 ? (
+              <EmptyComponent
+                title="There is no available court in this branch"
+                description="Please choose another branch"
+                className="col-span-3  w-full"
+              />
+            ) : (
+              data.data.courts.map((court: ICourt) => {
+                if (court.status === CourtStatusEnum.INUSE) {
+                  return (
+                    <Card key={court._id}>
+                      <CardContent className="grid gap-4 overflow-hidden p-5">
+                        <div className="flex items-center gap-4">
+                          <Icons.BadmintonCourt className="rounded-lg object-cover" />
+                          {/* <Image src={} alt="Court Image" width={80} height={80} /> */}
+                          <div className="w-full">
+                            <h3 className="font-semibold">{court.name}</h3>
+                            <span className="line-clamp-3  text-sm  text-gray-500 dark:text-gray-400">
+                              {court.description}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                            <Badge
+                              variant="solid"
+                              className="bg-yellow-500 text-white"
+                            >
+                              {court.status}
+                            </Badge>
+                          </div>
+                          <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                            <UsersIcon className="size-4" />
+                            <span>type: {court.type}</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                            <DollarSignIcon className="size-4" />
+                            <span>{court.price}/hr</span>
+                          </div>
+                          {/* <Button variant="outline" size="sm">
+                          Book Now
+                        </Button> */}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                }
+              })
+            )}
           </div>
         </div>
       </div>
