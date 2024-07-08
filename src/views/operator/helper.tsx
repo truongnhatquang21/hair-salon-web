@@ -72,7 +72,7 @@ export const columns: ColumnDef<CreateOperaterSchemaTypeWithId>[] = [
   {
     accessorKey: "email",
     header: ({ column }) => {
-      return <DataTableColumnHeader column={column} title="email" />;
+      return <DataTableColumnHeader column={column} title="Email" />;
     },
   },
   {
@@ -104,7 +104,7 @@ export const columns: ColumnDef<CreateOperaterSchemaTypeWithId>[] = [
     },
     cell: ({ getValue }) => {
       const data = getValue() as string;
-      return <span>{data ? format(new Date(data), "yyyy-MM-dd") : "--"}</span>;
+      return <span>{data ? format(new Date(data), "dd/MM/yyy") : "--"}</span>;
     },
   },
 

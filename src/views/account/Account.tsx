@@ -184,8 +184,12 @@ const Account = (props: Props) => {
     try {
       await triggerChangePassword(value);
       setIsChangePasswordDialogOpen(false);
-      router.push("/sign-in");
-      signOutServer();
+      await signOutServer();
+
+      await queryClient.invalidateQueries({
+        queryKey: ["myProfile"],
+      });
+      await router.push("/sign-in");
     } catch (error) {
       console.log(error);
     }

@@ -78,7 +78,7 @@ export const columns: ColumnDef<CreateCustomerSchemaTypeWithId>[] = [
   {
     accessorKey: "email",
     header: ({ column }) => {
-      return <DataTableColumnHeader column={column} title="email" />;
+      return <DataTableColumnHeader column={column} title="Email" />;
     },
   },
   {
@@ -94,7 +94,7 @@ export const columns: ColumnDef<CreateCustomerSchemaTypeWithId>[] = [
   {
     accessorKey: "status",
     header: ({ column }) => {
-      return <DataTableColumnHeader column={column} title="status" />;
+      return <DataTableColumnHeader column={column} title="Status" />;
     },
   },
   {
@@ -110,7 +110,7 @@ export const columns: ColumnDef<CreateCustomerSchemaTypeWithId>[] = [
     },
     cell: ({ getValue }) => {
       const data = getValue() as string;
-      return <span>{data ? format(new Date(data), "yyyy-MM-dd") : "--"}</span>;
+      return <span>{data ? format(new Date(data), "dd/MM/yyy") : "--"}</span>;
     },
   },
 
