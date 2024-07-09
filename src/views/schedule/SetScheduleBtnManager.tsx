@@ -2,7 +2,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import * as z from "zod";
 
 import { setScheduleFlexible } from "@/apiCallers/schedule";
@@ -30,11 +30,17 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
-import type IBookingReceipt from "@/types/BookingReceipt";
 
 type Props = {
-  defalutValues: IBookingReceipt;
+  defalutValues: string;
   Trigger: React.ReactNode;
   invalidateKey?: string[];
 };
@@ -43,19 +49,23 @@ export const datePicker = z.object({
 });
 export type DatePickerType = z.infer<typeof datePicker>;
 
-const SetScheduleBtn = ({ defalutValues, Trigger, invalidateKey }: Props) => {
+const SetScheduleBtnManager = ({
+  defalutValues,
+  Trigger,
+  invalidateKey,
+}: Props) => {
   const router = useRouter();
   const { toast } = useToast();
   const [isOpen, setIsOpen] = React.useState(false);
   const [selectDay, setSelectDay] = React.useState<Date | undefined>(
-    new Date(defalutValues?.startDate)
+    new Date()
   );
   console.log(defalutValues);
   const [startSlot, setStartSlot] = React.useState(null);
   const [endSlot, setEndSlot] = React.useState(null);
   const [selectedSlots, setSelectedSlots] = React.useState<[]>([]);
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
-
+  const [selectType, setSelecType] = useState("Booking");
   const {
     mutateAsync: getSlotByCourtId,
     isPending: isSlotPending,
@@ -123,12 +133,11 @@ const SetScheduleBtn = ({ defalutValues, Trigger, invalidateKey }: Props) => {
       }
     },
   });
-  console.log(dataSchedule);
+
   const handleSetScheduled = async () => {
     console.log({
-      type: "Booking",
-      booking: defalutValues._id,
-      court: defalutValues.court._id,
+      type: selectType,
+      court: defalutValues,
       startTime: startSlot.startTime,
       endTime: endSlot ? endSlot.endTime : startSlot.endTime,
       date: format(selectDay.toString(), "yyyy-MM-dd"),
@@ -137,9 +146,8 @@ const SetScheduleBtn = ({ defalutValues, Trigger, invalidateKey }: Props) => {
       }),
     });
     await setScheduleMutate({
-      type: "Booking",
-      booking: defalutValues._id,
-      court: defalutValues.court._id,
+      type: selectType,
+      court: defalutValues,
       startTime: startSlot.startTime,
       endTime: endSlot ? endSlot.endTime : startSlot.endTime,
       date: format(selectDay.toString(), "yyyy-MM-dd"),
@@ -153,18 +161,18 @@ const SetScheduleBtn = ({ defalutValues, Trigger, invalidateKey }: Props) => {
   };
 
   useEffect(() => {
-    if (defalutValues.court?._id !== "" && selectDay) {
+    if (defalutValues !== "" && selectDay) {
       getSlotByCourtId({
-        courtId: defalutValues.court?._id,
+        courtId: defalutValues,
         date: format(selectDay?.toString(), "yyyy-MM-dd"),
       });
     }
-  }, [defalutValues.court?._id, getSlotByCourtId, selectDay]);
+  }, [defalutValues, getSlotByCourtId, selectDay]);
 
   return (
     <>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogTrigger className="w-full">{Trigger}</DialogTrigger>
+        <DialogTrigger className="w-fit">{Trigger}</DialogTrigger>
         <DialogContent className="max-h-[70vh] overflow-auto sm:max-w-[70vw]">
           <DialogHeader>
             <DialogTitle>Set Schedule for your Court</DialogTitle>
@@ -174,18 +182,37 @@ const SetScheduleBtn = ({ defalutValues, Trigger, invalidateKey }: Props) => {
           </DialogHeader>
 
           <div className=" flex w-full flex-col items-center justify-center gap-2 overflow-auto rounded-md border-2 border-dashed p-2 md:flex-row">
-            <Calendar
-              mode="single"
-              selected={selectDay}
-              fromDate={new Date(defalutValues?.startDate)}
-              toDate={new Date(defalutValues?.endDate)}
-              onSelect={(value) => {
-                setSelectDay(value);
-              }}
-              className="rounded-md border"
-            />
+            <div className="flex flex-col gap-4">
+              <Select
+                value={selectType}
+                onValueChange={(value) => setSelecType(value)}
+                defaultValue="Booking"
+              >
+                <SelectTrigger
+                  className={`${selectType === "Maintenance" && "bg-orange-300"} ${selectType === "Booking" && "bg-green-300"}`}
+                >
+                  <SelectValue className=" p-2" placeholder={selectType} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Booking">Booking</SelectItem>
+                  <SelectItem value="Maintenance">Maintenance</SelectItem>
+                </SelectContent>
+              </Select>
+              <Calendar
+                mode="single"
+                selected={selectDay}
+                fromDate={new Date()}
+                onSelect={(value) => {
+                  setSelectedSlots([]);
+
+                  setSelectDay(value);
+                }}
+                className="rounded-md border"
+              />
+            </div>
+
             <span className="flex items-center  justify-between  py-2 font-semibold">
-              <div className="flex w-full flex-col gap-2">
+              <div className="flex min-h-full w-full flex-col gap-2">
                 {isSlotPending ? (
                   <Loading />
                 ) : (
@@ -235,14 +262,15 @@ const SetScheduleBtn = ({ defalutValues, Trigger, invalidateKey }: Props) => {
           <AlertDialogFooter>
             <AlertDialogAction
               onClick={() => {
-                router.push("/me/schedule");
+                console.log("lsđ");
+                setIsDialogOpen(false);
               }}
             >
-              Go To Schedule
+              Cancel
             </AlertDialogAction>
             <AlertDialogAction
               onClick={() => {
-                router.push("/");
+                router.push("/dashboard");
               }}
             >
               Go Home
@@ -254,4 +282,4 @@ const SetScheduleBtn = ({ defalutValues, Trigger, invalidateKey }: Props) => {
   );
 };
 
-export default SetScheduleBtn;
+export default SetScheduleBtnManager;

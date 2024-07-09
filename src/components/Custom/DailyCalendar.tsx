@@ -33,11 +33,11 @@ export default function CalendarDaily({
   );
   const handlePreviousWeek = () => {
     setCurrentWeek(currentWeek - 1);
-    setSelectedDay(new Date(selectedDay.getTime() - 7 * 24 * 60 * 60 * 1000));
+    // setSelectedDay(new Date(selectedDay.getTime() - 7 * 24 * 60 * 60 * 1000));
   };
   const handleNextWeek = () => {
     setCurrentWeek(currentWeek + 1);
-    setSelectedDay(new Date(selectedDay.getTime() + 7 * 24 * 60 * 60 * 1000));
+    // setSelectedDay(new Date(selectedDay.getTime() + 7 * 24 * 60 * 60 * 1000));
   };
   const handleDaySelect = (day: Date): void => {
     setSelectedSlots([]);
