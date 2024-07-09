@@ -35,10 +35,7 @@ const SearchSection = ({
       onSearch(
         data?.data?.filter((branch: IBranch) => branch?.status === "Active")
       );
-      router.push({
-        pathname: "/search",
-        query: { query: keyword?.trim() }, // Ensure the URL query parameter is updated
-      });
+      router.push(`/search?query=${encodeURIComponent(keyword?.trim())}`);
     },
     onError: (error) => {
       console.error("Error fetching search results:", error);
@@ -48,10 +45,7 @@ const SearchSection = ({
   const handleSearch = () => {
     setKeyword((prevKeyword) => prevKeyword?.trim());
     mutation.mutate({ keyword });
-    router.push({
-      pathname: "/search",
-      query: { query: keyword },
-    });
+    router.push(`/search?query=${encodeURIComponent(keyword?.trim())}`);
   };
 
   return (
