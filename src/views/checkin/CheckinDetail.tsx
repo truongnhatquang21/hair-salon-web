@@ -2,6 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
+import { useRouter } from "next/navigation";
 import React, { useMemo } from "react";
 
 import { doneBookingAPI } from "@/apiCallers/booking";
@@ -78,7 +79,7 @@ type Props = {
 };
 
 const CheckinDetail = ({ slug }: Props) => {
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["checkin", slug],
     queryFn: async () => {
       return getCheckInApi({ id: slug });
@@ -94,30 +95,31 @@ const CheckinDetail = ({ slug }: Props) => {
     }
   }, [data?.data]);
   const { toast } = useToast();
-  const { invalidateQueries } = useQueryClient();
+  const queryClient = useQueryClient();
+  const router = useRouter();
   const { mutateAsync: doneBooking, isPending: isDoneBookingPending } =
     useMutation({
       mutationFn: async (id: string) => doneBookingAPI({ id }),
-      onSuccess: (data) => {
-        if (!data.ok) {
+      onSuccess: (Res) => {
+        if (!Res.ok) {
           toast({
             variant: "destructive",
             title: "Uh oh! Something went wrong.",
-            description: data.message || data.statusText,
+            description: Res.message || Res.statusText,
           });
 
-          throw new Error(data.message || data.statusText);
+          throw new Error(Res.message || Res.statusText);
         }
-
-        if (data.message) {
+        queryClient.invalidateQueries(["checkin", slug]);
+        if (Res.message) {
           return toast({
             variant: "default",
             className: "bg-green-600 text-white",
             title: "Message from system",
-            description: data.message,
+            description: Res.message,
           });
         }
-
+        router.refresh();
         return toast({
           variant: "default",
           title: "Submitted successfully",
@@ -136,9 +138,6 @@ const CheckinDetail = ({ slug }: Props) => {
   const onDoneBooking = async () => {
     try {
       await doneBooking(slug);
-      invalidateQueries({
-        queryKey: ["checkin", slug],
-      });
     } catch (e) {
       console.error(e);
     }
@@ -216,7 +215,8 @@ const CheckinDetail = ({ slug }: Props) => {
                   </div>
                 </div>
                 {item.status === ScheduleStatusEnum.AVAILABLE &&
-                  (!isCanCheckIn(item.date, item.startTime) ? (
+                  data?.data[0]?.booking?.status !== "Done" &&
+                  (isCanCheckIn(item.date, item.startTime) ? (
                     <CheckInBtn
                       id={item._id}
                       invalidateKey={["checkin", slug]}

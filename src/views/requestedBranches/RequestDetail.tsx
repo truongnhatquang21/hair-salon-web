@@ -10,6 +10,7 @@ import {
   getBranchByIdAPI,
   handleRequestBranchAPI,
 } from "@/apiCallers/Branches";
+import CustomTag from "@/components/CustomTag";
 import { Loading } from "@/components/loading";
 import SpinnerIcon from "@/components/SpinnerIcon";
 import {
@@ -164,9 +165,7 @@ const RequestDetail = ({ branchId }: Props) => {
             <div className="mr-auto flex items-center gap-2 text-2xl font-semibold">
               Review request
               <span className="text-xl font-semibold">{branch?.name}</span>
-              <Badge variant="default" className="bg-green-500">
-                {branch?.status}
-              </Badge>
+              <CustomTag status={branch?.status} />
               <span className="text-xs text-gray-400" />
             </div>
             {branch.status === BranchStatusEnum.PENDING && (
