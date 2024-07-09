@@ -3,6 +3,7 @@ import "@/styles/global.css";
 import { GeistMono } from "geist/font/mono";
 import { GeistSans } from "geist/font/sans";
 import type { Metadata } from "next";
+import Head from "next/head";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider, useMessages } from "next-intl";
 import NextTopLoader from "nextjs-toploader";
@@ -31,6 +32,9 @@ export default function RootLayout(props: {
       lang={props.params.locale}
       className={`${GeistSans.variable} ${GeistMono.variable}`}
     >
+      <Head>
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+      </Head>
       <body>
         <NextTopLoader color="gray" showSpinner={false} height={2} />
         <NextIntlClientProvider
