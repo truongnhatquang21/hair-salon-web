@@ -14,10 +14,6 @@ export default async function Layout(props: { children: React.ReactNode }) {
       href: "/",
     },
     {
-      title: "Activity",
-      href: "/activity",
-    },
-    {
       title: "About",
       href: "/about",
     },
