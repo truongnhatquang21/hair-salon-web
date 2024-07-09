@@ -70,7 +70,7 @@ const adminPages = [
 ];
 const operatorPages = [
   ...commonAuthPages,
-  "/dashboard/transactions",
+  // "/dashboard/transactions",
   "/dashboard",
   "/dashboard/managers",
   "/dashboard/customers",
