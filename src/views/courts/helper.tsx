@@ -7,7 +7,7 @@ import React, { useState } from "react";
 import { z } from "zod";
 
 import { getProfileAPI } from "@/apiCallers/auth";
-import { formatToVND } from "@/app/[locale]/(normalUser)/(auth)/subscriptions/page";
+import { formatToVND } from "@/app/[locale]/(normalUser)/(auth)/subscriptions/helper";
 import { DataTableColumnHeader } from "@/components/table/ColumnHeader";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";

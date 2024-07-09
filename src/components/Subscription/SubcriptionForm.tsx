@@ -6,7 +6,7 @@ import { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
-import { formatToVND } from "@/app/[locale]/(normalUser)/(auth)/subscriptions/page";
+import { formatToVND } from "@/app/[locale]/(normalUser)/(auth)/subscriptions/helper";
 import AutoForm from "@/components/ui/auto-form";
 
 import { Button } from "../ui/button";

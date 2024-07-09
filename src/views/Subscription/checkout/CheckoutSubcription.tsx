@@ -16,10 +16,8 @@ import {
   type PurchasedOrderType,
 } from "@/apiCallers/package";
 import { addCardAPI, getCardListAPI } from "@/apiCallers/payment";
-import {
-  formatToVND,
-  PricingCard,
-} from "@/app/[locale]/(normalUser)/(auth)/subscriptions/page";
+import { formatToVND } from "@/app/[locale]/(normalUser)/(auth)/subscriptions/helper";
+import { PricingCard } from "@/app/[locale]/(normalUser)/(auth)/subscriptions/page";
 import { Loading } from "@/components/loading";
 import SpinnerIcon from "@/components/SpinnerIcon";
 import { subscriptionFormSchema } from "@/components/Subscription/SubcriptionForm";

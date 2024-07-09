@@ -1,7 +1,7 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { z } from "zod";
 
-import { formatToVND } from "@/app/[locale]/(normalUser)/(auth)/subscriptions/page";
+import { formatToVND } from "@/app/[locale]/(normalUser)/(auth)/subscriptions/helper";
 import { DataTableColumnHeader } from "@/components/table/ColumnHeader";
 import { type TransactionTypeEnum } from "@/types";
 
