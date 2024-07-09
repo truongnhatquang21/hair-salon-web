@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 
+import { getProfileAPI } from "@/apiCallers/auth";
 import {
   type BranchSchemaTypeWithId,
   getMyBranchListAPI,
@@ -18,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useBranchStore } from "@/stores/branchStore";
+import { RoleEnum } from "@/types";
 
 interface NavbarProps {
   title: string;
@@ -41,33 +43,39 @@ export function Navbar({ title }: NavbarProps) {
     selectedBranch,
   ]);
   console.log(data, "my branch");
-
+  const { data: profileData } = useQuery({
+    queryKey: ["myProfile"],
+    queryFn: async () => getProfileAPI(),
+  });
   return (
     <header className="sticky top-0 z-10 w-full bg-background/95 shadow backdrop-blur supports-[backdrop-filter]:bg-background/60 dark:shadow-secondary">
       <div className="mx-4 flex h-14 items-center sm:mx-8">
         <div className="flex items-center gap-4 space-x-4 lg:space-x-0">
           <SheetMenu />
           <h1 className="font-bold">{title}</h1>
-          <Select
-            value={selectedBranch.branch?._id}
-            onValueChange={(value) => {
-              const branch = branches?.find((branch) => branch._id === value);
-              selectedBranch.setBranch(branch as BranchSchemaTypeWithId);
-            }}
-          >
-            <SelectTrigger className="w-[300px]">
-              <SelectValue placeholder="Select branch" />
-            </SelectTrigger>
-            <SelectContent>
-              {branches?.length
-                ? branches?.map((branch) => (
-                    <SelectItem value={branch._id} key={branch._id}>
-                      {branch.name}
-                    </SelectItem>
-                  ))
-                : ""}
-            </SelectContent>
-          </Select>
+          {(profileData?.data?.role === "Manager" ||
+            profileData?.data?.role === RoleEnum.STAFF) && (
+            <Select
+              value={selectedBranch.branch?._id}
+              onValueChange={(value) => {
+                const branch = branches?.find((branch) => branch._id === value);
+                selectedBranch.setBranch(branch as BranchSchemaTypeWithId);
+              }}
+            >
+              <SelectTrigger className="w-[300px]">
+                <SelectValue placeholder="Select branch" />
+              </SelectTrigger>
+              <SelectContent>
+                {branches?.length
+                  ? branches?.map((branch) => (
+                      <SelectItem value={branch._id} key={branch._id}>
+                        {branch.name}
+                      </SelectItem>
+                    ))
+                  : ""}
+              </SelectContent>
+            </Select>
+          )}
         </div>
         <div className="flex flex-1 items-center justify-end space-x-2">
           <ModeToggle />

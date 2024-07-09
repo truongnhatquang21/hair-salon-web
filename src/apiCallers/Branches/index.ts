@@ -40,6 +40,8 @@ export const getBranchListAPI = async () => {
 };
 
 export const postBranchListAPI = async (data: BranchSchemaType) => {
+  console.log(data, "odaso");
+
   return fetcher("branch", {
     body: JSON.stringify(data),
     method: "POST",

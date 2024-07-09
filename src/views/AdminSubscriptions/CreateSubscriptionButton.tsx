@@ -259,33 +259,28 @@ const CreateSubscriptionButton = ({
                   placeholder: "--",
                   required: true,
                 },
-                description: "Name of the package, e.g. 'Standard Package'",
               },
               totalPrice: {
                 inputProps: {
                   placeholder: "--",
                 },
-                description: "Total price of the package, e.g. '1000'",
               },
               priceEachCourt: {
                 inputProps: {
                   placeholder: "--",
                 },
-                description: "Price per court of the package, e.g. '100'",
               },
 
               maxCourt: {
                 inputProps: {
                   placeholder: "--",
                 },
-                description: "Maximum court of the package, e.g. '10'",
               },
               duration: {
                 inputProps: {
                   placeholder: "--",
                   defaultValue: 1,
                 },
-                description: "Duration of the package, e.g. '1'",
               },
               description: {
                 inputProps: {

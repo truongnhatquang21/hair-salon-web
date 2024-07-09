@@ -320,7 +320,13 @@ const DetailButton = ({
                   defaultValue: defaultValues?.status,
                 },
                 fieldType: SelectFieldTypeWrapWithEnum(
-                  Object.values(CourtReportStatus)
+                  isEdit
+                    ? Object.values(CourtReportStatus)
+                    : Object.values(CourtReportStatus).filter(
+                        (item) =>
+                          item !== CourtReportStatus.DENIED &&
+                          item !== CourtReportStatus.PENDING
+                      )
                 ),
               },
               images: {

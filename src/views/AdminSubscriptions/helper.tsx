@@ -28,8 +28,8 @@ export enum PackageEnum {
 export const createPackageCourtSchema = z.object({
   name: z.string(),
   type: z.string(),
-  totalPrice: z.coerce.number().nullable().optional(),
-  priceEachCourt: z.coerce.number().nullable().optional(),
+  totalPrice: z.coerce.number().min(0).nullable().optional(),
+  priceEachCourt: z.coerce.number().min(0).nullable().optional(),
   maxCourt: z.coerce.number().int().min(1).optional().nullable(),
   duration: z.coerce.number().int().min(1).optional().nullable(),
   description: z.string().optional(),
@@ -125,7 +125,7 @@ export const columns: ColumnDef<PackageCourtSchemaTypeWithId>[] = [
     accessorKey: "description",
     cell: ({ getValue }) => {
       const data = getValue() as string;
-      return <span className="">{`${data.slice(0, 100)}...` || "-"}</span>;
+      return <span className="">{`${data?.slice(0, 100)}...` || "-"}</span>;
     },
     header: ({ column }) => {
       return <DataTableColumnHeader column={column} title="Description" />;

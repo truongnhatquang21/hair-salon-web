@@ -354,13 +354,6 @@ export function getMenuList(pathname: string, role: RoleEnum): Group[] {
               icon: LayoutGrid,
               submenus: [],
             },
-            {
-              href: "/dashboard/staffs",
-              label: "Staffs",
-              active: pathname.includes("/dashboard/staffs"),
-              icon: LayoutGrid,
-              submenus: [],
-            },
 
             {
               href: "/dashboard/reports",
