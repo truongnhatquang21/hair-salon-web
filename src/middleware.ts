@@ -58,6 +58,7 @@ const customerPages = [
 ];
 const adminPages = [
   ...commonAuthPages,
+  "/dashboard/transactions",
   "/dashboard",
   "/dashboard/operators",
   "/dashboard/managers",
@@ -69,6 +70,7 @@ const adminPages = [
 ];
 const operatorPages = [
   ...commonAuthPages,
+  "/dashboard/transactions",
   "/dashboard",
   "/dashboard/managers",
   "/dashboard/customers",
