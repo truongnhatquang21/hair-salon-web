@@ -82,7 +82,7 @@ export const columns: ColumnDef<TransactionTypeWithId>[] = [
   {
     accessorKey: "paymentMethod",
     header: ({ column }) => {
-      return <DataTableColumnHeader column={column} title="PaymentMethod" />;
+      return <DataTableColumnHeader column={column} title="Payment Method" />;
     },
   },
   {
