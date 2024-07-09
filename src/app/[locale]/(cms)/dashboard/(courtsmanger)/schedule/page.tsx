@@ -1,5 +1,7 @@
+import CalendarCourtManager from "@/views/schedule/CalendarCourtManager";
+
 const page = () => {
-  return "Shcedule page";
+  return <CalendarCourtManager />;
 };
 
 export default page;
