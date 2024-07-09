@@ -9,6 +9,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
+import { getProfileAPI } from "@/apiCallers/auth";
 import { getBranchByIdAPI2 } from "@/apiCallers/Branches";
 import { getCourtAvailable } from "@/apiCallers/courts";
 import BranchDetailOverview from "@/components/branchs/BranchDetailOverview";
@@ -35,11 +36,16 @@ import { useToast } from "@/components/ui/use-toast";
 import type { ICourt } from "@/interfaces/court.interface";
 import type { ISlot } from "@/interfaces/slot.interface";
 import { useBookingStore } from "@/stores/bookingStore";
+import { RoleEnum } from "@/types";
 import { calculateTotalPrice, getThu } from "@/utils/Helpers";
 
 import FlexibleBooking from "./FlexibleBooking";
 
 const BranchDetailCustomer = ({ slug }: { slug: string }) => {
+  const { data: profileData } = useQuery({
+    queryKey: ["myProfile"],
+    queryFn: async () => getProfileAPI(),
+  });
   const router = useRouter();
   const { toast } = useToast();
   const { setBooking } = useBookingStore((state) => {
@@ -47,6 +53,7 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
       setBooking: state.setBookingData,
     };
   });
+
   const [selectDay, setSelectDay] = useState<Date | undefined>(new Date());
   const [startSlot, setStartSlot] = useState(null);
   const [endSlot, setEndSlot] = useState(null);
@@ -195,7 +202,11 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
         <Tabs defaultValue="overview">
           <TabsList className="flex border-b border-gray-200 dark:border-gray-800">
             <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="schedules">Schedules</TabsTrigger>
+            {profileData.data &&
+              profileData?.data?.role !== RoleEnum.CUSTOMER && (
+                <TabsTrigger value="schedules">Schedules</TabsTrigger>
+              )}
+
             {/* <TabsTrigger value="map">Map</TabsTrigger> */}
           </TabsList>
           <TabsContent value="overview" className="py-4">

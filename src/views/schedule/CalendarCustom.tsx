@@ -20,40 +20,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { ScheduleStatusEnum } from "@/types";
 
 const localizer = momentLocalizer(moment);
-
-const events = [
-  {
-    id: 0,
-    title: "Board meeting",
-    start: new Date(2024, 7, 29, 9, 0, 0),
-    end: new Date(2024, 7, 29, 13, 0, 0),
-    resourceId: 1,
-  },
-  {
-    id: 1,
-    title: "MS training",
-    allDay: true,
-    start: new Date(2024, 6, 29, 14, 0, 0),
-    end: new Date(2024, 6, 29, 16, 30, 0),
-    resourceId: 2,
-  },
-  {
-    id: 2,
-    title: "Team lead meeting",
-    start: new Date(2024, 6, 29, 8, 30, 0),
-    end: new Date(2024, 6, 29, 12, 30, 0),
-    resourceId: 3,
-  },
-  {
-    id: 11,
-    title: "Birthday Party",
-    start: new Date(2024, 6, 30, 7, 0, 0),
-    end: new Date(2024, 6, 30, 10, 30, 0),
-    resourceId: 4,
-  },
-];
 
 // const resourceMap = [
 //   { resourceId: 1, resourceTitle: "Board room" },
@@ -61,7 +30,12 @@ const events = [
 //   { resourceId: 3, resourceTitle: "Meeting room 1" },
 //   { resourceId: 4, resourceTitle: "Meeting room 2" },
 // ];f
-
+const EventSchedule = ({ event }) => {
+  const backgroundColor =
+    event.status === ScheduleStatusEnum.AVAILABLE ? "#3174ad" : "green";
+  // Set a default color if none provided
+  return <div style={{ backgroundColor }}>{event.title}</div>;
+};
 export default function CustomCalendar() {
   const { data: scheduleCustomer, isLoading } = useQuery({
     queryKey: ["schedule"],
@@ -152,6 +126,7 @@ export default function CustomCalendar() {
           // selectable
           localizer={localizer}
           events={eventData}
+          components={{ event: EventSchedule }}
           onSelectEvent={handleSelectEvent}
           defaultView={Views.MONTH}
           views={[Views.DAY, Views.WEEK, Views.MONTH]}
