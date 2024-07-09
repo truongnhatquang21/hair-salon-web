@@ -14,7 +14,6 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { BranchStatusEnum } from "@/types";
 import type IBranch from "@/types/branch";
 
 import { EmptyComponent } from "../Empty";
@@ -32,59 +31,57 @@ const ResultSection = ({
   totalPages,
   onPageChange,
 }: ResultSectionProps) => {
+  console.log(branches);
   return (
     <div>
       {/* Results Section */}
       <div className="mt-4">
         {branches?.length > 0 ? (
           <div className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3">
-            {branches?.map(
-              (br) =>
-                br.status === BranchStatusEnum.ACTIVE && (
-                  <div
-                    key={br.id}
-                    className="rounded-lg border border-green-500 bg-white p-2 shadow-md"
-                  >
-                    <Link href={`/badminton/${br.name}`}>
-                      <div className="relative h-48">
-                        <Image
-                          src={br.images[0] ?? ""}
-                          alt={br.name}
-                          layout="fill"
-                          objectFit="cover"
-                          className="h-48 rounded-md object-cover"
-                        />
-                      </div>
-                      <div className="my-1">
-                        <CustomTag status={br.status} />
-                      </div>
-                      <h2 className="mt-2 text-lg font-bold">{br.name}</h2>
-                      <div className="flex items-start gap-1">
-                        <div className="w-5">
-                          <MapPin className="w-5" />
-                        </div>
-                        <span className="text-sm">{br.address}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <div className="w-5">
-                          <AlignLeft className="w-5" />
-                        </div>
-                        <p className="description flex overflow-hidden truncate text-sm">
-                          {br.description}
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <div className="w-5">
-                          <Clock className="w-5" />
-                        </div>
-                        <span className="text-sm text-gray-600">
-                          {br.availableTime}
-                        </span>
-                      </div>
-                    </Link>
+            {branches?.map((br) => (
+              <div
+                key={br._id}
+                className="rounded-lg border border-green-500 bg-white p-2 shadow-md"
+              >
+                <Link href={`/branch/${br._id}`}>
+                  <div className="relative h-48">
+                    <Image
+                      src={br.images[0] ?? ""}
+                      alt={br.name}
+                      layout="fill"
+                      objectFit="cover"
+                      className="h-48 rounded-md object-cover"
+                    />
                   </div>
-                )
-            )}
+                  <div className="my-1">
+                    <CustomTag status={br.status} />
+                  </div>
+                  <h2 className="mt-2 text-lg font-bold">{br.name}</h2>
+                  <div className="flex items-start gap-1">
+                    <div className="w-5">
+                      <MapPin className="w-5" />
+                    </div>
+                    <span className="text-sm">{br.address}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div className="w-5">
+                      <AlignLeft className="w-5" />
+                    </div>
+                    <p className="description flex overflow-hidden truncate text-sm">
+                      {br.description}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div className="w-5">
+                      <Clock className="w-5" />
+                    </div>
+                    <span className="text-sm text-gray-600">
+                      {br.availableTime}
+                    </span>
+                  </div>
+                </Link>
+              </div>
+            ))}
           </div>
         ) : (
           <EmptyComponent
