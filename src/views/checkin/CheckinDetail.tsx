@@ -1,13 +1,17 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
+import { useRouter } from "next/navigation";
 import React, { useMemo } from "react";
 
+import { doneBookingAPI } from "@/apiCallers/booking";
 import { getCheckInApi } from "@/apiCallers/checkIn";
 import { Loading } from "@/components/loading";
+import SpinnerIcon from "@/components/SpinnerIcon";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
 import { ScheduleStatusEnum } from "@/types";
 
 import CheckInBtn from "./CheckInBtn";
@@ -75,7 +79,7 @@ type Props = {
 };
 
 const CheckinDetail = ({ slug }: Props) => {
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["checkin", slug],
     queryFn: async () => {
       return getCheckInApi({ id: slug });
@@ -90,6 +94,55 @@ const CheckinDetail = ({ slug }: Props) => {
         .sort((a, b) => compareTimesInMilliseconds(a.endTime, b.endTime));
     }
   }, [data?.data]);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const router = useRouter();
+  const { mutateAsync: doneBooking, isPending: isDoneBookingPending } =
+    useMutation({
+      mutationFn: async (id: string) => doneBookingAPI({ id }),
+      onSuccess: (Res) => {
+        if (!Res.ok) {
+          toast({
+            variant: "destructive",
+            title: "Uh oh! Something went wrong.",
+            description: Res.message || Res.statusText,
+          });
+
+          throw new Error(Res.message || Res.statusText);
+        }
+        queryClient.invalidateQueries(["checkin", slug]);
+        if (Res.message) {
+          return toast({
+            variant: "default",
+            className: "bg-green-600 text-white",
+            title: "Message from system",
+            description: Res.message,
+          });
+        }
+        router.refresh();
+        return toast({
+          variant: "default",
+          title: "Submitted successfully",
+          description: "You can do something else now",
+        });
+      },
+      onError: (e) => {
+        toast({
+          variant: "destructive",
+          title: "Uh oh! Something went wrong.",
+          description: e.message,
+        });
+      },
+    });
+
+  const onDoneBooking = async () => {
+    try {
+      await doneBooking(slug);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+  console.log(data, "ADSf");
 
   return (
     <div className="size-full">
@@ -109,6 +162,36 @@ const CheckinDetail = ({ slug }: Props) => {
             <p className="text-muted-foreground">
               Please check in 1 hour before your booking time.
             </p>
+            <div className="flex w-full items-center justify-between gap-2">
+              <div className="flex flex-1 flex-col items-start gap-2 border-b-2 p-2">
+                <Badge>{data?.data[0]?.booking?.status}</Badge>
+                <div className="text-sm">{data?.data[0]?.booking?.type}</div>
+                <div className="font-bold">
+                  {data?.data[0]?.booking?.customer.email}
+                </div>
+                <div className="text-xs font-semibold  italic">
+                  {format(
+                    new Date(data?.data[0]?.booking?.startDate),
+                    "dd/MM/yyyy"
+                  )}
+                  --
+                  {format(
+                    new Date(data?.data[0]?.booking?.endDate),
+                    "dd/MM/yyyy"
+                  )}
+                </div>
+              </div>
+              {data?.data[0]?.booking?.status === "Booked" && (
+                <Button
+                  onClick={() => {
+                    onDoneBooking();
+                  }}
+                  disabled={isDoneBookingPending}
+                >
+                  {isDoneBookingPending ? <SpinnerIcon /> : "Done this booking"}
+                </Button>
+              )}
+            </div>
           </div>
           <div className="grid gap-4">
             {sortData?.map((item) => (
@@ -121,9 +204,9 @@ const CheckinDetail = ({ slug }: Props) => {
                 </Badge>
                 <div>
                   <div className="font-medium">
-                    Branch: {item.court.branch.name}
+                    Branch: {item?.court?.branch?.name}
                   </div>
-                  <div className="font-medium">Court: {item.court.name}</div>
+                  <div className="font-medium">Court: {item?.court?.name}</div>
                   <div className="text-sm text-muted-foreground">
                     {item.startTime} - {item.endTime}
                   </div>
@@ -132,6 +215,7 @@ const CheckinDetail = ({ slug }: Props) => {
                   </div>
                 </div>
                 {item.status === ScheduleStatusEnum.AVAILABLE &&
+                  data?.data[0]?.booking?.status !== "Done" &&
                   (isCanCheckIn(item.date, item.startTime) ? (
                     <CheckInBtn
                       id={item._id}

@@ -288,18 +288,18 @@ export function getMenuList(pathname: string, role: RoleEnum): Group[] {
             // },
           ],
         },
-        {
-          groupLabel: "Transactions",
-          menus: [
-            {
-              href: "/dashboard/transactions",
-              label: "Transactions",
-              active: pathname.includes("/dashboard/transactions"),
-              icon: LayoutGrid,
-              submenus: [],
-            },
-          ],
-        },
+        // {
+        //   groupLabel: "Transactions",
+        //   menus: [
+        //     {
+        //       href: "/dashboard/transactions",
+        //       label: "Transactions",
+        //       active: pathname.includes("/dashboard/transactions"),
+        //       icon: LayoutGrid,
+        //       submenus: [],
+        //     },
+        //   ],
+        // },
         {
           groupLabel: "Settings",
           menus: [
@@ -351,13 +351,6 @@ export function getMenuList(pathname: string, role: RoleEnum): Group[] {
               href: "/dashboard/courts",
               label: "Courts",
               active: pathname.includes("/dashboard/courts"),
-              icon: LayoutGrid,
-              submenus: [],
-            },
-            {
-              href: "/dashboard/staffs",
-              label: "Staffs",
-              active: pathname.includes("/dashboard/staffs"),
               icon: LayoutGrid,
               submenus: [],
             },

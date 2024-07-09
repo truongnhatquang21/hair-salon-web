@@ -38,8 +38,19 @@ export const getBranchListAPI = async () => {
     }
   >("branch");
 };
+export const getPopularBranchListAPI = async () => {
+  console.log("get-popular");
+
+  return fetcher<
+    BranchSchemaTypeWithId & {
+      createdAt: string;
+    }
+  >("branch/get-popular");
+};
 
 export const postBranchListAPI = async (data: BranchSchemaType) => {
+  console.log(data, "odaso");
+
   return fetcher("branch", {
     body: JSON.stringify(data),
     method: "POST",

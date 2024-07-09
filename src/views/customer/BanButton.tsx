@@ -51,6 +51,7 @@ const BanButton = ({ id, Trigger }: Props) => {
       return toast({
         variant: "default",
         title: "Submitted successfully",
+        className: "bg-green-600 text-white",
         description: "You can do something else now",
       });
     },

@@ -41,8 +41,10 @@ type Props = {
   defaultValues?: CourtSchemaTypeWithId;
   openDialog?: boolean;
   setOpenDialog?: (value: boolean) => void;
+  isView?: boolean;
 };
 const CreateCourtButton = ({
+  isView,
   ButtonTrigger,
   isEdit,
   defaultValues,
@@ -189,7 +191,7 @@ const CreateCourtButton = ({
   //     form.setValue("duration", 1);
   //   }
   // }, [typePackage]);
-  const viewOnly = selectedBranch?.status === BranchStatusEnum.DENIED;
+  const viewOnly = selectedBranch?.status === BranchStatusEnum.DENIED || isView;
   return (
     <Dialog
       open={openDialog || isDialogOpen}
@@ -319,7 +321,7 @@ const CreateCourtButton = ({
               type: {
                 inputProps: {
                   readOnly: viewOnly,
-                  placeholder: "Type of court , e.g. 'Standard'",
+                  placeholder: "Type of court",
                   value: form.watch("type"),
                 },
               },

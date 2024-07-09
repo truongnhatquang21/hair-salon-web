@@ -1,5 +1,6 @@
 type IBranch = {
   id: string;
+  _id: string;
   name: string;
   address: string;
   manager_id: string;

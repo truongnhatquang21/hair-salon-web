@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { searchBranchesAPI } from "@/apiCallers/Branches"; // Import your API call function
+import type { IBranch } from "@/interfaces/branch.interface";
 
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -31,11 +32,10 @@ const SearchSection = ({
   const mutation = useMutation({
     mutationFn: searchBranchesAPI,
     onSuccess: (data) => {
-      onSearch(data.data);
-      router.push({
-        pathname: "/search",
-        query: { query: keyword }, // Ensure the URL query parameter is updated
-      });
+      onSearch(
+        data?.data?.filter((branch: IBranch) => branch?.status === "Active")
+      );
+      router.push(`/search?query=${encodeURIComponent(keyword?.trim())}`);
     },
     onError: (error) => {
       console.error("Error fetching search results:", error);
@@ -43,7 +43,9 @@ const SearchSection = ({
   });
 
   const handleSearch = () => {
+    setKeyword((prevKeyword) => prevKeyword?.trim());
     mutation.mutate({ keyword });
+    router.push(`/search?query=${encodeURIComponent(keyword?.trim())}`);
   };
 
   return (

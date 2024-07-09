@@ -233,6 +233,7 @@ const Confirmation = ({ goBackfn, goNextFn, steppers, stepIndex }: Props) => {
           variant: "destructive",
         });
       });
+    console.log(JSON.stringify(prepaeData), "prepaeData");
     // console.log(prepaeData, "prepaeData");
     // const sendData = JSON.stringify(prepaeData);
     await triggerPostBranch(prepaeData)

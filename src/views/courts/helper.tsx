@@ -1,10 +1,13 @@
+import { useQuery } from "@tanstack/react-query";
 import type { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
 import type { StaticImport } from "next/dist/shared/lib/get-img-props";
 import Image from "next/image";
-import { useState } from "react";
+import React, { useState } from "react";
 import { z } from "zod";
 
+import { getProfileAPI } from "@/apiCallers/auth";
+import { formatToVND } from "@/app/[locale]/(normalUser)/(auth)/subscriptions/page";
 import { DataTableColumnHeader } from "@/components/table/ColumnHeader";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
@@ -18,13 +21,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useBranchStore } from "@/stores/branchStore";
 import { BranchStatusEnum, CourtStatusEnum } from "@/types";
-import {
-  formatToVND,
-  PricingCard,
-} from "@/app/[locale]/(normalUser)/(auth)/subscriptions/page";
+
 import CreateCourtButton from "./CreateCourtButton";
-import { format } from "date-fns";
-import React from "react";
 
 export const createCourtObject = z.object({
   name: z
@@ -115,6 +113,10 @@ export const columns: ColumnDef<CourtSchemaTypeWithId>[] = [
       const [isMenuOpen, setIsMenuOpen] = useState(false);
       const data = row.original as CourtSchemaTypeWithId;
       const selectedBranch = useBranchStore((state) => state.branch);
+      const { data: profileData } = useQuery({
+        queryKey: ["myProfile"],
+        queryFn: async () => getProfileAPI(),
+      });
       return (
         <Dialog>
           <DropdownMenu
@@ -133,10 +135,15 @@ export const columns: ColumnDef<CourtSchemaTypeWithId>[] = [
               <CreateCourtButton
                 onClose={() => setIsMenuOpen(false)}
                 isEdit
+                isView={
+                  selectedBranch.status === BranchStatusEnum.DENIED ||
+                  profileData?.data?.role !== "Manager"
+                }
                 defaultValues={data}
                 ButtonTrigger={
                   <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                    {selectedBranch.status !== BranchStatusEnum.DENIED
+                    {selectedBranch.status !== BranchStatusEnum.DENIED &&
+                    profileData?.data?.role === "Manager"
                       ? "View and Update"
                       : "View"}
                   </DropdownMenuItem>

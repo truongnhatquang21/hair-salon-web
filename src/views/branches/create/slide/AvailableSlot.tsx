@@ -231,7 +231,7 @@ const AvailableSlot = ({ steppers, goBackfn, goNextFn, stepIndex }: Props) => {
 
       while (
         currentTime.getHours() * 60 + currentTime.getMinutes() <=
-        endHour * 60 + endMinute
+        endHour * 60 + endMinute - SlotPeriod
       ) {
         const slot: SlotSchemaType = {
           weekDay,

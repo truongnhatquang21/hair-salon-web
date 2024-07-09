@@ -37,6 +37,8 @@ export enum CourtReportStatus {
   AVAILABLE = "Available",
   WARN = "Warn",
   MAINTENANCE_NEEDED = "Maintenance needed",
+  PENDING = "Pending",
+  DENIED = "Denied",
 }
 
 export enum BranchStatusEnum {
