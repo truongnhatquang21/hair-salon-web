@@ -21,5 +21,6 @@ type IBookingReceipt = {
       images: Array<string>;
     };
   };
+  createdAt: string;
 };
 export default IBookingReceipt;

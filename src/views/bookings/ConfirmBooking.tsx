@@ -176,6 +176,13 @@ const ConfirmBooking = () => {
     },
   });
   const onAddCardSubmit = async (value: CardSchemaType) => {
+    if (new Date(value.expDate) < new Date()) {
+      return toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: "Card is expired",
+      });
+    }
     try {
       await triggerAddCard(value);
       setIsDialogOpen(false);
@@ -394,7 +401,6 @@ const ConfirmBooking = () => {
       bookingData?.booking?.type === "flexible_schedule" &&
       paymentId
     ) {
-      console.log(bookingData?.booking?.type);
       const endDate1month = new Date(bookingData.booking.endDate);
       endDate1month.setMonth(endDate1month.getMonth() + 1);
 
@@ -404,7 +410,7 @@ const ConfirmBooking = () => {
           paymentType,
           paymentMethod: payment,
           totalPrice: bookingData.booking.totalPrice,
-          totalHour: bookingData.booking.totalHour,
+          totalHour: parseInt(bookingData.booking.totalHour, 10),
           startDate: bookingData.booking.startDate,
           endDate: format(endDate1month.toString(), "yyyy-MM-dd"),
           court: bookingData.booking.court._id,

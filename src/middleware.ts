@@ -40,6 +40,7 @@ const publicPages = [
   "/subscriptions",
   "/tracking",
   "/search",
+  "/checkIn",
 ];
 const commonAuthPages = [
   "/subscriptions/order/[slug]",
@@ -57,6 +58,7 @@ const customerPages = [
 ];
 const adminPages = [
   ...commonAuthPages,
+  "/dashboard/transactions",
   "/dashboard",
   "/dashboard/operators",
   "/dashboard/managers",
@@ -68,6 +70,7 @@ const adminPages = [
 ];
 const operatorPages = [
   ...commonAuthPages,
+  "/dashboard/transactions",
   "/dashboard",
   "/dashboard/managers",
   "/dashboard/customers",
@@ -79,6 +82,7 @@ const operatorPages = [
 
 const managerPages = [
   ...commonAuthPages,
+  "/dashboard/check-in",
   "/dashboard",
   "/dashboard/branches",
   "/dashboard/branches/[branchId]",
@@ -88,14 +92,16 @@ const managerPages = [
   "/dashboard/staffs",
   "/dashboard/reports",
   "/dashboard/account",
+  "/dashboard/schedule",
 ];
 const staffPages = [
   ...commonAuthPages,
+  "/dashboard/check-in",
   "/dashboard",
   "/dashboard/courts",
-  "/dashboard/staffs",
   "/dashboard/reports",
   "/dashboard/account",
+  "/dashboard/schedule",
 ];
 const authMiddleware = auth((req) => {
   const session = req.auth;
@@ -151,6 +157,10 @@ const authMiddleware = auth((req) => {
       role: [RoleEnum.ADMIN, RoleEnum.OPERATOR, RoleEnum.MANAGER],
       regex: /^\/subscriptions\/order\/([^/]+)\/checkout$/,
     },
+    checkIn: {
+      role: [RoleEnum.STAFF, RoleEnum.MANAGER],
+      regex: /^\/dashboard\/check-in\/[a-zA-Z0-9]+$/,
+    },
   };
   const { pathname } = req.nextUrl;
 
@@ -176,6 +186,12 @@ const authMiddleware = auth((req) => {
     }
     case regex.subscriptionCheckout.regex.test(pathname): {
       if (regex.subscriptionCheckout.role.includes(role)) {
+        return intlMiddleware(req);
+      }
+      return NextResponse.redirect(new URL("/401", req.nextUrl));
+    }
+    case regex.checkIn.regex.test(pathname): {
+      if (regex.checkIn.role.includes(role)) {
         return intlMiddleware(req);
       }
       return NextResponse.redirect(new URL("/401", req.nextUrl));

@@ -15,3 +15,18 @@ export const getDayOfPermanent = async (data: {
     body: JSON.stringify(data),
   });
 };
+
+export const setScheduleFlexible = async (data: {
+  type: string;
+  slots: string[];
+  date: string;
+  court: string;
+  startTime: string;
+  endTime: string;
+  booking: string;
+}) => {
+  return fetcher("schedule/", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+};

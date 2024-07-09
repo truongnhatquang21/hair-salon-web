@@ -12,6 +12,8 @@ const SearchPage = () => {
   useEffect(() => {
     // Extract the query parameter from the URL
     const query = searchParams.get("query");
+    console.log(query);
+    console.log(keyword);
     if (query) {
       setKeyword(query);
     }

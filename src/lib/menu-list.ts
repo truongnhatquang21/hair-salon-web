@@ -99,6 +99,18 @@ export function getMenuList(pathname: string, role: RoleEnum): Group[] {
           ],
         },
         {
+          groupLabel: "Transactions",
+          menus: [
+            {
+              href: "/dashboard/transactions",
+              label: "Transactions",
+              active: pathname.includes("/dashboard/transactions"),
+              icon: LayoutGrid,
+              submenus: [],
+            },
+          ],
+        },
+        {
           groupLabel: "Settings",
           menus: [
             {
@@ -142,6 +154,20 @@ export function getMenuList(pathname: string, role: RoleEnum): Group[] {
         {
           groupLabel: "Branch management",
           menus: [
+            {
+              href: "/dashboard/schedule",
+              label: "Schedule",
+              active: pathname.includes("/dashboard/schedule"),
+              icon: LayoutGrid,
+              submenus: [],
+            },
+            {
+              href: "/dashboard/check-in",
+              label: "Check-in",
+              active: pathname.includes("/dashboard/check-in"),
+              icon: LayoutGrid,
+              submenus: [],
+            },
             {
               href: "/dashboard/courts",
               label: "Courts",
@@ -263,6 +289,18 @@ export function getMenuList(pathname: string, role: RoleEnum): Group[] {
           ],
         },
         {
+          groupLabel: "Transactions",
+          menus: [
+            {
+              href: "/dashboard/transactions",
+              label: "Transactions",
+              active: pathname.includes("/dashboard/transactions"),
+              icon: LayoutGrid,
+              submenus: [],
+            },
+          ],
+        },
+        {
           groupLabel: "Settings",
           menus: [
             {
@@ -295,6 +333,20 @@ export function getMenuList(pathname: string, role: RoleEnum): Group[] {
         {
           groupLabel: "Branch management",
           menus: [
+            {
+              href: "/dashboard/schedule",
+              label: "Schedule",
+              active: pathname.includes("/dashboard/schedule"),
+              icon: LayoutGrid,
+              submenus: [],
+            },
+            {
+              href: "/dashboard/check-in",
+              label: "Check in",
+              active: pathname.includes("/dashboard/check-in"),
+              icon: LayoutGrid,
+              submenus: [],
+            },
             {
               href: "/dashboard/courts",
               label: "Courts",

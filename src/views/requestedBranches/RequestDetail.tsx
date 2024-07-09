@@ -27,6 +27,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import defaultFile from "@/public/assets/images/fileIcon.png";
+import { BranchStatusEnum } from "@/types";
 import CourtDialog from "@/views/courts/CourtDialog";
 
 import type { SlotSchemaType } from "../branches/create/slide/AvailableSlot";
@@ -34,7 +35,6 @@ import { detailsFormSchema } from "../branches/create/slide/BranchDetails";
 import { amountFormSchema } from "../branches/create/slide/CourAvailability";
 import { PeriodTimeFieldType } from "../branches/create/slide/PeriodTimeField";
 import SlotDialog from "../branches/SlotDialog";
-import { BranchStatusEnum } from "@/types";
 
 export const workingTimeFormSchemaAdminRequest = z.object({
   availableTime: z.coerce.string({
@@ -351,7 +351,16 @@ const RequestDetail = ({ branchId }: Props) => {
                             <Image
                               width={40}
                               height={40}
-                              src={license || defaultFile}
+                              src={
+                                license.includes(
+                                  "https://storage.googleapis.com/"
+                                ) &&
+                                (license.includes(".png") ||
+                                  license.includes(".jpg") ||
+                                  license.includes(".jpeg"))
+                                  ? license
+                                  : defaultFile
+                              }
                               alt="fileImage"
                               className="size-4 object-contain"
                             />
