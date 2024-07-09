@@ -13,6 +13,13 @@ type Props = {
   invalidateKey?: string[];
 };
 
+function isWithin15MinutesOfCreatedTime(createdTime: Date): boolean {
+  const now = new Date();
+  const fifteenMinutes = 15 * 60 * 1000; // 15 minutes in milliseconds
+  const maxCreatedTime = new Date(createdTime.getTime() + fifteenMinutes);
+  return now <= maxCreatedTime;
+}
+
 const BookingReceipt: React.FC<Props> = ({ bookings, invalidateKey }) => {
   return (
     <div className="container my-10 flex-col items-center gap-5">
@@ -33,7 +40,8 @@ const BookingReceipt: React.FC<Props> = ({ bookings, invalidateKey }) => {
               <BookingCard booking={booking} invalidateKey={invalidateKey} />
 
               {booking.status === BookingStatusEnum.BOOKED &&
-                (daysBeforeStart >= 2 ? (
+                (daysBeforeStart >= 2 ||
+                isWithin15MinutesOfCreatedTime(new Date(booking.createdAt)) ? (
                   <CancelBookingBtn
                     invalidateKey={invalidateKey}
                     defalutValues={booking}
