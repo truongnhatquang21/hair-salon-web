@@ -68,9 +68,19 @@ import { getDayOfPermanent } from "../../apiCallers/schedule/index";
 //   branchId: String;
 // };
 const cardSchema = z.object({
-  accountNumber: z.string().min(16).max(16),
-  accountName: z.string(),
-  accountBank: z.string(),
+  accountNumber: z
+    .string()
+    .min(16)
+    .max(16)
+    .refine((value) => {
+      if (Number.isNaN(value)) {
+        //  throw new Error("Account number must contain only 16 digits");
+        return { error: "Account number must contain only 16 digits" };
+      }
+      return Number(value);
+    }),
+  accountName: z.string().transform((str) => str.toUpperCase()),
+  accountBank: z.string().transform((str) => str.toUpperCase()),
   expDate: z.coerce.date(),
 });
 
@@ -784,10 +794,10 @@ const ConfirmBooking = () => {
                                 className="size-20 rounded-md border object-contain p-1 shadow-md"
                               />
                               <div className="flex flex-col">
-                                <span className="text-xl font-bold">
+                                <span className="text-xl font-bold capitalize">
                                   {card.accountBank}
                                 </span>
-                                <span className="text-base font-semibold">
+                                <span className="text-base font-semibold capitalize">
                                   {card.accountName}
                                 </span>
                                 <span className="text-sm">
@@ -828,6 +838,7 @@ const ConfirmBooking = () => {
                                           inputProps: {
                                             readOnly: true,
                                             placeholder: "--",
+                                            type: "number",
                                           },
                                         },
                                         accountName: {
@@ -857,49 +868,6 @@ const ConfirmBooking = () => {
                           </Label>
                         </div>
                       ))}
-
-                      {/* <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="option-one" id="option-one" />
-                      <Label
-                        htmlFor="option-one"
-                        className="flex w-full items-center gap-2"
-                      >
-                        <div className="flex w-full items-center gap-2  rounded-md border-2 p-2">
-                          <Image
-                            src={cardimg}
-                            alt="img"
-                            className="size-20 rounded-md border object-contain p-1 shadow-md"
-                          />
-                          <div className="flex flex-col">
-                            <span className="text-xl font-semibold">
-                              VCB - Vietcombank
-                            </span>
-                            <span className="text-sm">Trương Nhật Quang</span>
-                          </div>
-                          <Dialog>
-                            <DialogTrigger asChild>
-                              <Eye className="ml-auto cursor-pointer" />
-                            </DialogTrigger>
-                            <DialogContent className="flex max-h-[50%] flex-col overflow-auto sm:max-w-xl">
-                              <DialogHeader>
-                                <DialogTitle>Add new card</DialogTitle>
-                                <DialogDescription>
-                                  Fill out the form below to add a new court
-                                </DialogDescription>
-                              </DialogHeader>
-                              <div className="relative flex-1 gap-4 overflow-auto p-2">
-                                <AutoForm formSchema={cardSchema} />
-                              </div>
-                              <DialogFooter className="w-full">
-                                <Button className="w-full" type="submit">
-                                  Save changes
-                                </Button>
-                              </DialogFooter>
-                            </DialogContent>
-                          </Dialog>
-                        </div>
-                      </Label>
-                    </div> */}
                     </RadioGroup>
                   ) : (
                     <div className="flex w-full justify-center text-sm">
