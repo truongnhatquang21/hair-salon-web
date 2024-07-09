@@ -36,10 +36,7 @@ export function Sidebar() {
           variant="link"
           asChild
         >
-          <Link
-            href="/dashboard"
-            className="flex items-center gap-2 hover:no-underline"
-          >
+          <Link href="/" className="flex items-center gap-2 hover:no-underline">
             <h1
               className={cn(
                 "font-bold text-lg whitespace-nowrap transition-[transform,opacity,display] ease-in-out duration-300",

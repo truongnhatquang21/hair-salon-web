@@ -31,6 +31,7 @@ const ResultSection = ({
   totalPages,
   onPageChange,
 }: ResultSectionProps) => {
+  console.log(branches);
   return (
     <div>
       {/* Results Section */}
@@ -39,10 +40,10 @@ const ResultSection = ({
           <div className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3">
             {branches?.map((br) => (
               <div
-                key={br.id}
+                key={br._id}
                 className="rounded-lg border border-green-500 bg-white p-2 shadow-md"
               >
-                <Link href={`/badminton/${br.name}`}>
+                <Link href={`/branch/${br._id}`}>
                   <div className="relative h-48">
                     <Image
                       src={br.images[0] ?? ""}

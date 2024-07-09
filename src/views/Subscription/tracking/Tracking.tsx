@@ -79,7 +79,7 @@ const Tracking: React.FC<TrackingProps> = ({ subscriptions, isLoading }) => {
                 <span className="font-semibold">Total price</span>
                 <div className="flex items-start gap-1">
                   <span className="font-semibold">
-                    {(subscription.totalPrice / 100).toFixed(2)}đ
+                    {subscription.totalPrice}đ
                   </span>
                   {subscription?.packageCourt?.type.toLowerCase() ===
                     "custom" && (

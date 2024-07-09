@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
@@ -50,25 +49,25 @@ const TopArticles = () => {
             key={article.id}
             className="relative overflow-hidden rounded-sm shadow-lg"
           >
-            <Link href={`/article/${article.id}`}>
-              <div className="relative h-48 w-full">
-                <Image
-                  src={article.imageUrl}
-                  alt={article.title}
-                  layout="fill"
-                  objectFit="cover"
-                  className="h-48 object-cover"
-                />
-              </div>
-              <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black to-transparent p-4">
-                <h3 className="line-clamp-2 font-semibold text-white">
-                  {article.title}
-                </h3>
-                <span className="line-clamp-2 text-sm text-white">
-                  {article.description}
-                </span>
-              </div>
-            </Link>
+            {/* <Link href={`/article/${article.id}`}> */}
+            <div className="relative h-48 w-full">
+              <Image
+                src={article.imageUrl}
+                alt={article.title}
+                layout="fill"
+                objectFit="cover"
+                className="h-48 object-cover"
+              />
+            </div>
+            <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black to-transparent p-4">
+              <h3 className="line-clamp-2 font-semibold text-white">
+                {article.title}
+              </h3>
+              <span className="line-clamp-2 text-sm text-white">
+                {article.description}
+              </span>
+            </div>
+            {/* </Link> */}
           </div>
         ))}
       </div>

@@ -319,7 +319,7 @@ const CreateCourtButton = ({
               type: {
                 inputProps: {
                   readOnly: viewOnly,
-                  placeholder: "Type of court , e.g. 'Standard'",
+                  placeholder: "Type of court",
                   value: form.watch("type"),
                 },
               },

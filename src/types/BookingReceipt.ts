@@ -8,6 +8,7 @@ type IBookingReceipt = {
   startDate: string;
   endDate: string;
   status: string;
+  createdAt?: string;
   court: {
     name: string;
     type: string;
