@@ -85,19 +85,19 @@ export const columns: ColumnDef<TransactionTypeWithId>[] = [
       return <DataTableColumnHeader column={column} title="Payment Method" />;
     },
   },
-  {
-    accessorKey: "payment",
+  // {
+  //   accessorKey: "payment",
 
-    header: ({ column }) => {
-      return <DataTableColumnHeader column={column} title="Payment" />;
-    },
-    cell: ({ getValue }) => {
-      const data = getValue() as z.infer<typeof paymentSchema>;
-      return (
-        <span>
-          {data ? `${data.accountNumber.slice(0, 4)}***** ***** **` : "--"}
-        </span>
-      );
-    },
-  },
+  //   header: ({ column }) => {
+  //     return <DataTableColumnHeader column={column} title="Payment" />;
+  //   },
+  //   cell: ({ getValue }) => {
+  //     const data = getValue() as z.infer<typeof paymentSchema>;
+  //     return (
+  //       <span>
+  //         {data ? `${data.accountNumber?.slice(0, 4)}***** ***** **` : "--"}
+  //       </span>
+  //     );
+  //   },
+  // },
 ];
