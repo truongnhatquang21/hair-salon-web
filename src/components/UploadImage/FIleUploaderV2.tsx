@@ -66,6 +66,8 @@ const FileUploaderV2 = ({
         for (const file of files) {
           formData.append("files", file, file.name);
         }
+        console.log(formData, "formData");
+
         return uploadFileAPI(formData);
       },
       onSuccess: (data) => {
@@ -120,6 +122,8 @@ const FileUploaderV2 = ({
     });
 
   const uploadFileChange = async (data: string | File[]) => {
+    console.log(data, "dataFile");
+
     if (Array.isArray(data)) {
       await Promise.all(
         data.map(async (file) => {
