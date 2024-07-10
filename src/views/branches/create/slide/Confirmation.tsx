@@ -88,6 +88,52 @@ const Confirmation = ({ goBackfn, goNextFn, steppers, stepIndex }: Props) => {
 
         return uploadImagesAPI(formData);
       },
+      onSuccess: (data) => {
+        console.log(data, "data");
+        if (!data.ok) {
+          if (data.error) {
+            //   const errs = data.error as { [key: string]: { message: string } };
+            //   Object.entries(errs).forEach(([key, value]) => {
+            //     setError(key as keyof PackageCourtSchemaType, {
+            //       type: "manual",
+            //       message: value.message,
+            //     });
+            //   });
+            // }
+
+            toast({
+              variant: "destructive",
+              title: "Uh oh! Something went wrong.",
+              description: data.message || data.statusText,
+            });
+
+            throw new Error(data.message || data.statusText);
+          }
+
+          if (data.message) {
+            return toast({
+              variant: "default",
+              className: "bg-green-600 text-white",
+              title: "Message from system",
+              description: data.message,
+            });
+          }
+
+          return toast({
+            variant: "default",
+            title: "Submitted successfully",
+            description: "You can do something else now",
+          });
+        }
+      },
+      onError: (error) => {
+        console.error("Error while uploading images", error);
+        toast({
+          variant: "destructive",
+          title: "Uh oh! Something went wrong.",
+          description: "Error while uploading images",
+        });
+      },
     });
 
   const { isPending: isUploadLicense, mutateAsync: triggerUploadLicense } =
@@ -99,6 +145,52 @@ const Confirmation = ({ goBackfn, goNextFn, steppers, stepIndex }: Props) => {
           formData.append("files", file, file.name);
         }
         return uploadFileAPI(formData);
+      },
+      onSuccess: (data) => {
+        console.log(data, "data");
+        if (!data.ok) {
+          if (data.error) {
+            //   const errs = data.error as { [key: string]: { message: string } };
+            //   Object.entries(errs).forEach(([key, value]) => {
+            //     setError(key as keyof PackageCourtSchemaType, {
+            //       type: "manual",
+            //       message: value.message,
+            //     });
+            //   });
+            // }
+
+            toast({
+              variant: "destructive",
+              title: "Uh oh! Something went wrong.",
+              description: data.message || data.statusText,
+            });
+
+            throw new Error(data.message || data.statusText);
+          }
+
+          if (data.message) {
+            return toast({
+              variant: "default",
+              className: "bg-green-600 text-white",
+              title: "Message from system",
+              description: data.message,
+            });
+          }
+
+          return toast({
+            variant: "default",
+            title: "Submitted successfully",
+            description: "You can do something else now",
+          });
+        }
+      },
+      onError: (error) => {
+        console.error("Error while uploading license", error);
+        toast({
+          variant: "destructive",
+          title: "Uh oh! Something went wrong.",
+          description: "Error while uploading license",
+        });
       },
     });
 
@@ -195,10 +287,13 @@ const Confirmation = ({ goBackfn, goNextFn, steppers, stepIndex }: Props) => {
   // console.log(cloneSteps, "cloneSteps");
 
   const handleCreateBranch = async () => {
+    console.log("handleCreateBranch");
+
     // const stepsClone: StoreStep[] = JSON.parse(JSON.stringify(steps));
     const prepaeData: BranchTypeInCreate = steps.reduce((acc, item) => {
       return { ...acc, ...item.data };
     }, {} as BranchTypeInCreate);
+    console.log(prepaeData, "prepaeData");
 
     // for (const court of prepaeData.courts) {
     //   console.log(court.images, "court");
@@ -217,22 +312,25 @@ const Confirmation = ({ goBackfn, goNextFn, steppers, stepIndex }: Props) => {
     //       });
     //     });
     // }
+
     // console.log(prepaeData, "prepaeData");
-    await Promise.all([
-      triggerUploadImages(prepaeData.images),
-      triggerUploadLicense(prepaeData.licenses),
-    ])
-      .then((res) => {
-        prepaeData.images = res[0].data;
-        prepaeData.licenses = res[1].data;
-      })
-      .catch(() => {
-        return toast({
-          title: "Error",
-          description: "Error while uploading images",
-          variant: "destructive",
-        });
-      });
+    // await Promise.all([
+    //   triggerUploadLicense(prepaeData.images),
+    //   triggerUploadLicense(prepaeData.licenses),
+    // ])
+    //   .then((res) => {
+    //     prepaeData.images = res[0].data;
+    //     prepaeData.licenses = res[1].data;
+    //   })
+    //   .catch(() => {
+    //     return toast({
+    //       title: "Error",
+    //       description: "Error while uploading images",
+    //       variant: "destructive",
+    //     });
+    //   });
+
+    console.log(prepaeData, "prepaeData");
     console.log(JSON.stringify(prepaeData), "prepaeData");
     // console.log(prepaeData, "prepaeData");
     // const sendData = JSON.stringify(prepaeData);
