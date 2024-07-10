@@ -99,9 +99,13 @@ export const columns: ColumnDef<CourtSchemaTypeWithId>[] = [
     },
   },
   {
-    accessorKey: "Description",
+    accessorKey: "description",
     header: ({ column }) => {
       return <DataTableColumnHeader column={column} title="Description" />;
+    },
+    cell: ({ getValue }) => {
+      const data = getValue() as string;
+      return <span>{data ? `${data.slice(0, 100)}...` : "-"}</span>;
     },
   },
 
