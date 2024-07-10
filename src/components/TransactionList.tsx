@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
 
 import { getMyTransaction } from "@/apiCallers/trasaction";
 import type { TransactionTypeWithId } from "@/views/transactions/helper";
@@ -14,14 +15,20 @@ export function TransactionList() {
     queryFn: async () => getMyTransaction(),
   });
   console.log(data, "dsd");
-
+  const dataSort = useMemo(() => {
+    if (!data?.data) return [];
+    return data?.data?.sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+  }, [data?.data]);
   return (
     <div className=" relative size-full overflow-auto">
       <DataTable
         navigation={false}
         canCreate={false}
         columns={columns}
-        data={(data?.data || []) as TransactionTypeWithId[]}
+        data={(dataSort || []) as TransactionTypeWithId[]}
         isLoading={isLoading}
       />
     </div>
