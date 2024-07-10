@@ -22,6 +22,7 @@ export const getCourtListAPI = async () => {
   return fetcher<CourtType[]>("court/get-my-available-courts");
 };
 export const getCourtByBranchIdAPI = async (branchId: string) => {
+  if (!branchId) return [];
   return fetcher<CourtSchemaTypeWithId>(`court/search`, {
     method: "POST",
     body: JSON.stringify({ branch: branchId }),
