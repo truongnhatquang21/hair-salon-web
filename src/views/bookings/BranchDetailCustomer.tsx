@@ -15,6 +15,7 @@ import { getCourtAvailable } from "@/apiCallers/courts";
 import BranchDetailOverview from "@/components/branchs/BranchDetailOverview";
 import CalendarDaily from "@/components/Custom/DailyCalendar";
 import CustomTag from "@/components/CustomTag";
+import { EmptyComponent } from "@/components/Empty";
 import { Icons } from "@/components/icons";
 import { Loading } from "@/components/loading";
 import { TimeSlot } from "@/components/TimeSlot";
@@ -108,7 +109,7 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
       },
     }
   );
-
+  console.log(CourtData?.data);
   const handleCourtSelection = (court: ICourt) => {
     if (selectedCourt?._id === court._id) {
       setSelectedCourt(null);
@@ -146,7 +147,10 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
         });
         router.push("/booking");
       }
-      if (activeTab !== "flexible_schedule") {
+      if (
+        activeTab === "single_schedule" ||
+        activeTab === "permanent_schedule"
+      ) {
         setBooking({
           booking: {
             type: activeTab,
@@ -200,7 +204,7 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
     router.push("/");
     return <div>Uh oh! Something went wrong.</div>;
   }
-  console.log(profileData);
+  // console.log(profileData);
   return (
     <div className="min-h-[calc(100vh_-_56px)] p-5">
       <div className=" rounded-xl bg-slate-400 p-5">
@@ -317,82 +321,91 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
                           <h3 className="mb-2 text-lg font-bold">
                             Select Badminton Court
                           </h3>
-                          <div className="grid grid-cols-2 gap-4">
-                            {CourtData?.data?.map((value: ICourt) => (
-                              <Card
-                                key={value._id}
-                                className={`cursor-pointer ${
-                                  selectedCourt !== null &&
-                                  selectedCourt._id === value._id
-                                    ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                                    : "hover:bg-muted"
-                                }`}
-                                onClick={() => handleCourtSelection(value)}
-                              >
-                                <CardContent className="grid gap-4 overflow-hidden p-5">
-                                  <div className="flex items-center gap-4">
-                                    <div
-                                      className={`cursor-pointer rounded-lg object-cover p-2 ${
-                                        selectedCourt !== null &&
-                                        selectedCourt._id === value._id
-                                          ? " bg-slate-500 stroke-white "
-                                          : " border-white text-white "
-                                      }`}
-                                    >
-                                      <Icons.BadmintonCourt className="rounded-lg object-cover" />
+                          {CourtData?.data?.length === 0 ? (
+                            <EmptyComponent
+                              title="No Court Available"
+                              // description="You haven't made any bookings yet. Start booking now to manage your reservations."
+                              className="w-full"
+                            />
+                          ) : (
+                            <div className="grid grid-cols-2 gap-4">
+                              {CourtData?.data?.map((value: ICourt) => (
+                                <Card
+                                  key={value._id}
+                                  className={`cursor-pointer ${
+                                    selectedCourt !== null &&
+                                    selectedCourt._id === value._id
+                                      ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                                      : "hover:bg-muted"
+                                  }`}
+                                  onClick={() => handleCourtSelection(value)}
+                                >
+                                  <CardContent className="grid gap-4 overflow-hidden p-5">
+                                    <div className="flex items-center gap-4">
+                                      <div
+                                        className={`cursor-pointer rounded-lg object-cover p-2 ${
+                                          selectedCourt !== null &&
+                                          selectedCourt._id === value._id
+                                            ? " bg-slate-500 stroke-white "
+                                            : " border-white text-white "
+                                        }`}
+                                      >
+                                        <Icons.BadmintonCourt className="rounded-lg object-cover" />
+                                      </div>
+                                      <div>
+                                        <h3 className="font-semibold">
+                                          {value.name}
+                                        </h3>
+                                        <span
+                                          className={`line-clamp-3 text-sm ${
+                                            selectedCourt !== null &&
+                                            selectedCourt._id === value._id
+                                              ? " text-slate-300 dark:text-slate-200 "
+                                              : "text-gray-500 dark:text-gray-400"
+                                          }`}
+                                        >
+                                          {value.description}
+                                        </span>
+                                      </div>
                                     </div>
-                                    <div>
-                                      <h3 className="font-semibold">
-                                        {value.name}
-                                      </h3>
-                                      <span
-                                        className={`line-clamp-3  text-sm ${
+                                    <div className="flex items-center justify-between">
+                                      <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                                        <CustomTag status={value.status} />
+                                      </div>
+                                      <div
+                                        className={`flex items-center gap-2 text-sm ${
                                           selectedCourt !== null &&
                                           selectedCourt._id === value._id
                                             ? " text-slate-300 dark:text-slate-200 "
-                                            : "  text-gray-500 dark:text-gray-400 "
+                                            : "text-gray-500 dark:text-gray-400"
                                         }`}
                                       >
-                                        {value.description}
-                                      </span>
+                                        <UsersIcon className="size-4" />
+                                        <span>type: {value.type}</span>
+                                      </div>
                                     </div>
-                                  </div>
-                                  <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                                      <CustomTag status={value.status} />
+                                    <div className="flex items-center justify-between">
+                                      <div
+                                        className={`flex items-center gap-2 text-sm ${
+                                          selectedCourt !== null &&
+                                          selectedCourt._id === value._id
+                                            ? " text-slate-300 dark:text-slate-200 "
+                                            : "text-gray-500 dark:text-gray-400"
+                                        }`}
+                                      >
+                                        {/* <DollarSignIcon className="size-4" /> */}
+                                        <span>
+                                          {(value.price / 100).toFixed(2)}
+                                          VND/slot
+                                        </span>
+                                      </div>
                                     </div>
-                                    <div
-                                      className={`flex items-center gap-2 text-sm ${
-                                        selectedCourt !== null &&
-                                        selectedCourt._id === value._id
-                                          ? " text-slate-300 dark:text-slate-200 "
-                                          : "text-gray-500 dark:text-gray-400"
-                                      }`}
-                                    >
-                                      <UsersIcon className="size-4" />
-                                      <span>type: {value.type}</span>
-                                    </div>
-                                  </div>
-                                  <div className="flex items-center justify-between">
-                                    <div
-                                      className={`flex items-center gap-2 text-sm ${
-                                        selectedCourt !== null &&
-                                        selectedCourt._id === value._id
-                                          ? " text-slate-300 dark:text-slate-200 "
-                                          : "text-gray-500 dark:text-gray-400"
-                                      }`}
-                                    >
-                                      {/* <DollarSignIcon className="size-4" /> */}
-                                      <span>
-                                        {(value.price / 100).toFixed(2)}
-                                        VND/slot
-                                      </span>
-                                    </div>
-                                  </div>
-                                </CardContent>
-                              </Card>
-                            ))}
-                          </div>
+                                  </CardContent>
+                                </Card>
+                              ))}
+                            </div>
+                          )}
+
                           <div className="mt-6 flex justify-end">
                             <Button
                               variant="default"
@@ -418,6 +431,7 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
                     </CardDescription>
                     <CardContent className="mt-5">
                       <FlexibleBooking
+                        setSelectedCourts={setSelectedCourts}
                         courts={data.data.courts}
                         handleCourtSelection={handleCourtSelection}
                         selectedCourt={selectedCourt}
@@ -464,82 +478,92 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
                           <h3 className="mb-2 text-lg font-bold">
                             Select Badminton Court
                           </h3>
-                          <div className="grid grid-cols-2 gap-4">
-                            {CourtData?.data?.map((value: ICourt) => (
-                              <Card
-                                key={value._id}
-                                className={`cursor-pointer ${
-                                  selectedCourt !== null &&
-                                  selectedCourt._id === value._id
-                                    ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                                    : "hover:bg-muted"
-                                }`}
-                                onClick={() => handleCourtSelection(value)}
-                              >
-                                <CardContent className="grid gap-4 overflow-hidden p-5">
-                                  <div className="flex items-center gap-4">
-                                    <div
-                                      className={`cursor-pointer rounded-lg object-cover p-2 ${
-                                        selectedCourt !== null &&
-                                        selectedCourt._id === value._id
-                                          ? " bg-slate-500 stroke-white "
-                                          : " border-white text-white "
-                                      }`}
-                                    >
-                                      <Icons.BadmintonCourt className="rounded-lg object-cover" />
+
+                          {CourtData?.data?.length === 0 ? (
+                            <EmptyComponent
+                              title="No Court Available"
+                              // description="You haven't made any bookings yet. Start booking now to manage your reservations."
+                              className="w-full"
+                            />
+                          ) : (
+                            <div className="grid grid-cols-2 gap-4">
+                              {CourtData?.data?.map((value: ICourt) => (
+                                <Card
+                                  key={value._id}
+                                  className={`cursor-pointer ${
+                                    selectedCourt !== null &&
+                                    selectedCourt._id === value._id
+                                      ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                                      : "hover:bg-muted"
+                                  }`}
+                                  onClick={() => handleCourtSelection(value)}
+                                >
+                                  <CardContent className="grid gap-4 overflow-hidden p-5">
+                                    <div className="flex items-center gap-4">
+                                      <div
+                                        className={`cursor-pointer rounded-lg object-cover p-2 ${
+                                          selectedCourt !== null &&
+                                          selectedCourt._id === value._id
+                                            ? " bg-slate-500 stroke-white "
+                                            : " border-white text-white "
+                                        }`}
+                                      >
+                                        <Icons.BadmintonCourt className="rounded-lg object-cover" />
+                                      </div>
+                                      <div>
+                                        <h3 className="font-semibold">
+                                          {value.name}
+                                        </h3>
+                                        <span
+                                          className={`line-clamp-3 text-sm ${
+                                            selectedCourt !== null &&
+                                            selectedCourt._id === value._id
+                                              ? " text-slate-300 dark:text-slate-200 "
+                                              : "text-gray-500 dark:text-gray-400"
+                                          }`}
+                                        >
+                                          {value.description}
+                                        </span>
+                                      </div>
                                     </div>
-                                    <div>
-                                      <h3 className="font-semibold">
-                                        {value.name}
-                                      </h3>
-                                      <span
-                                        className={`line-clamp-3 text-sm ${
+                                    <div className="flex items-center justify-between">
+                                      <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                                        <CustomTag status={value.status} />
+                                      </div>
+                                      <div
+                                        className={`flex items-center gap-2 text-sm ${
                                           selectedCourt !== null &&
                                           selectedCourt._id === value._id
                                             ? " text-slate-300 dark:text-slate-200 "
                                             : "text-gray-500 dark:text-gray-400"
                                         }`}
                                       >
-                                        {value.description}
-                                      </span>
+                                        <UsersIcon className="size-4" />
+                                        <span>type: {value.type}</span>
+                                      </div>
                                     </div>
-                                  </div>
-                                  <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                                      <CustomTag status={value.status} />
+                                    <div className="flex items-center justify-between">
+                                      <div
+                                        className={`flex items-center gap-2 text-sm ${
+                                          selectedCourt !== null &&
+                                          selectedCourt._id === value._id
+                                            ? " text-slate-300 dark:text-slate-200 "
+                                            : "text-gray-500 dark:text-gray-400"
+                                        }`}
+                                      >
+                                        {/* <DollarSignIcon className="size-4" /> */}
+                                        <span>
+                                          {(value.price / 100).toFixed(2)}
+                                          VND/slot
+                                        </span>
+                                      </div>
                                     </div>
-                                    <div
-                                      className={`flex items-center gap-2 text-sm ${
-                                        selectedCourt !== null &&
-                                        selectedCourt._id === value._id
-                                          ? " text-slate-300 dark:text-slate-200 "
-                                          : "text-gray-500 dark:text-gray-400"
-                                      }`}
-                                    >
-                                      <UsersIcon className="size-4" />
-                                      <span>type: {value.type}</span>
-                                    </div>
-                                  </div>
-                                  <div className="flex items-center justify-between">
-                                    <div
-                                      className={`flex items-center gap-2 text-sm ${
-                                        selectedCourt !== null &&
-                                        selectedCourt._id === value._id
-                                          ? " text-slate-300 dark:text-slate-200 "
-                                          : "text-gray-500 dark:text-gray-400"
-                                      }`}
-                                    >
-                                      {/* <DollarSignIcon className="size-4" /> */}
-                                      <span>
-                                        {(value.price / 100).toFixed(2)}
-                                        VND/slot
-                                      </span>
-                                    </div>
-                                  </div>
-                                </CardContent>
-                              </Card>
-                            ))}
-                          </div>
+                                  </CardContent>
+                                </Card>
+                              ))}
+                            </div>
+                          )}
+
                           <div className="mt-6 flex justify-end">
                             <Button
                               variant="default"
@@ -586,82 +610,92 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
                           <h3 className="mb-2 text-lg font-bold">
                             Select Badminton Court
                           </h3>
-                          <div className="grid grid-cols-2 gap-4">
-                            {CourtData?.data?.map((value: ICourt) => (
-                              <Card
-                                key={value._id}
-                                className={`cursor-pointer ${
-                                  selectedCourts.length !== 0 &&
-                                  selectedCourts.includes(value)
-                                    ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                                    : "hover:bg-muted"
-                                }`}
-                                onClick={() => handleCheckboxChange(value)}
-                              >
-                                <CardContent className="grid gap-4 overflow-hidden p-5">
-                                  <div className="flex items-center gap-4">
-                                    <div
-                                      className={`cursor-pointer rounded-lg object-cover p-2 ${
-                                        selectedCourts.length !== 0 &&
-                                        selectedCourts.includes(value)
-                                          ? " bg-slate-500 stroke-white "
-                                          : " border-white text-white "
-                                      }`}
-                                    >
-                                      <Icons.BadmintonCourt className="rounded-lg object-cover" />
+
+                          {CourtData?.data?.length === 0 ? (
+                            <EmptyComponent
+                              title="No Court Available"
+                              // description="You haven't made any bookings yet. Start booking now to manage your reservations."
+                              className="w-full"
+                            />
+                          ) : (
+                            <div className="grid grid-cols-2 gap-4">
+                              {CourtData?.data?.map((value: ICourt) => (
+                                <Card
+                                  key={value._id}
+                                  className={`cursor-pointer ${
+                                    selectedCourts.length !== 0 &&
+                                    selectedCourts.includes(value)
+                                      ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                                      : "hover:bg-muted"
+                                  }`}
+                                  onClick={() => handleCheckboxChange(value)}
+                                >
+                                  <CardContent className="grid gap-4 overflow-hidden p-5">
+                                    <div className="flex items-center gap-4">
+                                      <div
+                                        className={`cursor-pointer rounded-lg object-cover p-2 ${
+                                          selectedCourts.length !== 0 &&
+                                          selectedCourts.includes(value)
+                                            ? " bg-slate-500 stroke-white "
+                                            : " border-white text-white "
+                                        }`}
+                                      >
+                                        <Icons.BadmintonCourt className="rounded-lg object-cover" />
+                                      </div>
+                                      <div>
+                                        <h3 className="font-semibold">
+                                          {value.name}
+                                        </h3>
+                                        <span
+                                          className={`line-clamp-3 text-sm ${
+                                            selectedCourts.length !== 0 &&
+                                            selectedCourts.includes(value)
+                                              ? " text-slate-300 dark:text-slate-200 "
+                                              : "text-gray-500 dark:text-gray-400"
+                                          }`}
+                                        >
+                                          {value.description}
+                                        </span>
+                                      </div>
                                     </div>
-                                    <div>
-                                      <h3 className="font-semibold">
-                                        {value.name}
-                                      </h3>
-                                      <span
-                                        className={`line-clamp-3 text-sm ${
+                                    <div className="flex items-center justify-between">
+                                      <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                                        <CustomTag status={value.status} />
+                                      </div>
+                                      <div
+                                        className={`flex items-center gap-2 text-sm ${
                                           selectedCourts.length !== 0 &&
                                           selectedCourts.includes(value)
                                             ? " text-slate-300 dark:text-slate-200 "
                                             : "text-gray-500 dark:text-gray-400"
                                         }`}
                                       >
-                                        {value.description}
-                                      </span>
+                                        <UsersIcon className="size-4" />
+                                        <span>type: {value.type}</span>
+                                      </div>
                                     </div>
-                                  </div>
-                                  <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                                      <CustomTag status={value.status} />
+                                    <div className="flex items-center justify-between">
+                                      <div
+                                        className={`flex items-center gap-2 text-sm ${
+                                          selectedCourts.length !== 0 &&
+                                          selectedCourts.includes(value)
+                                            ? " text-slate-300 dark:text-slate-200 "
+                                            : "text-gray-500 dark:text-gray-400"
+                                        }`}
+                                      >
+                                        {/* <DollarSignIcon className="size-4" /> */}
+                                        <span>
+                                          {(value.price / 100).toFixed(2)}
+                                          VND/slot
+                                        </span>
+                                      </div>
                                     </div>
-                                    <div
-                                      className={`flex items-center gap-2 text-sm ${
-                                        selectedCourts.length !== 0 &&
-                                        selectedCourts.includes(value)
-                                          ? " text-slate-300 dark:text-slate-200 "
-                                          : "text-gray-500 dark:text-gray-400"
-                                      }`}
-                                    >
-                                      <UsersIcon className="size-4" />
-                                      <span>type: {value.type}</span>
-                                    </div>
-                                  </div>
-                                  <div className="flex items-center justify-between">
-                                    <div
-                                      className={`flex items-center gap-2 text-sm ${
-                                        selectedCourts.length !== 0 &&
-                                        selectedCourts.includes(value)
-                                          ? " text-slate-300 dark:text-slate-200 "
-                                          : "text-gray-500 dark:text-gray-400"
-                                      }`}
-                                    >
-                                      {/* <DollarSignIcon className="size-4" /> */}
-                                      <span>
-                                        {(value.price / 100).toFixed(2)}
-                                        VND/slot
-                                      </span>
-                                    </div>
-                                  </div>
-                                </CardContent>
-                              </Card>
-                            ))}
-                          </div>
+                                  </CardContent>
+                                </Card>
+                              ))}
+                            </div>
+                          )}
+
                           <div className="mt-6 flex justify-end">
                             <Button
                               variant="default"
