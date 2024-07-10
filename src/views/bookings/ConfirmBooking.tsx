@@ -462,7 +462,7 @@ const ConfirmBooking = () => {
     }
   }, [bookingData.booking, router]);
   return (
-    <div className="w-fit space-y-8">
+    <div className="w-full space-y-8">
       <div className="text-center">
         <h1 className="text-4xl font-bold">Confirm Booking</h1>
         <p className="text-lg text-muted-foreground">
@@ -470,7 +470,7 @@ const ConfirmBooking = () => {
         </p>
       </div>
       <div
-        className={` gap-6     ${bookingData.booking?.type === "permanent_schedule" ? "grid grid-cols-3" : "flex justify-center"}`}
+        className={` w-full  gap-6   ${bookingData.booking?.type === "permanent_schedule" ? "grid grid-cols-3" : "flex justify-center"}`}
       >
         {bookingData.booking?.type === "permanent_schedule" && (
           <Card className="col-span-1  rounded-lg shadow-lg">
