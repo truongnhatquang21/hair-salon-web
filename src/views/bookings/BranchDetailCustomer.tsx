@@ -203,7 +203,7 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
           <TabsList className="flex border-b border-gray-200 dark:border-gray-800">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             {profileData.data &&
-              profileData?.data?.role !== RoleEnum.CUSTOMER && (
+              profileData?.data?.role === RoleEnum.CUSTOMER && (
                 <TabsTrigger value="schedules">Schedules</TabsTrigger>
               )}
 
