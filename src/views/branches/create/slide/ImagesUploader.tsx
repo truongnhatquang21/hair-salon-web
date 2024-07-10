@@ -122,7 +122,7 @@ const ImagesUploader = ({ goBackfn, goNextFn, steppers, stepIndex }: Props) => {
                 isRequired
                 field={field}
                 accetp={{
-                  "image/jpg": [".jpeg", ".png"],
+                  "image/png": [".jpeg", ".png", ".jpg"],
                 }}
               />
             );

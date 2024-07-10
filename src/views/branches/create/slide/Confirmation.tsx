@@ -452,7 +452,7 @@ const Confirmation = ({ goBackfn, goNextFn, steppers, stepIndex }: Props) => {
                     <Image
                       width={40}
                       height={40}
-                      src={image.preview}
+                      src={image}
                       alt="image"
                       className="h-40 w-full object-contain"
                     />
@@ -468,7 +468,7 @@ const Confirmation = ({ goBackfn, goNextFn, steppers, stepIndex }: Props) => {
                 <a
                   key={license.name}
                   className="w-full "
-                  href={license.preview}
+                  href={license}
                   download
                 >
                   <div className="flex w-full cursor-pointer items-center gap-2 rounded-md bg-gray-50 p-2 transition-all duration-200 ease-in hover:bg-accent">
@@ -477,7 +477,9 @@ const Confirmation = ({ goBackfn, goNextFn, steppers, stepIndex }: Props) => {
                       alt="fileImage"
                       className="size-4 object-contain"
                     />
-                    <span className="hover:underline">{license.name}</span>
+                    <span className="hover:underline">
+                      {license || "licences file"}
+                    </span>
                   </div>
                 </a>
               ))}
