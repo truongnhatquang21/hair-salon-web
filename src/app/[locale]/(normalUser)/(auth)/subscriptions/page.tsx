@@ -20,16 +20,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { PackageEnum } from "@/views/AdminSubscriptions/helper";
 
-export function formatToVND(amount: number): string {
-  const formatter = new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  });
-
-  return formatter.format(amount);
-}
+import { formatToVND } from "./helper";
 
 type PricingSwitchProps = {
   onSwitch: (value: string) => void;

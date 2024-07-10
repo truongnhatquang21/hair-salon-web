@@ -5,10 +5,10 @@ import { IconRight } from "react-day-picker";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { ReactHookFormDemo } from "@/_components/react-hook-form-demo";
 import { Button } from "@/components/ui/button";
 import { FormField } from "@/components/ui/form";
 import { useToast } from "@/components/ui/use-toast";
+import FileUploaderV2 from "@/components/UploadImage/FIleUploaderV2";
 import type { Steppers } from "@/hooks/useStepper";
 import { useBranchStepStore } from "@/stores/createBranchStore";
 
@@ -39,19 +39,13 @@ const LisenseDetails = ({ goBackfn, goNextFn, steppers, stepIndex }: Props) => {
     resolver: zodResolver(schema),
     defaultValues: initialValues,
   });
-  const validateForm = async () => {
-    const isValid = await form.trigger();
-    if (!isValid) {
-      toast({
-        title: "Error",
-        variant: "destructive",
-        description: "Please check your form again",
-      });
-    }
-  };
+  const validateForm = async () => {};
   const onSubmit: SubmitHandler<Schema> = async (data) => {
-    console.log(data, "images data");
+    console.log(data, "licenses data");
+
     if (!data.licenses || data.licenses.length === 0) {
+      console.log(data.licenses);
+
       toast({
         title: "Error",
         variant: "destructive",
@@ -113,12 +107,14 @@ const LisenseDetails = ({ goBackfn, goNextFn, steppers, stepIndex }: Props) => {
           control={form.control}
           render={({ field }) => {
             return (
-              <ReactHookFormDemo
+              <FileUploaderV2
                 label="Licenses"
                 isRequired
                 field={field}
                 accetp={{
-                  "*": [],
+                  "image/png": [".jpeg", ".png", `.jpg`],
+                  "application/pdf": [".pdf"],
+                  "application/msword": [".doc"],
                 }}
               />
             );

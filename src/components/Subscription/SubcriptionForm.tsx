@@ -6,7 +6,7 @@ import { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
-import { formatToVND } from "@/app/[locale]/(normalUser)/(auth)/subscriptions/page";
+import { formatToVND } from "@/app/[locale]/(normalUser)/(auth)/subscriptions/helper";
 import AutoForm from "@/components/ui/auto-form";
 
 import { Button } from "../ui/button";
@@ -30,7 +30,7 @@ export const subscriptionFormSchema = z.object({
 export type SubscriptionFormSchemaType = z.infer<typeof subscriptionFormSchema>;
 type Props = {
   onSubmit: (value: SubscriptionFormSchemaType) => void;
-  defaultValue?: SubscriptionFormSch;
+  defaultValue?: SubscriptionFormSchemaType;
   priceEachCourt: number;
 };
 export function SubscriptionAutoForm({
@@ -84,7 +84,9 @@ export function SubscriptionAutoForm({
       Alternatively, you can not pass a submit button
       to create auto-saving forms etc.
       */}
-      <h3 className="text-3xl font-bold">{formatToVND(totalPrice)}</h3>
+      <h3 className="text-3xl font-bold">
+        {formatToVND(totalPrice * Number(defaultValue?.duration))}
+      </h3>
       <Button className="w-full">Continue</Button>
 
       {/*

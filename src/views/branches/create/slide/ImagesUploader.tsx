@@ -5,10 +5,10 @@ import { IconRight } from "react-day-picker";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { ReactHookFormDemo } from "@/_components/react-hook-form-demo";
 import { Button } from "@/components/ui/button";
 import { FormField } from "@/components/ui/form";
 import { useToast } from "@/components/ui/use-toast";
+import FileUploaderV2 from "@/components/UploadImage/FIleUploaderV2";
 import type { Steppers } from "@/hooks/useStepper";
 import { useBranchStepStore } from "@/stores/createBranchStore";
 
@@ -117,7 +117,14 @@ const ImagesUploader = ({ goBackfn, goNextFn, steppers, stepIndex }: Props) => {
           control={form.control}
           render={({ field }) => {
             return (
-              <ReactHookFormDemo label="Images" isRequired field={field} />
+              <FileUploaderV2
+                label="Images"
+                isRequired
+                field={field}
+                accetp={{
+                  "image/png": [".jpeg", ".png", ".jpg"],
+                }}
+              />
             );
           }}
         />
