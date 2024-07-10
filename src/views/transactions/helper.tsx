@@ -1,4 +1,5 @@
 import type { ColumnDef } from "@tanstack/react-table";
+import { format } from "date-fns";
 import { z } from "zod";
 
 import { formatToVND } from "@/app/[locale]/(normalUser)/(auth)/subscriptions/helper";
@@ -33,6 +34,7 @@ export type TransactionTypeWithId = {
   payment: z.infer<typeof paymentSchema> & {
     _id: string;
   };
+  createdAt: string;
 };
 export const columns: ColumnDef<TransactionTypeWithId>[] = [
   {
@@ -83,6 +85,16 @@ export const columns: ColumnDef<TransactionTypeWithId>[] = [
     accessorKey: "paymentMethod",
     header: ({ column }) => {
       return <DataTableColumnHeader column={column} title="Payment Method" />;
+    },
+  },
+  {
+    accessorKey: "createdAt",
+    header: ({ column }) => {
+      return <DataTableColumnHeader column={column} title="Created At" />;
+    },
+    cell: ({ getValue }) => {
+      const data = getValue() as string;
+      return <span>{data ? format(new Date(data), "Ppp") : "--"}</span>;
     },
   },
   // {
