@@ -82,18 +82,33 @@ const BookingFlexibleCard: React.FC<Props> = ({ booking, invalidateKey }) => {
           </div> */}
         </p>
         <p className="flex gap-2">
-          <SetScheduleBtn
-            invalidateKey={invalidateKey}
-            defalutValues={booking}
-            Trigger={
-              <Button
-                // variant=""
-                className="flex w-full justify-center"
-              >
-                Set Schedule
-              </Button>
-            }
-          />
+          {booking?.totalHour === 0 ? (
+            <Button
+              // variant=""
+              disabled={booking?.totalHour === 0}
+              className="flex w-full justify-center"
+            >
+              {booking?.totalHour === 0
+                ? "Out of slots to book an appointment"
+                : "Set Schedule"}
+            </Button>
+          ) : (
+            <SetScheduleBtn
+              invalidateKey={invalidateKey}
+              defalutValues={booking}
+              Trigger={
+                <Button
+                  // variant=""
+                  disabled={booking?.totalHour === 0}
+                  className="flex w-full justify-center"
+                >
+                  {booking?.totalHour === 0
+                    ? "Out of slots to book an appointment"
+                    : "Set Schedule"}
+                </Button>
+              }
+            />
+          )}
         </p>
       </div>
     </>

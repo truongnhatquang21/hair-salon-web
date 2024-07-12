@@ -79,15 +79,6 @@ const SetScheduleBtnManager = ({
     },
     onSuccess: (dataRes) => {
       if (!dataRes.ok) {
-        // if (data.error) {
-        //   const errs = data.error as { [key: string]: { message: string } };
-        //   Object.entries(errs).forEach(([key, value]) => {
-        //     setError(key as keyof PackageCourtSchemaType, {
-        //       type: "manual",
-        //       message: value.message,
-        //     });
-        //   });
-        // }
         toast({
           variant: "destructive",
           title: "Uh oh! Something went wrong.",

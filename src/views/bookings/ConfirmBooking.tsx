@@ -12,7 +12,11 @@ import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { postBooking, postBookingFlexible } from "@/apiCallers/customerBooking";
+import {
+  postBooking,
+  postBookingCompetition,
+  postBookingFlexible,
+} from "@/apiCallers/customerBooking";
 import { addCardAPI, getCardListAPI } from "@/apiCallers/payment";
 import CustomTag from "@/components/CustomTag";
 import { Icons } from "@/components/icons";
@@ -209,6 +213,8 @@ const ConfirmBooking = () => {
       bookingData: state.bookingData,
     };
   });
+
+  console.log(bookingData);
   const { trigger, setValue, getValues } = useForm<OrderSchemaType>({
     resolver: zodResolver(bookingTransactionSchema),
     defaultValues: {
@@ -242,7 +248,34 @@ const ConfirmBooking = () => {
         }
       },
     });
+  const {
+    mutateAsync: bookingCompetitionMutatue,
+    isPending: bookingCompetitionMutating,
+  } = useMutation({
+    mutationFn: async (bookingReq: {
+      courtArray: string[];
+      booking: Omit<IBooking, "status">;
+      schedule: Omit<ISchedule, "status">;
+      transaction: { amount: number; payment: string };
+    }) => postBookingCompetition(bookingReq),
+    onSuccess: (data) => {
+      if (!data.ok) {
+        if (data.error) {
+          console.log(data.error);
+        }
 
+        return toast({
+          variant: "destructive",
+          title: "Uh oh! Something went wrong.",
+          description: data.message || data.statusText,
+        });
+      }
+
+      if (data.message) {
+        setOpen(true);
+      }
+    },
+  });
   const {
     mutateAsync: bookingMutationFlexible,
     isPending: bookingMutatingFlexible,
@@ -430,6 +463,38 @@ const ConfirmBooking = () => {
           payment: getValues("payment"),
         },
       });
+    } else if (
+      bookingData?.booking?.type === "competition_schedule" &&
+      paymentId
+    ) {
+      const endDate1month = new Date(bookingData.booking.endDate);
+      endDate1month.setMonth(endDate1month.getMonth() + 1);
+      await bookingCompetitionMutatue({
+        arrayCourt: bookingData?.booking?.arrayCourt?.map((el) => el._id),
+        booking: {
+          paymentType,
+          paymentMethod: payment,
+          totalPrice: bookingData.booking.totalPrice,
+          totalHour: bookingData.booking.totalHour,
+          startDate: bookingData.booking.startDate,
+          endDate: format(endDate1month.toString(), "yyyy-MM-dd"),
+        },
+        schedule: {
+          type: "booking",
+          slots: bookingData.schedule.slots,
+          startTime: bookingData.schedule?.startTime,
+          endTime: bookingData.schedule?.endTime,
+          date: bookingData.schedule?.date,
+        },
+
+        transaction: {
+          amount:
+            paymentType === "full"
+              ? bookingData.booking.totalPrice
+              : bookingData.booking.totalPrice / 2,
+          payment: getValues("payment"),
+        },
+      });
     }
   };
   const getEndDate = () => {
@@ -562,71 +627,159 @@ const ConfirmBooking = () => {
             )}
 
             <div>
-              <Label htmlFor="court" className="text-lg font-medium">
-                Court
-              </Label>
-              <Card
-                key={bookingData.booking?.court._id}
-                className={`
+              {bookingData?.booking?.type === "competition_schedule" ? (
+                <>
+                  <Label htmlFor="court" className="text-lg font-medium">
+                    Courts
+                  </Label>
+                  <div className="max-h-50 overflow-auto">
+                    {bookingData?.booking?.arrayCourt?.map((court) => {
+                      return (
+                        <Card
+                          key={court._id}
+                          className={`
+   
+                 mb-4
+              cursor-pointer hover:bg-muted`}
+                        >
+                          <CardContent className="grid gap-4 overflow-hidden p-5">
+                            <div className="flex items-center gap-4">
+                              <div
+                                className={`cursor-pointer rounded-lg border-white object-cover 
+                       p-2 text-white 
+                    `}
+                              >
+                                <Icons.BadmintonCourt className="rounded-lg object-cover" />
+                              </div>
+                              <div>
+                                <h3 className="font-semibold">{court.name}</h3>
+                                {/* <span
+                                  className={`line-clamp-3 text-sm
+                       text-gray-500 dark:text-gray-400
+                  `}
+                                >
+                                  {bookingData.booking?.court.description}
+                                </span> */}
+                              </div>
+                            </div>
+                            <div className="flex items-center justify-between">
+                              {bookingData.booking?.type !==
+                                "competition_schedule" && (
+                                <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                                  <CustomTag status={court.status} />
+                                </div>
+                              )}
+
+                              <div
+                                className={`flex items-center gap-2 text-sm 
+                        text-gray-500 dark:text-gray-400
+                    `}
+                              >
+                                <UsersIcon className="size-4" />
+                                <span>type: {court.type}</span>
+                              </div>
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <div
+                                className={`flex items-center gap-2 text-sm 
+                    text-gray-500 dark:text-gray-400
+                    `}
+                              >
+                                {/* <DollarSignIcon className="size-4" /> */}
+                                <span>
+                                  {" "}
+                                  {(court.price / 100).toFixed(2)}
+                                  VND/slot
+                                </span>
+                              </div>
+                              {/* <Button variant="outline" size="sm">
+                        Book Now
+                      </Button> */}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <Label htmlFor="court" className="text-lg font-medium">
+                    Court
+                  </Label>
+                  <Card
+                    key={bookingData.booking?.court._id}
+                    className={`
    
                  cursor-pointer
               hover:bg-muted`}
-              >
-                <CardContent className="grid gap-4 overflow-hidden p-5">
-                  <div className="flex items-center gap-4">
-                    <div
-                      className={`cursor-pointer rounded-lg border-white object-cover 
+                  >
+                    <CardContent className="grid gap-4 overflow-hidden p-5">
+                      <div className="flex items-center gap-4">
+                        <div
+                          className={`cursor-pointer rounded-lg border-white object-cover 
                        p-2 text-white 
                     `}
-                    >
-                      <Icons.BadmintonCourt className="rounded-lg object-cover" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold">
-                        {bookingData.booking?.court.name}
-                      </h3>
-                      <span
-                        className={`line-clamp-3 text-sm
+                        >
+                          <Icons.BadmintonCourt className="rounded-lg object-cover" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold">
+                            {bookingData.booking?.court.name}
+                          </h3>
+                          <span
+                            className={`line-clamp-3 text-sm
                        text-gray-500 dark:text-gray-400
                   `}
-                      >
-                        {bookingData.booking?.court.description}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                      <CustomTag status={bookingData.booking?.court.status} />
-                    </div>
-                    <div
-                      className={`flex items-center gap-2 text-sm 
+                          >
+                            {bookingData.booking?.court.description}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        {bookingData.booking?.type !==
+                          "competition_schedule" && (
+                          <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                            <CustomTag
+                              status={bookingData.booking?.court.status}
+                            />
+                          </div>
+                        )}
+
+                        <div
+                          className={`flex items-center gap-2 text-sm 
                         text-gray-500 dark:text-gray-400
                     `}
-                    >
-                      <UsersIcon className="size-4" />
-                      <span>type: {bookingData.booking?.court.type}</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div
-                      className={`flex items-center gap-2 text-sm 
+                        >
+                          <UsersIcon className="size-4" />
+                          <span>type: {bookingData.booking?.court.type}</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div
+                          className={`flex items-center gap-2 text-sm 
                     text-gray-500 dark:text-gray-400
                     `}
-                    >
-                      {/* <DollarSignIcon className="size-4" /> */}
-                      <span>
-                        {" "}
-                        {(bookingData?.booking?.court.price / 100).toFixed(2)}
-                        VND/slot
-                      </span>
-                    </div>
-                    {/* <Button variant="outline" size="sm">
+                        >
+                          {/* <DollarSignIcon className="size-4" /> */}
+                          <span>
+                            {" "}
+                            {(bookingData?.booking?.court.price / 100).toFixed(
+                              2
+                            )}
+                            VND/slot
+                          </span>
+                        </div>
+                        {/* <Button variant="outline" size="sm">
                         Book Now
                       </Button> */}
-                  </div>
-                </CardContent>
-              </Card>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </>
+              )}
             </div>
+
             <div className="grid grid-cols-2 gap-6">
               <div>
                 <Label htmlFor="total-price" className="text-lg font-medium">
@@ -652,6 +805,7 @@ const ConfirmBooking = () => {
                 </div>
               </div>
             </div>
+
             <div className="grid grid-cols-2 gap-6">
               <div className="">
                 <Label htmlFor="total-price" className="text-lg font-medium">
@@ -926,7 +1080,9 @@ const ConfirmBooking = () => {
               onClick={handleBooking}
               className="w-full rounded-md bg-primary-foreground px-4 py-2 font-medium text-primary shadow-sm transition-colors hover:bg-slate-300"
             >
-              {(bookingMutating || bookingMutatingFlexible) && <SpinnerIcon />}
+              {(bookingMutating ||
+                bookingMutatingFlexible ||
+                bookingCompetitionMutating) && <SpinnerIcon />}
               Confirm Booking
             </Button>
           </CardFooter>
