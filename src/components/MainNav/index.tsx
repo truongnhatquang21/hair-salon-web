@@ -39,11 +39,11 @@ export function MainNav({ items, session }: MainNavProps) {
   });
   const router = useRouter();
   const queryClient = useQueryClient();
-  React.useEffect(() => {
-    if (!profileData?.ok && !profileData?.data && !session?.user) {
-      router.push("/sign-in");
-    }
-  }, [profileData?.data]);
+  // React.useEffect(() => {
+  //   if (!profileData?.ok && !profileData?.data && !session?.user) {
+  //     router.push("/sign-in");
+  //   }
+  // }, [profileData?.data]);
   return (
     <div className=" flex items-center gap-6 rounded-md  border-b  px-4 shadow-sm backdrop-blur-md md:gap-10">
       <Link

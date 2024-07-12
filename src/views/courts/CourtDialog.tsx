@@ -154,7 +154,7 @@ const CourtDialog = ({
                 },
                 fieldType: FileUploadFileTypeWithAccept({
                   accept: {
-                    "image/png": [".jpeg", ".png", `.jpg`],
+                    "image/*": [".jpeg", ".png", `.jpg`],
                   },
                   readOnly,
                 }),

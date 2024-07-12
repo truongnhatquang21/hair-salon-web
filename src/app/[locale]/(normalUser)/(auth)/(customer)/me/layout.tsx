@@ -18,7 +18,7 @@ const sidebarNavItems = [
     href: "/me/receipts",
   },
   {
-    title: "Balance history",
+    title: "Transaction History",
     href: "/me/history",
   },
 ];

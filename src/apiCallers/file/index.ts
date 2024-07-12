@@ -15,6 +15,8 @@ export const uploadFileAPI = async (files: FormData) => {
 };
 
 export const uploadImagesAPI = async (files: FormData) => {
+  console.log(files, "files");
+  console.log("kut");
   return fetcher("file/upload-images", {
     method: "POST",
     body: files,

@@ -140,13 +140,13 @@ export const columns: ColumnDef<CourtSchemaTypeWithId>[] = [
                 onClose={() => setIsMenuOpen(false)}
                 isEdit
                 isView={
-                  selectedBranch.status === BranchStatusEnum.DENIED ||
+                  selectedBranch?.status === BranchStatusEnum.DENIED ||
                   profileData?.data?.role !== "Manager"
                 }
                 defaultValues={data}
                 ButtonTrigger={
                   <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                    {selectedBranch.status !== BranchStatusEnum.DENIED &&
+                    {selectedBranch?.status !== BranchStatusEnum.DENIED &&
                     profileData?.data?.role === "Manager"
                       ? "View and Update"
                       : "View"}

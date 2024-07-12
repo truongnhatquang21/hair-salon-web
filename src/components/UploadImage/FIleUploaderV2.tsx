@@ -112,11 +112,11 @@ const FileUploaderV2 = ({
         // });
       },
       onError: (error) => {
-        console.error("Error while posting branch", error);
+        console.error("Error while posting", error);
         toast({
           variant: "destructive",
           title: "Uh oh! Something went wrong.",
-          description: "Error while posting branch",
+          description: "Error while posting",
         });
       },
     });
