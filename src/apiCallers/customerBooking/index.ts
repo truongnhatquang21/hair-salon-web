@@ -15,6 +15,18 @@ export const postBooking = async (data: {
 }) => {
   return fetcher("booking", { method: "POST", body: JSON.stringify(data) });
 };
+export const postBookingCompetition = async (data: {
+  courtArray: string[];
+  booking: Omit<IBooking, "status">;
+  schedule: Omit<ISchedule, "status">;
+  transaction: { amount: number; payment: string };
+}) => {
+  return fetcher("booking/competition", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+};
+
 export const postBookingFlexible = async (data: {
   booking: Omit<IBooking, "status">;
   transaction: { amount: number; payment: string };

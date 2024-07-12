@@ -78,8 +78,9 @@ export function calculateTotalPricePerCourt(
     results.push({ court, totalPrice: sum });
   }
   const totalPrice = results.reduce(
-    (acc, current) => acc.totalPrice + current.totalPrice,
+    (acc, current) => acc + current.totalPrice,
     0
   );
+  console.log(totalPrice);
   return totalPrice;
 }

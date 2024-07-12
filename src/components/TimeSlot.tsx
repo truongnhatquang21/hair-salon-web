@@ -46,6 +46,7 @@ export const TimeSlot = ({
           parseInt(slot.endTime?.split(":")[0] ?? "0", 10),
           parseInt(slot.endTime?.split(":")[1] ?? "1", 10)
         );
+
         const startTimeString = startTime
           .toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
           .replace(/^0/, "");
@@ -55,6 +56,7 @@ export const TimeSlot = ({
 
         slots.push({
           ...slot,
+          isInThePass: endTime < new Date(),
           timeDisplay: `${startTimeString} - ${endTimeString}`,
         });
       }
@@ -93,7 +95,7 @@ export const TimeSlot = ({
       );
     }
   };
-
+  console.log(timeSlots);
   return (
     <div className="p-6 sm:p-10">
       <div className="mx-auto max-w-2xl">
@@ -103,6 +105,7 @@ export const TimeSlot = ({
           {timeSlots.length !== 0 ? (
             timeSlots.map((slot) => (
               <Button
+                disabled={slot.isInThePass}
                 key={slot.timeDisplay}
                 variant={
                   selectedSlots.includes(slot)

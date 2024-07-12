@@ -102,7 +102,7 @@ export default function CalendarCourtManager() {
             ...el,
           };
         });
-
+  console.log(eventData);
   return (
     <div className="h-[70vh]">
       <Dialog open={open} onOpenChange={setOpen}>

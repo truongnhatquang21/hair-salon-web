@@ -75,12 +75,15 @@ const CustomTag = ({ status }: CustomTagProps) => {
   }
   const formatStatus = (text: string) => {
     // Capitalize the first letter and make the rest lowercase
-    text = text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+    if (text) {
+      text = text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
 
-    // Replace underscores (_) or dashes (-) with spaces
-    text = text.replace(/[_-]/g, " ");
+      // Replace underscores (_) or dashes (-) with spaces
+      text = text.replace(/[_-]/g, " ");
 
-    return text;
+      return text;
+    }
+    return "error";
   };
   return (
     <Badge className={clsx("px-2 py-1 text-sm font-medium", colorClass)}>
