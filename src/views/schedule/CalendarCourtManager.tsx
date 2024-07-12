@@ -55,6 +55,11 @@ export default function CalendarCourtManager() {
     queryFn: async () => getCourtByBranchIdAPI(selectedBranch?._id as string),
   });
 
+  useEffect(() => {
+    if (CourtList?.data?.length) {
+      setSelectedCourt(CourtList?.data[0]._id || "All");
+    }
+  }, [CourtList, selectedBranch]);
   const { data: scheduleCustomer, isLoading } = useQuery({
     queryKey: ["schedule", selectedCourt || ""],
     enabled: selectedCourt !== "all",
@@ -186,11 +191,11 @@ export default function CalendarCourtManager() {
               />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">
+              {/* <SelectItem value="all" disabled>
                 {selectedBranch
                   ? `All court of ${selectedBranch?.name}`
                   : "All court"}
-              </SelectItem>
+              </SelectItem> */}
               {CourtList?.data?.map((court) => (
                 <SelectItem key={court._id} value={court._id}>
                   {/* <Avatar>

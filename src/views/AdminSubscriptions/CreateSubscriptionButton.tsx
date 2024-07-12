@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { PlusCircleIcon } from "lucide-react";
-import React from "react";
+import React, { useEffect } from "react";
 import type { SubmitHandler } from "react-hook-form";
 import { useForm } from "react-hook-form";
 
@@ -165,12 +165,20 @@ const CreateSubscriptionButton = ({
         console.log("render");
       }
       queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
+      form.reset();
       setIsDialogOpen(false);
       // if (onClose) onClose();
     } catch (e) {
       console.log(e);
     }
   };
+  useEffect(() => {
+    if (!isDialogOpen) {
+      if (isEdit) {
+        form.reset();
+      }
+    }
+  }, [isDialogOpen, isEdit, form]);
   // const typePackage = form.watch("type");
   // useEffect(() => {
   //   if (typePackage === PackageCourtTypeEnum.CUSTOM) {

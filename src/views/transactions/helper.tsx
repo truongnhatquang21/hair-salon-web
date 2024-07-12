@@ -39,7 +39,7 @@ export type TransactionTypeWithId = {
 export const columns: ColumnDef<TransactionTypeWithId>[] = [
   {
     accessorKey: "from",
-    accessorFn: (data) => data.from.email,
+    accessorFn: (data) => data.from?.email,
     id: "name",
     cell: ({ getValue }) => {
       const data = getValue() as string;
@@ -51,7 +51,7 @@ export const columns: ColumnDef<TransactionTypeWithId>[] = [
   },
   {
     accessorKey: "to",
-    accessorFn: (data) => data.to.email,
+    accessorFn: (data) => data.to?.email,
     id: "to",
     cell: ({ getValue }) => {
       const data = getValue() as string;

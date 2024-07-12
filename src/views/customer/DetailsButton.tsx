@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { PlusCircleIcon } from "lucide-react";
-import React from "react";
+import React, { useEffect } from "react";
 import type { SubmitHandler } from "react-hook-form";
 import { useForm } from "react-hook-form";
 
@@ -164,6 +164,7 @@ const DetailButton = ({
       queryClient.invalidateQueries({
         queryKey: ["customerList"],
       });
+      form.reset();
       setOpenDialog && setOpenDialog(false);
       setIsDialogOpen(false);
     } catch (e) {
@@ -178,6 +179,11 @@ const DetailButton = ({
   // }, [typePackage]);
   const isReadOnly = true;
 
+  useEffect(() => {
+    if (!isDialogOpen) {
+      if (isEdit || isReadOnly) form.reset();
+    }
+  }, [isDialogOpen, isEdit, form, isReadOnly]);
   return (
     <Dialog
       open={openDialog || isDialogOpen}
@@ -283,7 +289,13 @@ const DetailButton = ({
           >
             <DialogFooter className="w-full">
               <DialogClose className="flex w-full items-center justify-center">
-                <Button className="w-full" type="button">
+                <Button
+                  className="w-full"
+                  type="button"
+                  onClick={() => {
+                    form.reset();
+                  }}
+                >
                   <span className="sr-only">Close</span>Close
                 </Button>
               </DialogClose>

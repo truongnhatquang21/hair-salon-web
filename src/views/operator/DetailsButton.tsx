@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { PlusCircleIcon } from "lucide-react";
-import React from "react";
+import React, { useEffect } from "react";
 import type { SubmitHandler } from "react-hook-form";
 import { useForm } from "react-hook-form";
 
@@ -186,6 +186,7 @@ const DetailButton = ({
       queryClient.invalidateQueries({
         queryKey: ["operatorList"],
       });
+      form.reset();
       setOpenDialog && setOpenDialog(false);
       setIsDialogOpen(false);
     } catch (e) {
@@ -199,7 +200,13 @@ const DetailButton = ({
   //   }
   // }, [typePackage]);
   const isReadOnly = isView;
-
+  useEffect(() => {
+    if (!isDialogOpen) {
+      if (isEdit || isView) {
+        form.reset();
+      }
+    }
+  }, [isDialogOpen, isEdit, form, isView]);
   return (
     <Dialog
       open={openDialog || isDialogOpen}
@@ -278,6 +285,7 @@ const DetailButton = ({
               },
               dob: {
                 inputProps: {
+                  disabled: isReadOnly,
                   readOnly: isReadOnly,
                   placeholder: "yyyy-mm-dd",
                 },
@@ -302,6 +310,7 @@ const DetailButton = ({
               },
               gender: {
                 inputProps: {
+                  disabled: isReadOnly,
                   readOnly: isReadOnly,
                   placeholder: "Select gender",
                 },
@@ -334,7 +343,13 @@ const DetailButton = ({
                 </AutoFormSubmit>
               ) : (
                 <DialogClose className="flex w-full items-center justify-center">
-                  <Button className="w-full" type="button">
+                  <Button
+                    className="w-full"
+                    type="button"
+                    onClick={() => {
+                      form.reset();
+                    }}
+                  >
                     <span className="sr-only">Close</span>Close
                   </Button>
                 </DialogClose>

@@ -5,14 +5,16 @@ import React from "react";
 
 import { getListStaffAPI } from "@/apiCallers/staff";
 import { DataTable } from "@/components/table/DataTable";
+import { useBranchStore } from "@/stores/branchStore";
 
 import DetailButton from "./DetailsButton";
 import { columns, type CreateStaffSchemaTypeWithId } from "./help";
 
 const StaffList = () => {
+  const selectedBranch = useBranchStore((state) => state.branch);
   const { data, isLoading } = useQuery({
-    queryKey: ["staffList"],
-    queryFn: async () => getListStaffAPI(),
+    queryKey: ["staffList", selectedBranch?._id || ""],
+    queryFn: async () => getListStaffAPI({ branch: selectedBranch?._id || "" }),
   });
 
   return (

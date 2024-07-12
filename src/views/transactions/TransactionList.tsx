@@ -22,6 +22,8 @@ const TransactionList = () => {
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
   }, [data?.data]);
+  console.log(dataSort, "dataSort");
+
   return (
     <div className=" relative size-full overflow-auto">
       <DataTable

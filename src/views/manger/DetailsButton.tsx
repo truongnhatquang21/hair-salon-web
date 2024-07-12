@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { PlusCircleIcon } from "lucide-react";
-import React from "react";
+import React, { useEffect } from "react";
 import type { SubmitHandler } from "react-hook-form";
 import { useForm } from "react-hook-form";
 
@@ -170,7 +170,13 @@ const DetailButton = ({
   // }, [typePackage]);
   const isReadOnly = true;
   console.log("defaultValues", defaultValues);
-
+  useEffect(() => {
+    if (!isDialogOpen) {
+      if (isEdit || isReadOnly) {
+        form.reset();
+      }
+    }
+  }, [isDialogOpen, isEdit, form]);
   return (
     <Dialog
       open={openDialog || isDialogOpen}
@@ -218,12 +224,14 @@ const DetailButton = ({
               status: {
                 inputProps: {
                   readOnly: isReadOnly,
+                  disabled: isReadOnly,
                   placeholder: "Select status",
                 },
               },
               role: {
                 inputProps: {
                   readOnly: isReadOnly,
+                  disabled: isReadOnly,
                   placeholder: "Select role",
                 },
               },
@@ -255,6 +263,7 @@ const DetailButton = ({
               gender: {
                 inputProps: {
                   readOnly: isReadOnly,
+                  disabled: isReadOnly,
                   placeholder: "Select gender",
                 },
               },
@@ -267,7 +276,13 @@ const DetailButton = ({
           >
             <DialogFooter className="w-full">
               <DialogClose className="flex w-full items-center justify-center">
-                <Button className="w-full" type="button">
+                <Button
+                  className="w-full"
+                  type="button"
+                  onClick={() => {
+                    form.reset();
+                  }}
+                >
                   <span className="sr-only">Close</span>Close
                 </Button>
               </DialogClose>

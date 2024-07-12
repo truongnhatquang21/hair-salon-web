@@ -240,7 +240,13 @@ const DetailButton = ({
   //   }
   // }, [typePackage]);
   const isReadOnly = isView;
-
+  useEffect(() => {
+    if (!isDialogOpen) {
+      if (isEdit || isReadOnly) {
+        form.reset();
+      }
+    }
+  }, [isDialogOpen, isEdit, form, isReadOnly]);
   return (
     <Dialog
       open={openDialog || isDialogOpen}
@@ -360,7 +366,13 @@ const DetailButton = ({
                 </AutoFormSubmit>
               ) : (
                 <DialogClose className="flex w-full items-center justify-center">
-                  <Button className="w-full" type="button">
+                  <Button
+                    className="w-full"
+                    type="button"
+                    onClick={() => {
+                      if (isView || isEdit) form.reset();
+                    }}
+                  >
                     <span className="sr-only">Close</span>Close
                   </Button>
                 </DialogClose>

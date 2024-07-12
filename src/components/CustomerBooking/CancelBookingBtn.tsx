@@ -178,6 +178,8 @@ const CancelBookingBtn = ({ defalutValues, Trigger, invalidateKey }: Props) => {
     }
   }, [paymentId, setPaymentId, availableCard]);
 
+  console.log("defalutValues", defalutValues);
+
   return (
     <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
       <AlertDialogTrigger className="w-full">{Trigger}</AlertDialogTrigger>
@@ -187,7 +189,16 @@ const CancelBookingBtn = ({ defalutValues, Trigger, invalidateKey }: Props) => {
           <AlertDialogDescription>
             This action cannot be undone. This will permanently delete the
             booking. Your all schedule will be removed and your money will be
-            refunded to this bank card below.
+            refunded to this bank card below. Because of the refund policy,
+            <b className="text-base font-bold uppercase text-black">
+              {" "}
+              {defalutValues.paymentType} booking type
+            </b>{" "}
+            will be charged a fee of{" "}
+            <b className=" text-2xl font-bold text-destructive">
+              {defalutValues.paymentType === "full" ? "50%" : "100%"}
+            </b>{" "}
+            of the total amount of the booking.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <div className="flex w-full flex-col gap-2 rounded-md border-2 border-dashed p-2">
