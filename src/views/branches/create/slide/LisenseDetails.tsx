@@ -108,7 +108,7 @@ const LisenseDetails = ({ goBackfn, goNextFn, steppers, stepIndex }: Props) => {
           render={({ field }) => {
             return (
               <FileUploaderV2
-                label="Images"
+                label="Licenses"
                 isRequired
                 field={field}
                 accetp={{
