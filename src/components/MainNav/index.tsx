@@ -48,7 +48,7 @@ export function MainNav({ items, session }: MainNavProps) {
     <div className=" flex items-center gap-6 rounded-md  border-b  px-4 shadow-sm backdrop-blur-md md:gap-10">
       <Link
         href="/"
-        className="flex items-center gap-0  border-r-2 border-foreground font-sans text-xl font-extrabold  "
+        className="flex items-center gap-0  border-foreground font-sans text-xl font-extrabold lg:border-r-2  "
       >
         <span className="relative -right-4 inline-block  uppercase ">
           Bookm
@@ -61,7 +61,7 @@ export function MainNav({ items, session }: MainNavProps) {
         <span className="relative -left-4 inline-block  uppercase ">nton </span>
       </Link>
       {items?.length ? (
-        <nav className="flex gap-4 py-6 md:gap-10">
+        <nav className="flex gap-2 py-6 md:gap-10">
           {items?.map(
             (item) =>
               item.href && (
