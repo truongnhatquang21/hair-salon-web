@@ -18,7 +18,7 @@ const sidebarNavItems = [
     href: "/me/receipts",
   },
   {
-    title: "Balance history",
+    title: "Transaction History",
     href: "/me/history",
   },
 ];
@@ -41,7 +41,7 @@ export default function SettingsLayout({ children }: SettingsLayoutProps) {
         <aside className=" rounded-md border-r pr-3 lg:w-1/5  ">
           <SidebarNav items={sidebarNavItems} />
         </aside>
-        <div className=" flex-1 ">{children}</div>
+        <div className=" max-h-screen flex-1 overflow-auto p-2">{children}</div>
       </div>
     </div>
   );

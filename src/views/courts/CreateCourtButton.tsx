@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { PlusCircleIcon } from "lucide-react";
-import React from "react";
+import React, { useEffect } from "react";
 import type { SubmitHandler } from "react-hook-form";
 import { useForm } from "react-hook-form";
 
@@ -181,6 +181,7 @@ const CreateCourtButton = ({
       });
       setOpenDialog && setOpenDialog(false);
       setIsDialogOpen(false);
+      form.reset();
     } catch (e) {
       console.log(e);
     }
@@ -192,6 +193,11 @@ const CreateCourtButton = ({
   //   }
   // }, [typePackage]);
   const viewOnly = selectedBranch?.status === BranchStatusEnum.DENIED || isView;
+  useEffect(() => {
+    if (!isDialogOpen) {
+      if (isEdit || viewOnly) form.reset();
+    }
+  }, [isDialogOpen, isEdit, form, viewOnly]);
   return (
     <Dialog
       open={openDialog || isDialogOpen}

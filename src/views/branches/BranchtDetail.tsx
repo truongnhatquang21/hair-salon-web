@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { BadgePlus, Hourglass, Trash } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -43,6 +44,7 @@ import {
 import { useToast } from "@/components/ui/use-toast";
 import FileUploadModal from "@/components/UploadImage/fileUploadModal";
 import defaultFile from "@/public/assets/images/fileIcon.png";
+import { useBranchStore } from "@/stores/branchStore";
 import { BranchStatusEnum } from "@/types";
 import CourtDialog from "@/views/courts/CourtDialog";
 
@@ -67,6 +69,8 @@ type Props = {
 };
 
 const BranchDetail = ({ branchId }: Props) => {
+  const selectedBranch = useBranchStore((state) => state);
+
   const form = useForm<BranchSchemaType>({
     resolver: zodResolver(createBranchSchema),
     defaultValues: {
@@ -88,7 +92,11 @@ const BranchDetail = ({ branchId }: Props) => {
     queryKey: ["branch", branchId],
     queryFn: async () => getBranchByIdAPI(branchId),
   });
-
+  useEffect(() => {
+    if (branchId && branchData?.data) {
+      selectedBranch.setBranch(branchData?.data);
+    }
+  }, [branchData?.data]);
   useEffect(() => {
     if (branchData?.data) {
       form.reset(branchData.data, {
@@ -96,6 +104,12 @@ const BranchDetail = ({ branchId }: Props) => {
       });
     }
   }, [branchData?.data]);
+  const router = useRouter();
+  useEffect(() => {
+    if (selectedBranch?.branch) {
+      router.push(`/dashboard/branches/${selectedBranch.branch._id}`);
+    }
+  }, [selectedBranch.branch]);
 
   const branch = form.getValues();
   const weekdays = [
