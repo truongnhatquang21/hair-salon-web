@@ -39,9 +39,14 @@ import SetScheduleBtnManager from "./SetScheduleBtnManager";
 const localizer = momentLocalizer(moment);
 const EventSchedule = ({ event }) => {
   const backgroundColor =
-    event.status === ScheduleStatusEnum.AVAILABLE ? "#3174ad" : "green";
+    event.type === "Booking"
+      ? event.status === ScheduleStatusEnum.AVAILABLE
+        ? "#3174ad"
+        : "green"
+      : "orange";
+
   // Set a default color if none provided
-  return <div style={{ backgroundColor }}>{event.title}</div>;
+  return <div style={{ backgroundColor, padding: 0 }}>{event.title}</div>;
 };
 export default function CalendarCourtManager() {
   const selectedBranch = useBranchStore((state) => state.branch);
@@ -104,10 +109,11 @@ export default function CalendarCourtManager() {
             end: endDate,
             status: el.status,
             type: el.type,
+            customerName: el?.booking?.customer?.email,
             ...el,
           };
         });
-  console.log(eventData);
+
   return (
     <div className="h-[70vh]">
       <Dialog open={open} onOpenChange={setOpen}>
@@ -129,6 +135,13 @@ export default function CalendarCourtManager() {
           </DialogHeader>
 
           <div className="grid gap-4 py-4">
+            {selectedEvent?.customerName && (
+              <div className="grid grid-cols-4 items-center gap-4">
+                <div className="col-span-1 text-muted-foreground">Email:</div>
+                <div className="col-span-3">{selectedEvent?.customerName}</div>
+              </div>
+            )}
+
             <div className="grid grid-cols-4 items-center gap-4">
               <div className="col-span-1 text-muted-foreground">Date:</div>
               <div className="col-span-3">
