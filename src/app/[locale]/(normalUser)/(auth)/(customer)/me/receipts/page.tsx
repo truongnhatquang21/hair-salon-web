@@ -7,6 +7,7 @@ import { getMyBookingReceiptByStatus } from "@/apiCallers/customerBooking";
 import BookingReceipt from "@/components/CustomerBooking/BookingReceipts";
 import StatusFilter from "@/components/CustomerBooking/StatusFilter";
 import { EmptyComponent } from "@/components/Empty";
+import { Loading } from "@/components/loading";
 
 type Props = {};
 
@@ -23,7 +24,7 @@ const Receipt: React.FC<Props> = () => {
 
   console.log(data);
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <Loading />;
   }
 
   if (isError) {

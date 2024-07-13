@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import React from "react";
 
 import { getSubscriptionList } from "@/apiCallers/managerSubscription";
+import { Loading } from "@/components/loading";
 import type { IPackagePurchase } from "@/interfaces/packagePurchase.interface";
 
 import Tracking from "./Tracking";
@@ -18,7 +19,7 @@ const TrackingSubscription = () => {
   console.log(data);
 
   if (isLoading) {
-    return <div>Loading subscriptions...</div>;
+    return <Loading />;
   }
 
   return (
