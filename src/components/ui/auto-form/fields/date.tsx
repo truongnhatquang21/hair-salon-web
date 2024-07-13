@@ -20,6 +20,9 @@ export default function AutoFormDate({
       />
       <FormControl>
         <DatePicker
+          disabledFromNow={fieldConfigItem.inputProps?.disabledFromNow}
+          disabledFromPast={fieldConfigItem.inputProps?.disabledFromPast}
+          disabled={fieldConfigItem.inputProps?.disabled}
           date={field.value}
           setDate={field.onChange}
           {...fieldProps}
