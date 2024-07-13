@@ -212,6 +212,7 @@ const SetScheduleBtnManager = ({
                     selectedSlots={selectedSlots}
                     setSelectedSlots={setSelectedSlots}
                     timeSlotData={SlotOfCourt?.data}
+                    selectDay={selectDay}
                     endSlot={endSlot}
                     startSlot={startSlot}
                     setEndSlot={setEndSlot}
