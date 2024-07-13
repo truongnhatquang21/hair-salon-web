@@ -48,7 +48,7 @@ export const DatePicker = forwardRef<
           onSelect={setDate}
           initialFocus
           disabled={(dateTime) => {
-            if (disabledFromNow && dateTime < new Date()) {
+            if (disabledFromNow && dateTime > new Date()) {
               return true;
             }
             if (disabledFromPast && dateTime < new Date(Date.now())) {

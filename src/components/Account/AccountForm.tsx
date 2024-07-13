@@ -181,6 +181,7 @@ export function AccountAutoForm({
             inputProps: {
               placeholder: "Select date of birth",
               required: true,
+              disabledFromNow: true,
             },
           },
           firstName: {
