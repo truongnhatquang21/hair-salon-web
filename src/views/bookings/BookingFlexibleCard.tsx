@@ -5,7 +5,6 @@ import CustomTag from "@/components/CustomTag";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import type IBookingReceipt from "@/types/BookingReceipt";
-import { upperCaseFirstLetter } from "@/utils/Helpers";
 
 import SetScheduleBtn from "../schedule/SetScheduleBtn";
 
@@ -20,7 +19,7 @@ const BookingFlexibleCard: React.FC<Props> = ({ booking, invalidateKey }) => {
       <div className="flex w-full justify-between align-middle">
         <div>
           <h2 className="w-full text-lg font-semibold">
-            {upperCaseFirstLetter(booking?.court?.branch?.name)}
+            {booking?.court?.branch?.name}
           </h2>
         </div>
         <div>

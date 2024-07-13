@@ -290,6 +290,7 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
                         selectedSlots={selectedSlots}
                         setSelectedSlots={setSelectedSlots}
                         timeSlotData={timeSlots}
+                        selectDay={selectDay}
                         endSlot={endSlot}
                         startSlot={startSlot}
                         setEndSlot={setEndSlot}
@@ -446,6 +447,7 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
                         selectedSlots={selectedSlots}
                         setSelectedSlots={setSelectedSlots}
                         timeSlotData={timeSlots}
+                        selectDay={selectDay}
                         endSlot={endSlot}
                         startSlot={startSlot}
                         setEndSlot={setEndSlot}
@@ -583,6 +585,7 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
                         setSelectedSlots={setSelectedSlots}
                         timeSlotData={timeSlots}
                         endSlot={endSlot}
+                        selectDay={selectDay}
                         startSlot={startSlot}
                         setEndSlot={setEndSlot}
                         setStartSlot={setStartSlot}

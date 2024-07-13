@@ -238,7 +238,7 @@ const DetailButton = ({
               dob: {
                 inputProps: {
                   readOnly: isReadOnly,
-
+                  disabledFromNow: true,
                   disabled: true,
                 },
               },

@@ -116,7 +116,7 @@ const FileUploaderV2 = ({
         toast({
           variant: "destructive",
           title: "Uh oh! Something went wrong.",
-          description: "Error while posting",
+          description: error?.message || "Error while posting",
         });
       },
     });
@@ -172,7 +172,7 @@ const FileUploaderV2 = ({
                       value={fieldForm.value}
                       onValueChange={uploadFileChange}
                       maxFiles={10}
-                      maxSize={10 * 1024 * 1024}
+                      maxSize={1 * 1024 * 1024}
                       progresses={progresses}
                       // pass the onUpload function here for direct upload
                       // onUpload={uploadFiles}

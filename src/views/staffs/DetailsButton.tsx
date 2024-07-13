@@ -300,6 +300,7 @@ const DetailButton = ({
                 inputProps: {
                   readOnly: isReadOnly,
                   disabled: isReadOnly,
+                  disabledFromNow: true,
                   placeholder: "Select date of birth",
                 },
               },

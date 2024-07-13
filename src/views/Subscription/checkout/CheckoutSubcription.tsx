@@ -368,6 +368,13 @@ const CheckoutSubcription = ({ subsId }: Props) => {
                         <div className="relative flex-1 gap-4 overflow-auto p-2">
                           <AutoForm
                             formSchema={cardSchema}
+                            fieldConfig={{
+                              expDate: {
+                                inputProps: {
+                                  disabledFromPast: true,
+                                },
+                              },
+                            }}
                             onSubmit={onAddCardSubmit}
                           >
                             <AutoFormSubmit className="w-full">
@@ -498,6 +505,7 @@ const CheckoutSubcription = ({ subsId }: Props) => {
                                             inputProps: {
                                               readOnly: true,
                                               placeholder: "--",
+                                              disabled: true,
                                             },
                                           },
                                         }}

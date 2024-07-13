@@ -1,6 +1,6 @@
 "use client";
 
-import { type Dispatch, type SetStateAction, useMemo, useState } from "react";
+import { type Dispatch, type SetStateAction, useMemo } from "react";
 
 import type { ISlot } from "@/interfaces/slot.interface";
 
@@ -14,10 +14,12 @@ export const TimeSlot = ({
   endSlot,
   setSelectedSlots,
   selectedSlots,
+  selectDay,
   title = "Book a Badminton Court",
 }: {
   timeSlotData: ISlot[];
   setStartSlot: Dispatch<SetStateAction<null>>;
+  selectDay: Date;
   startSlot: string | null;
   endSlot: string | null;
   selectedSlots: string[] | null;
@@ -25,7 +27,7 @@ export const TimeSlot = ({
   setEndSlot: Dispatch<SetStateAction<null>>;
   setSelectedSlots: Dispatch<SetStateAction<[]>>;
 }) => {
-  const [date, setDate] = useState(new Date());
+  // const [date, setDate] = useState(new Date());
 
   const timeSlots = useMemo(() => {
     const slots = [] as any[];
@@ -33,16 +35,16 @@ export const TimeSlot = ({
     if (timeSlotData?.length !== 0) {
       for (const slot of timeSlotData) {
         const startTime = new Date(
-          date.getFullYear(),
-          date.getMonth(),
-          date.getDate(),
+          selectDay.getFullYear(),
+          selectDay.getMonth(),
+          selectDay.getDate(),
           parseInt(slot.startTime?.split(":")[0] ?? "0", 10),
           parseInt(slot.startTime?.split(":")[1] ?? "1", 10)
         );
         const endTime = new Date(
-          date.getFullYear(),
-          date.getMonth(),
-          date.getDate(),
+          selectDay.getFullYear(),
+          selectDay.getMonth(),
+          selectDay.getDate(),
           parseInt(slot.endTime?.split(":")[0] ?? "0", 10),
           parseInt(slot.endTime?.split(":")[1] ?? "1", 10)
         );
@@ -62,8 +64,9 @@ export const TimeSlot = ({
       }
       return slots;
     }
+
     return slots;
-  }, [date, timeSlotData]);
+  }, [selectDay, timeSlotData]);
   const toggleSlot = (slot) => {
     const slotIndex = timeSlots.indexOf(slot);
     if (!startSlot) {
@@ -95,7 +98,7 @@ export const TimeSlot = ({
       );
     }
   };
-  console.log(timeSlots);
+
   return (
     <div className="p-6 sm:p-10">
       <div className="mx-auto max-w-2xl">

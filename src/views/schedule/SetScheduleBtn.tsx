@@ -193,6 +193,7 @@ const SetScheduleBtn = ({ defalutValues, Trigger, invalidateKey }: Props) => {
                     title="choose a slot"
                     selectedSlots={selectedSlots}
                     setSelectedSlots={setSelectedSlots}
+                    selectDay={selectDay}
                     timeSlotData={SlotOfCourt?.data}
                     endSlot={endSlot}
                     startSlot={startSlot}

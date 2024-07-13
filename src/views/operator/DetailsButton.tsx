@@ -288,6 +288,7 @@ const DetailButton = ({
                   disabled: isReadOnly,
                   readOnly: isReadOnly,
                   placeholder: "yyyy-mm-dd",
+                  disabledFromNow: true,
                 },
               },
               firstName: {

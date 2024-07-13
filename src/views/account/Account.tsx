@@ -318,6 +318,13 @@ const Account = (props: Props) => {
                     <div className="relative flex-1 gap-4 overflow-auto p-2">
                       <AutoForm
                         formSchema={cardSchema}
+                        fieldConfig={{
+                          expDate: {
+                            inputProps: {
+                              disabledFromPast: true,
+                            },
+                          },
+                        }}
                         onSubmit={onAddCardSubmit}
                       >
                         <AutoFormSubmit className="w-full">
@@ -416,6 +423,7 @@ const Account = (props: Props) => {
                                     },
                                     expDate: {
                                       inputProps: {
+                                        disabled: true,
                                         readOnly: true,
                                         placeholder: "--",
                                       },
