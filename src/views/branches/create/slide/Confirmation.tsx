@@ -337,7 +337,7 @@ const Confirmation = ({ goBackfn, goNextFn, steppers, stepIndex }: Props) => {
 
         return toast({
           title: "Error",
-          description: "Error while sending branch to review",
+          description: error.message || "Error while sending branch to review",
           variant: "destructive",
         });
       });

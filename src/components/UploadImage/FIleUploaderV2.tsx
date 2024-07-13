@@ -172,7 +172,7 @@ const FileUploaderV2 = ({
                       value={fieldForm.value}
                       onValueChange={uploadFileChange}
                       maxFiles={10}
-                      maxSize={10 * 1024 * 1024}
+                      maxSize={1 * 1024 * 1024}
                       progresses={progresses}
                       // pass the onUpload function here for direct upload
                       // onUpload={uploadFiles}
