@@ -203,40 +203,29 @@ const Confirmation = ({ goBackfn, goNextFn, steppers, stepIndex }: Props) => {
       onSuccess: (data) => {
         console.log(data, "data");
         if (!data.ok) {
-          if (data.error) {
-            //   const errs = data.error as { [key: string]: { message: string } };
-            //   Object.entries(errs).forEach(([key, value]) => {
-            //     setError(key as keyof PackageCourtSchemaType, {
-            //       type: "manual",
-            //       message: value.message,
-            //     });
-            //   });
-            // }
+          toast({
+            variant: "destructive",
+            title: "Uh oh! Something went wrong.",
+            description: data.message || data.statusText,
+          });
 
-            toast({
-              variant: "destructive",
-              title: "Uh oh! Something went wrong.",
-              description: data.message || data.statusText,
-            });
+          throw new Error(data.message || data.statusText);
+        }
 
-            throw new Error(data.message || data.statusText);
-          }
-
-          if (data.message) {
-            return toast({
-              variant: "default",
-              className: "bg-green-600 text-white",
-              title: "Message from system",
-              description: data.message,
-            });
-          }
-
+        if (data.message) {
           return toast({
             variant: "default",
-            title: "Submitted successfully",
-            description: "You can do something else now",
+            className: "bg-green-600 text-white",
+            title: "Message from system",
+            description: data.message,
           });
         }
+
+        return toast({
+          variant: "default",
+          title: "Submitted successfully",
+          description: "You can do something else now",
+        });
       },
       onError: (error) => {
         console.error("Error while posting branch", error);
