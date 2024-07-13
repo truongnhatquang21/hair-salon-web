@@ -23,6 +23,7 @@ type TrackingProps = {
 };
 
 const Tracking: React.FC<TrackingProps> = ({ subscriptions, isLoading }) => {
+  console.log(subscriptions);
   return (
     <div className="flex w-full flex-wrap justify-between gap-3">
       {subscriptions?.length > 0 ? (
@@ -66,10 +67,14 @@ const Tracking: React.FC<TrackingProps> = ({ subscriptions, isLoading }) => {
                   {subscription?.duration <= 1 ? "month" : "months"}
                 </span>
               </div>
-              <div className="flex items-center justify-between py-2">
-                <span>Court price</span>
-                <span>{subscription?.priceEachCourt}</span>
-              </div>
+              {subscription?.priceEachCourt ? (
+                <div className="flex items-center justify-between py-2">
+                  <span>Court price</span>
+                  <span>{subscription?.priceEachCourt}</span>
+                </div>
+              ) : (
+                <div />
+              )}
               <div className="flex items-center justify-between py-2">
                 <span>Total court</span>
                 <span>{subscription?.totalCourt}</span>

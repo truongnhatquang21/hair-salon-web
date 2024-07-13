@@ -12,6 +12,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 import CustomTag from "../CustomTag";
 import { EmptyComponent } from "../Empty";
+import { Loading } from "../loading";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
@@ -60,7 +61,7 @@ const CourtDetailPage = ({ id }: CourtDetailProps) => {
   if (isCourtLoading || isBranchLoading) {
     return (
       <div className="flex h-screen items-center justify-center">
-        <div>Loading...</div>
+        <Loading />
       </div>
     );
   }

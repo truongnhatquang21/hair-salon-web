@@ -150,8 +150,8 @@ const CheckinDetail = ({ slug }: Props) => {
         <div className="flex size-full items-center justify-center">
           <Loading />
         </div>
-      ) : !data?.data ? (
-        "No data"
+      ) : !data?.data?.length ? (
+        <div className="flex w-full justify-center">No data found</div>
       ) : (
         <div className="mx-auto max-w-md space-y-6">
           <div className="space-y-2 text-center">
@@ -171,12 +171,12 @@ const CheckinDetail = ({ slug }: Props) => {
                 </div>
                 <div className="text-xs font-semibold  italic">
                   {format(
-                    new Date(data?.data[0]?.booking?.startDate),
+                    new Date(data?.data[0]?.booking?.startDate || new Date()),
                     "dd/MM/yyyy"
                   )}
                   --
                   {format(
-                    new Date(data?.data[0]?.booking?.endDate),
+                    new Date(data?.data[0]?.booking?.endDate || new Date()),
                     "dd/MM/yyyy"
                   )}
                 </div>
