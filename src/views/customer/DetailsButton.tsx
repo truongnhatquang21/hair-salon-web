@@ -237,6 +237,7 @@ const DetailButton = ({
               },
               status: {
                 inputProps: {
+                  disabled: isReadOnly,
                   readOnly: isReadOnly,
                 },
               },
@@ -275,6 +276,7 @@ const DetailButton = ({
               },
               gender: {
                 inputProps: {
+                  disabled: isReadOnly,
                   readOnly: isReadOnly,
                   placeholder: "Select gender",
                 },
