@@ -116,7 +116,7 @@ const FileUploaderV2 = ({
         toast({
           variant: "destructive",
           title: "Uh oh! Something went wrong.",
-          description: "Error while posting",
+          description: error?.message || "Error while posting",
         });
       },
     });

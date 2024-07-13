@@ -84,3 +84,11 @@ export function calculateTotalPricePerCourt(
   console.log(totalPrice);
   return totalPrice;
 }
+
+export function upperCaseFirstLetter(name: string): string {
+  const words = name.toLowerCase().split(" ");
+  for (let i = 0; i < words.length; i++) {
+    words[i] = words[i]?.charAt(0).toUpperCase() + words[i]?.substring(1);
+  }
+  return words.join(" ");
+}

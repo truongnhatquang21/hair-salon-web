@@ -3,6 +3,7 @@
 "use client";
 
 import { Clock, DollarSignIcon, MapPin, UsersIcon } from "lucide-react";
+import Link from "next/link";
 import type { FC } from "react";
 
 import type { IBranch } from "@/interfaces/branch.interface";
@@ -36,7 +37,7 @@ const BranchDetailOverview: FC<BranchDetailOverviewProps> = ({ data }) => {
         <div className="col-span-full md:col-span-3">
           <Card className="">
             <CardHeader>
-              <CardTitle>{data?.data.name}</CardTitle>
+              <CardTitle>{data?.data?.name}</CardTitle>
               <CardDescription>
                 <div className="flex flex-col">
                   <div className="flex gap-4">
@@ -221,43 +222,45 @@ const BranchDetailOverview: FC<BranchDetailOverviewProps> = ({ data }) => {
               data.data.courts.map((court: ICourt) => {
                 if (court.status === CourtStatusEnum.INUSE) {
                   return (
-                    <Card key={court._id}>
-                      <CardContent className="grid gap-4 overflow-hidden p-5">
-                        <div className="flex items-center gap-4">
-                          <Icons.BadmintonCourt className="rounded-lg object-cover" />
-                          {/* <Image src={} alt="Court Image" width={80} height={80} /> */}
-                          <div className="w-full">
-                            <h3 className="font-semibold">{court.name}</h3>
-                            <span className="line-clamp-3  text-sm  text-gray-500 dark:text-gray-400">
-                              {court.description}
-                            </span>
+                    <Link key={court?._id} href={`/court-detail/${court?._id}`}>
+                      <Card>
+                        <CardContent className="grid gap-4 overflow-hidden p-5">
+                          <div className="flex items-center gap-4">
+                            <Icons.BadmintonCourt className="rounded-lg object-cover" />
+                            {/* <Image src={} alt="Court Image" width={80} height={80} /> */}
+                            <div className="w-full">
+                              <h3 className="font-semibold">{court.name}</h3>
+                              <span className="line-clamp-3  text-sm  text-gray-500 dark:text-gray-400">
+                                {court.description}
+                              </span>
+                            </div>
                           </div>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                            <Badge
-                              variant="solid"
-                              className="bg-yellow-500 text-white"
-                            >
-                              {court.status}
-                            </Badge>
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                              <Badge
+                                variant="solid"
+                                className="bg-yellow-500 text-white"
+                              >
+                                {court.status}
+                              </Badge>
+                            </div>
+                            <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                              <UsersIcon className="size-4" />
+                              <span>type: {court.type}</span>
+                            </div>
                           </div>
-                          <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                            <UsersIcon className="size-4" />
-                            <span>type: {court.type}</span>
-                          </div>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                            <DollarSignIcon className="size-4" />
-                            <span>{court.price}/hr</span>
-                          </div>
-                          {/* <Button variant="outline" size="sm">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                              <DollarSignIcon className="size-4" />
+                              <span>{court.price}/hr</span>
+                            </div>
+                            {/* <Button variant="outline" size="sm">
                           Book Now
                         </Button> */}
-                        </div>
-                      </CardContent>
-                    </Card>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </Link>
                   );
                 }
               })

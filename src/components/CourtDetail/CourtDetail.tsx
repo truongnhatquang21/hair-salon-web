@@ -54,7 +54,7 @@ const CourtDetailPage = ({ id }: CourtDetailProps) => {
   const surcharge = sundaySlot?.surcharge ?? 0;
   const weekendPrice = court?.price
     ? surcharge !== 0
-      ? court.price * surcharge
+      ? court.price * (1 + surcharge)
       : court?.price
     : 0;
 
@@ -125,13 +125,13 @@ const CourtDetailPage = ({ id }: CourtDetailProps) => {
             <strong>{t("description")}:</strong>
             <p>{court.description}</p>
           </p>
-          <div className="mt-6">
-            <Link href="/booking">
+          {/* <div className="mt-6">
+            <Link href={`/branch/${branch?._id}`}>
               <Button variant="default" className="w-full">
                 Book now
               </Button>
             </Link>
-          </div>
+          </div> */}
         </div>
       </div>
       {/* Branch information */}
@@ -151,9 +151,9 @@ const CourtDetailPage = ({ id }: CourtDetailProps) => {
               </Avatar>
             </Link>
             <p>
-              <h3 className="ml-6 text-xl font-bold">{branch?.name}</h3>
+              <h3 className=" text-xl font-bold">{branch?.name}</h3>
               <div className="flex items-center gap-1 opacity-75">
-                <MapPin />
+                <MapPin size={18} />
                 {branch?.address}
               </div>
             </p>
