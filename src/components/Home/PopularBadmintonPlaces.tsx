@@ -66,7 +66,7 @@ const PopularBadmintonPlaces = () => {
                     <div className="my-1">
                       <CustomTag status={br?.status ?? "Active"} />
                     </div>
-                    <h2 className="mt-2 text-lg font-bold">{br.name}</h2>
+                    <h2 className="mt-2 text-lg font-bold">{br?.name}</h2>
                     <div className="flex items-start gap-1">
                       <div className="w-5">
                         <MapPin className="w-5" />

@@ -5,7 +5,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { Info, UsersIcon } from "lucide-react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
@@ -13,6 +12,7 @@ import { getProfileAPI } from "@/apiCallers/auth";
 import { getBranchByIdAPI2 } from "@/apiCallers/Branches";
 import { getCourtAvailable } from "@/apiCallers/courts";
 import BranchDetailOverview from "@/components/branchs/BranchDetailOverview";
+import { CourtCarousel } from "@/components/CourtDetail/CourtCarousel";
 import CalendarDaily from "@/components/Custom/DailyCalendar";
 import CustomTag from "@/components/CustomTag";
 import { EmptyComponent } from "@/components/Empty";
@@ -209,39 +209,15 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
   }
   // console.log(profileData);
   return (
-    <div className="min-h-[calc(100vh_-_56px)] p-5">
-      <div className=" rounded-xl bg-slate-400 p-5">
-        <div className="grid grid-cols-3 gap-4">
-          <div className="col-span-2 flex align-middle">
-            <Image
-              src="/assets/images/clerk.png"
-              alt="Main Image"
-              width={100}
-              height={100}
-              className="h-auto w-full cursor-pointer object-contain p-3"
+    <div className="min-h-[calc(100vh_-_56px)] w-full">
+      <div className="flex  items-center justify-center rounded-xl">
+        <div className=" flex max-w-5xl items-center justify-center rounded-xl">
+          {data?.data?.images && data?.data?.images.length > 0 && (
+            <CourtCarousel
+              court_images={data?.data?.images}
+              court_name={data?.data?.name}
             />
-          </div>
-          <div className="flex flex-col space-y-2 ">
-            <Image
-              src="/assets/images/banner.jpeg"
-              alt="Secondary Image"
-              width={100}
-              height={100}
-              className="max-h-96 w-full cursor-pointer"
-            />
-            <div className="relative">
-              <Image
-                src="/assets/images/clerk.png"
-                alt="Tertiary Image"
-                className=" w-full p-3 "
-                width={100}
-                height={100}
-              />
-              <div className="absolute inset-0 flex cursor-pointer items-center justify-center bg-black opacity-50">
-                <span className="text-2xl text-white">+ 6 ...</span>
-              </div>
-            </div>
-          </div>
+          )}
         </div>
       </div>
       <div className="mt-8">
