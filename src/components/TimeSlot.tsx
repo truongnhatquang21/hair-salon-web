@@ -30,7 +30,7 @@ export const TimeSlot = ({
   const timeSlots = useMemo(() => {
     const slots = [] as any[];
 
-    if (timeSlotData.length !== 0) {
+    if (timeSlotData?.length !== 0) {
       for (const slot of timeSlotData) {
         const startTime = new Date(
           date.getFullYear(),
