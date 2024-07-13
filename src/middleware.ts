@@ -41,6 +41,7 @@ const publicPages = [
   "/tracking",
   "/search",
   "/checkIn",
+  "/court-detail/[slug]",
 ];
 const commonAuthPages = [
   "/subscriptions/order/[slug]",
@@ -219,6 +220,7 @@ export default function middleware(req: NextRequest) {
     badminton: /^\/badminton\/[a-zA-Z0-9]+$/,
     article: /^\/article\/[a-zA-Z0-9]+$/,
     branch: /^\/branch\/[a-zA-Z0-9]+$/,
+    court: /^\/court-detail\/[a-zA-Z0-9]+$/,
   };
 
   switch (true) {
@@ -229,6 +231,9 @@ export default function middleware(req: NextRequest) {
       return intlMiddleware(req);
     }
     case regex.branch.test(path): {
+      return intlMiddleware(req);
+    }
+    case regex.court.test(path): {
       return intlMiddleware(req);
     }
     default: {

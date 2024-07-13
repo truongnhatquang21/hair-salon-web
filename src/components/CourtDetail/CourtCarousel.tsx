@@ -1,3 +1,4 @@
+import Autoplay from "embla-carousel-autoplay";
 import Image from "next/image";
 import * as React from "react";
 
@@ -36,20 +37,29 @@ export function CourtCarousel({
       setCurrent(api.selectedScrollSnap() + 1);
     });
   }, [api]);
+  const plugin = React.useRef(
+    Autoplay({ delay: 2000, stopOnInteraction: true })
+  );
   return (
     <div>
-      <Carousel setApi={setApi}>
-        <CarouselContent className="-ml-4">
+      <Carousel
+        setApi={setApi}
+        plugins={[plugin.current]}
+        onMouseEnter={plugin.current.stop}
+        onMouseLeave={plugin.current.reset}
+        className=""
+      >
+        <CarouselContent className="-ml-4 border-0 border-white">
           {court_images.map((image, index) => (
-            <CarouselItem key={index} className="pl-4">
-              <Card className="size-full">
+            <CarouselItem key={index} className=" pl-4">
+              <Card className="size-full ">
                 <CardContent className="flex items-center justify-center p-0">
                   <Image
                     src={image}
                     alt={`${court_name}`}
                     width={900}
                     height={400}
-                    className="h-[400px] w-full rounded-lg object-cover shadow-lg"
+                    className="h-[400px] w-[1000px] rounded-lg object-cover shadow-lg"
                   />
                 </CardContent>
               </Card>
@@ -60,7 +70,7 @@ export function CourtCarousel({
         <CarouselNext />
       </Carousel>
       <div className="py-2 text-center text-sm text-muted-foreground">
-        {current} of {count}
+        {current} of {court_images?.length}
       </div>
     </div>
   );
