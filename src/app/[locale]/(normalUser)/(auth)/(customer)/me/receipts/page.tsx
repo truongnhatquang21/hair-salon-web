@@ -16,8 +16,7 @@ const Receipt: React.FC<Props> = () => {
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["bookingReceipts", status],
-    queryFn: async () =>
-      getMyBookingReceiptByStatus(status === "All" ? "" : status),
+    queryFn: async () => getMyBookingReceiptByStatus("All"),
   });
 
   const bookings = data?.data ?? [];
@@ -36,10 +35,16 @@ const Receipt: React.FC<Props> = () => {
       <div className="my-4 flex justify-end">
         <StatusFilter currentStatus={status} onStatusChange={setStatus} />
       </div>
-      {bookings?.length > 0 ? (
+      {(bookings?.length > 0 &&
+        bookings.filter((el) => el.status === status).length > 0) ||
+      status === "All" ? (
         <BookingReceipt
           invalidateKey={["bookingReceipts", status]}
-          bookings={bookings}
+          bookings={
+            status === "All"
+              ? bookings
+              : bookings.filter((el) => el.status === status)
+          }
         />
       ) : (
         <EmptyComponent
