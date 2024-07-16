@@ -12,6 +12,7 @@ import { IconRight } from "react-day-picker";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { formatToVND } from "@/app/[locale]/(normalUser)/(auth)/subscriptions/helper";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -35,6 +36,7 @@ import {
 } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
 import type { Steppers } from "@/hooks/useStepper";
+import defaultImg from "@/public/assets/images/badminton-cour.svg";
 import { useBranchStepStore } from "@/stores/createBranchStore";
 import { CourtStatusEnum } from "@/types";
 import CourtDialog from "@/views/courts/CourtDialog";
@@ -383,16 +385,18 @@ const CourRegistration = ({
                       height={20}
                       alt="defaultBadminton"
                       src={
-                        typeof item.images[0] === "string"
-                          ? item.images[0]
-                          : URL.createObjectURL(item.images[0])
+                        item.images?.length === 0
+                          ? defaultImg
+                          : typeof item.images[0] === "string"
+                            ? item.images[0]
+                            : URL.createObjectURL(item.images[0])
                       }
                       className="size-20 rounded-md object-cover shadow-md"
                     />
                     <div className="flex flex-1 flex-col gap-1 ">
                       <span className="text-lg font-semibold">{item.name}</span>
                       <span className="text-sm text-gray-700 underline underline-offset-2">
-                        {item.price} VND
+                        {formatToVND(item.price)}
                       </span>
                       <span className="text-xs text-gray-500">
                         {item.status}

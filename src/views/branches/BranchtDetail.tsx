@@ -17,6 +17,7 @@ import {
 } from "@/apiCallers/Branches";
 import type { CourtType } from "@/apiCallers/courts";
 import { postSlotAPI } from "@/apiCallers/slot";
+import { formatToVND } from "@/app/[locale]/(normalUser)/(auth)/subscriptions/helper";
 import { Loading } from "@/components/loading";
 import SpinnerIcon from "@/components/SpinnerIcon";
 import {
@@ -106,10 +107,10 @@ const BranchDetail = ({ branchId }: Props) => {
   }, [branchData?.data]);
   const router = useRouter();
   useEffect(() => {
-    if (selectedBranch?.branch) {
+    if (selectedBranch?.branch && branchData?.data) {
       router.push(`/dashboard/branches/${selectedBranch.branch._id}`);
     }
-  }, [selectedBranch.branch]);
+  }, [selectedBranch.branch?._id, branchData?.data]);
 
   const branch = form.getValues();
   const weekdays = [
@@ -932,7 +933,7 @@ const BranchDetail = ({ branchId }: Props) => {
                                     {item.name}
                                   </span>
                                   <span className="text-sm text-gray-700 underline underline-offset-2">
-                                    $ {item.price}
+                                    {formatToVND(item.price)}
                                   </span>
                                   <span className="text-xs text-gray-500">
                                     {item.status}

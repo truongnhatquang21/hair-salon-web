@@ -186,9 +186,18 @@ const CheckinDetail = ({ slug }: Props) => {
                   onClick={() => {
                     onDoneBooking();
                   }}
-                  disabled={isDoneBookingPending}
+                  disabled={
+                    isDoneBookingPending ||
+                    new Date(data?.data[0]?.booking?.endDate) > new Date()
+                  }
                 >
-                  {isDoneBookingPending ? <SpinnerIcon /> : "Done this booking"}
+                  {isDoneBookingPending ? (
+                    <SpinnerIcon />
+                  ) : new Date(data?.data[0]?.booking?.endDate) > new Date() ? (
+                    "Only done after end date"
+                  ) : (
+                    "Done"
+                  )}
                 </Button>
               )}
             </div>
