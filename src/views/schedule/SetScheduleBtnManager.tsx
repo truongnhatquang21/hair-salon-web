@@ -1,5 +1,5 @@
 /* eslint-disable no-underscore-dangle */
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -124,7 +124,7 @@ const SetScheduleBtnManager = ({
       }
     },
   });
-
+  const queryclient = useQueryClient();
   const handleSetScheduled = async () => {
     console.log({
       type: selectType,
@@ -146,7 +146,7 @@ const SetScheduleBtnManager = ({
         return el._id;
       }),
     });
-
+    queryclient.invalidateQueries({ queryKey: ["schedule"] });
     setIsOpen(false);
     setIsDialogOpen(true);
   };
@@ -227,6 +227,8 @@ const SetScheduleBtnManager = ({
               onClick={() => {
                 setSelectedSlots([]);
                 setSelectDay(new Date());
+                setEndSlot(null);
+                setStartSlot(null);
                 setIsOpen(false);
               }}
             >
