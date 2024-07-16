@@ -124,7 +124,8 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
     if (selectedCourt !== null || selectedCourts.length !== 0) {
       console.log(activeTab);
       if (activeTab === "competition_schedule") {
-        setBooking({
+        console.log({
+          arrayCourt: selectedCourts,
           booking: {
             type: activeTab,
             paymentType: "haft",
@@ -137,7 +138,30 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
             startDate: format(selectDay.toString(), "yyyy-MM-dd"),
             endDate: format(selectDay.toString(), "yyyy-MM-dd"),
             court: selectedCourts,
+          },
+          schedule: {
+            type: "booking",
+            slots: selectedSlots.map((el) => el._id),
+            startTime: startSlot.startTime,
+            endTime: endSlot ? endSlot.endTime : startSlot.endTime,
+            date: format(selectDay.toString(), "yyyy-MM-dd"),
+            court: selectedCourts,
+          },
+        });
+        setBooking({
+          booking: {
             arrayCourt: selectedCourts,
+            type: activeTab,
+            paymentType: "haft",
+            paymentMethod: "vnpay",
+            totalPrice: calculateTotalPricePerCourt(
+              selectedSlots,
+              selectedCourts
+            ),
+            totalHour: selectedSlots.length,
+            startDate: format(selectDay.toString(), "yyyy-MM-dd"),
+            endDate: format(selectDay.toString(), "yyyy-MM-dd"),
+            court: selectedCourts,
           },
           schedule: {
             type: "booking",

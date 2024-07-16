@@ -469,8 +469,34 @@ const ConfirmBooking = () => {
     ) {
       const endDate1month = new Date(bookingData.booking.endDate);
       endDate1month.setMonth(endDate1month.getMonth() + 1);
+      console.log({
+        courtArray: bookingData?.booking?.arrayCourt?.map((el) => el._id),
+        booking: {
+          paymentType,
+          paymentMethod: payment,
+          totalPrice: bookingData.booking.totalPrice,
+          totalHour: bookingData.booking.totalHour,
+          startDate: bookingData.booking.startDate,
+          endDate: format(endDate1month.toString(), "yyyy-MM-dd"),
+        },
+        schedule: {
+          type: "booking",
+          slots: bookingData.schedule.slots,
+          startTime: bookingData.schedule?.startTime,
+          endTime: bookingData.schedule?.endTime,
+          date: bookingData.schedule?.date,
+        },
+
+        transaction: {
+          amount:
+            paymentType === "full"
+              ? bookingData.booking.totalPrice
+              : bookingData.booking.totalPrice / 2,
+          payment: getValues("payment"),
+        },
+      });
       await bookingCompetitionMutatue({
-        arrayCourt: bookingData?.booking?.arrayCourt?.map((el) => el._id),
+        courtArray: bookingData?.booking?.arrayCourt?.map((el) => el._id),
         booking: {
           paymentType,
           paymentMethod: payment,
@@ -497,6 +523,7 @@ const ConfirmBooking = () => {
       });
     }
   };
+  console.log(bookingData);
   const getEndDate = () => {
     if (
       bookingData?.booking?.type !== "single_schedule" &&

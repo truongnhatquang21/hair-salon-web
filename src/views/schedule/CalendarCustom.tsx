@@ -3,6 +3,7 @@
 import "react-big-calendar/lib/css/react-big-calendar.css";
 
 import { useQuery } from "@tanstack/react-query";
+import clsx from "clsx";
 import { format } from "date-fns";
 import moment from "moment";
 import { useCallback, useState } from "react";
@@ -14,6 +15,7 @@ import {
 
 import { getScheduleOfCustomer } from "@/apiCallers/schedule";
 import { Loading } from "@/components/loading";
+import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -32,9 +34,14 @@ const localizer = momentLocalizer(moment);
 // ];f
 const EventSchedule = ({ event }) => {
   const backgroundColor =
-    event.status === ScheduleStatusEnum.AVAILABLE ? "#3174ad" : "green";
+    event.type === "Booking"
+      ? event.status === ScheduleStatusEnum.AVAILABLE
+        ? "#3174ad"
+        : "green"
+      : "orange";
+
   // Set a default color if none provided
-  return <div style={{ backgroundColor }}>{event.title}</div>;
+  return <div style={{ backgroundColor, padding: 0 }}>{event.title}</div>;
 };
 export default function CustomCalendar() {
   const { data: scheduleCustomer, isLoading } = useQuery({
@@ -80,6 +87,9 @@ export default function CustomCalendar() {
             court: el.court.name,
             start: starTime,
             end: endDate,
+            status: el.status,
+            type: el.type,
+            customerName: el?.booking?.customer?.email,
             ...el,
           };
         });
@@ -88,7 +98,19 @@ export default function CustomCalendar() {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Schedule</DialogTitle>
+            <DialogTitle>
+              Schedule{" "}
+              <Badge
+                className={clsx(
+                  "px-2 py-1 text-sm font-medium",
+                  selectedEvent?.type === "Booking"
+                    ? "bg-green-700"
+                    : "bg-orange-300"
+                )}
+              >
+                {selectedEvent?.type}
+              </Badge>
+            </DialogTitle>
           </DialogHeader>
 
           <div className="grid gap-4 py-4">
@@ -111,6 +133,10 @@ export default function CustomCalendar() {
             <div className="grid grid-cols-4 items-start gap-4">
               <div className="col-span-1 text-muted-foreground">Court:</div>
               <div className="col-span-3">{selectedEvent?.title}</div>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <div className="col-span-1 text-muted-foreground">Status:</div>
+              <div className="col-span-3">{selectedEvent?.status}</div>
             </div>
           </div>
         </DialogContent>
