@@ -19,7 +19,7 @@ const BookingCard: React.FC<Props> = ({ booking, invalidateKey }) => {
         <div>
           <div className="flex w-full gap-3">
             <h2 className="text-lg font-semibold">
-              {booking?.court?.branch?.name}
+              {booking?.court[0]?.branch?.name}
             </h2>
             <div>
               <CustomTag status={booking?.type} />
@@ -46,29 +46,34 @@ const BookingCard: React.FC<Props> = ({ booking, invalidateKey }) => {
       </div>
       <Separator className="my-2" />
       <div />
-      <div className="flex justify-between align-middle">
-        <div className="flex gap-3 align-middle">
-          <div>
-            <Image
-              src={booking?.court?.images[0] ?? ""}
-              alt={booking?.court?.name}
-              className=""
-              width={100}
-              height={100}
-            />
-          </div>
-          <div className="flex flex-col justify-center">
-            <div className="font-semibold">{booking?.court?.name}</div>
-            <div className="flex flex-col justify-end gap-3 align-middle">
-              <div className="ml-auto">x {booking?.totalHour} hours</div>
+      {booking.court.map((book) => {
+        return (
+          <div key={book.id}>
+            <div className="flex justify-between align-middle">
+              <div className="flex gap-3 align-middle">
+                <div>
+                  <Image
+                    src={book?.images[0] ?? ""}
+                    alt={book?.name}
+                    className=""
+                    width={100}
+                    height={100}
+                  />
+                </div>
+                <div className="flex flex-col justify-center">
+                  <div className="font-semibold">{book?.name}</div>
+                  <div className="flex flex-col justify-end gap-3 align-middle">
+                    <div className="ml-auto">x {booking?.totalHour} hours</div>
+                  </div>
+                </div>
+              </div>
+              <div className="my-auto ml-auto opacity-70">$ {book?.price}</div>
             </div>
+            <Separator className="my-2" />
           </div>
-        </div>
-        <div className="my-auto ml-auto opacity-70">
-          $ {booking?.court?.price}
-        </div>
-      </div>
-      <Separator className="my-2" />
+        );
+      })}
+
       <p className="ml-auto flex gap-2">
         <strong>Total price:</strong>{" "}
         <div className="font-medium">

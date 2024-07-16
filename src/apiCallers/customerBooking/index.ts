@@ -36,7 +36,7 @@ export const postBookingFlexible = async (data: {
 export const getMyBookingReceiptByStatus = async (status: string = "") => {
   const endpoint = status
     ? `booking/GetBookingByStatus/${status}`
-    : "booking/MyBooking";
+    : "booking/BookingReceipt";
   return fetcher(endpoint);
 };
 
