@@ -715,7 +715,7 @@ const ConfirmBooking = () => {
                                 {/* <DollarSignIcon className="size-4" /> */}
                                 <span>
                                   {" "}
-                                  {(court.price / 100).toFixed(2)}
+                                  {(court.price / 100).toFixed(3)}
                                   VND/slot
                                 </span>
                               </div>
@@ -792,7 +792,7 @@ const ConfirmBooking = () => {
                           <span>
                             {" "}
                             {(bookingData?.booking?.court.price / 100).toFixed(
-                              2
+                              3
                             )}
                             VND/slot
                           </span>

@@ -7,12 +7,14 @@ import { IconRight } from "react-day-picker";
 
 import { postBranchListAPI } from "@/apiCallers/Branches";
 import { uploadFileAPI, uploadImagesAPI } from "@/apiCallers/file";
+import { formatToVND } from "@/app/[locale]/(normalUser)/(auth)/subscriptions/helper";
 import SpinnerIcon from "@/components/SpinnerIcon";
 import AutoForm from "@/components/ui/auto-form";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import type { Steppers } from "@/hooks/useStepper";
+import defaltImg from "@/public/assets/images/badminton-cour.svg";
 import defaultFile from "@/public/assets/images/fileIcon.png";
 import { useBranchStepStore } from "@/stores/createBranchStore";
 import CourtDialog from "@/views/courts/CourtDialog";
@@ -488,9 +490,11 @@ const Confirmation = ({ goBackfn, goNextFn, steppers, stepIndex }: Props) => {
                         height={20}
                         alt="defaultBadminton"
                         src={
-                          typeof item.images[0] === "string"
-                            ? item.images[0]
-                            : URL.createObjectURL(item.images[0])
+                          item.images?.length === 0
+                            ? defaltImg
+                            : typeof item.images[0] === "string"
+                              ? item.images[0]
+                              : URL.createObjectURL(item.images[0])
                         }
                         className="size-20 rounded-md object-cover shadow-md"
                       />
@@ -499,7 +503,7 @@ const Confirmation = ({ goBackfn, goNextFn, steppers, stepIndex }: Props) => {
                           {item.name}
                         </span>
                         <span className="text-sm text-gray-700 underline underline-offset-2">
-                          {item.price} VND
+                          {formatToVND(item.price)}
                         </span>
                         <span className="text-xs text-gray-500">
                           {item.status}

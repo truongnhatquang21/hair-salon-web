@@ -4,7 +4,8 @@ import { z } from "zod";
 
 import { formatToVND } from "@/app/[locale]/(normalUser)/(auth)/subscriptions/helper";
 import { DataTableColumnHeader } from "@/components/table/ColumnHeader";
-import { type TransactionTypeEnum } from "@/types";
+import { cn } from "@/lib/utils";
+import { TransactionTypeEnum } from "@/types";
 
 import type { CreateCustomerSchemaTypeWithId } from "../customer/helper";
 
@@ -66,9 +67,23 @@ export const columns: ColumnDef<TransactionTypeWithId>[] = [
     header: ({ column }) => {
       return <DataTableColumnHeader column={column} title="Amount" />;
     },
-    cell: ({ getValue }) => {
+    cell: ({ getValue, row }) => {
+      const fulldata = row.original as TransactionTypeWithId;
+
       const data = getValue() as number;
-      return <span>{formatToVND(data) || "--"}</span>;
+      return (
+        <span
+          className={cn(
+            fulldata?.type === TransactionTypeEnum.REFUND
+              ? "text-green-500"
+              : "text-red-500",
+            "font-semibold text-left flex items-center flex-nowrap text-nowrap"
+          )}
+        >
+          {fulldata.type === TransactionTypeEnum.REFUND ? "+" : "-"}{" "}
+          {formatToVND(data) || "--"}
+        </span>
+      );
     },
   },
   {
