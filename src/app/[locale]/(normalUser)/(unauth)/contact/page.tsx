@@ -1,6 +1,8 @@
 "use client";
 
 import { Mail, MapPin, PhoneCall } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
@@ -8,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import contact from "@/public/assets/images/contact-us.jpg";
 
 export default function Contact() {
   const t = useTranslations("Contact");
@@ -40,29 +43,81 @@ export default function Contact() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <div className="container mx-auto px-4 py-8">
+      <div className="relative flex h-[400px] justify-center rounded-lg">
+        <div className="absolute inset-0 rounded-md">
+          <Image
+            src={contact}
+            alt="Contact us"
+            layout="fill"
+            objectFit="cover"
+            objectPosition="center"
+            className="opacity-90"
+          />
+        </div>
+        <div className="absolute inset-0 flex flex-col justify-center p-8 text-white">
+          <h1 className="mb-4 text-4xl font-bold">{t("title")}</h1>
+          <p className="mb-4 w-2/4">
+            {t("description", {
+              platformName: "Bookminton",
+            })}
+          </p>
+          <div>
+            <Link
+              href="#contactForm"
+              className="rounded-full bg-green-700 px-6 py-2 font-bold text-white hover:bg-green-800"
+            >
+              {t("contact_button")}
+            </Link>
+          </div>
+        </div>
+      </div>
+      <div className="container mx-auto px-40 py-20">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
           {/* Contact Information */}
           <div>
-            <h2 className="mb-4 text-2xl font-semibold">
-              {t("contact_information_title")}
-            </h2>
-            <p className="mb-4 flex gap-2 text-lg">
-              <MapPin />
-              {t("address")}
-            </p>
-            <p className="mb-4 flex gap-2 text-lg">
-              <PhoneCall />
-              {t("phone_number")}
-            </p>
-            <p className="mb-4 flex gap-2 text-lg">
-              <Mail />
-              {t("email")}
-            </p>
+            <div className="rounded-lg bg-white px-6 py-4">
+              <p className="flex gap-5">
+                <Button className="my-auto size-[50px] rounded-full bg-green-200 hover:bg-green-300">
+                  <PhoneCall className="text-green-800" size={45} />
+                </Button>
+                <div className="flex flex-col">
+                  <span className="text-lg font-semibold">
+                    {t("phone_number_title")}
+                  </span>
+                  <span className="">{t("phone_number")}</span>
+                </div>
+              </p>
+            </div>
+            <div className="my-5 rounded-lg bg-white px-6 py-4">
+              <p className="flex gap-5">
+                <Button className="my-auto size-[50px] rounded-full bg-green-200 hover:bg-green-300">
+                  <Mail className="text-green-800" size={45} />
+                </Button>
+                <div className="flex flex-col">
+                  <span className="text-lg font-semibold">
+                    {t("email_title")}
+                  </span>
+                  <span className="">{t("email")}</span>
+                </div>
+              </p>
+            </div>
+            <div className=" rounded-lg bg-white px-6 py-4">
+              <p className="flex gap-5">
+                <Button className="my-auto size-[50px] rounded-full bg-green-200 hover:bg-green-300">
+                  <MapPin className="text-green-800" size={45} />
+                </Button>
+                <div className="flex flex-col">
+                  <span className="text-lg font-semibold">
+                    {t("address_title")}
+                  </span>
+                  <span className="">{t("address")}</span>
+                </div>
+              </p>
+            </div>
           </div>
 
           {/* Get in Touch Form */}
-          <div>
+          <div id="contactForm">
             <h2 className="mb-4 text-2xl font-semibold">
               {t("get_in_touch_title")}
             </h2>
@@ -120,10 +175,10 @@ export default function Contact() {
                   placeholder={t("message_placeholder")}
                 />
               </div>
-              <div className="flex w-full justify-end">
+              <div>
                 <Button
                   type="submit"
-                  className="ml-auto rounded-md bg-green-700 px-4 py-2 text-white transition duration-300 hover:bg-green-400"
+                  className="ml-auto rounded-md bg-green-700 px-4 py-2 text-white transition duration-300 hover:bg-green-500"
                 >
                   {t("submit_button")}
                 </Button>
