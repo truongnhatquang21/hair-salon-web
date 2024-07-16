@@ -375,7 +375,7 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
                                       >
                                         {/* <DollarSignIcon className="size-4" /> */}
                                         <span>
-                                          {(value.price / 100).toFixed(2)}
+                                          {(value.price / 100).toFixed(3)}
                                           VND/slot
                                         </span>
                                       </div>
@@ -537,7 +537,7 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
                                         >
                                           {/* <DollarSignIcon className="size-4" /> */}
                                           <span>
-                                            {(value.price / 100).toFixed(2)}
+                                            {(value.price / 100).toFixed(3)}
                                             VND/slot
                                           </span>
                                         </div>
@@ -671,7 +671,7 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
                                       >
                                         {/* <DollarSignIcon className="size-4" /> */}
                                         <span>
-                                          {(value.price / 100).toFixed(2)}
+                                          {(value.price / 100).toFixed(3)}
                                           VND/slot
                                         </span>
                                       </div>
