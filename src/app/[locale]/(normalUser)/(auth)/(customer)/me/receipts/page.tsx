@@ -15,8 +15,8 @@ const Receipt: React.FC<Props> = () => {
   const [status, setStatus] = useState("All");
 
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["bookingReceipts"],
-    queryFn: async () => getMyBookingReceiptByStatus("All"),
+    queryKey: ["bookingReceipts", status],
+    queryFn: async () => getMyBookingReceiptByStatus(),
   });
 
   const bookings = data?.data ?? [];
