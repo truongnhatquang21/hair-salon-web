@@ -1,48 +1,48 @@
-"use client";
+'use client';
 
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { useZxing } from "react-zxing";
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useZxing } from 'react-zxing';
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 
 function QrCodeIcon(props) {
   return (
     <svg
       {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      xmlns='http://www.w3.org/2000/svg'
+      width='24'
+      height='24'
+      viewBox='0 0 24 24'
+      fill='none'
+      stroke='currentColor'
+      strokeWidth='2'
+      strokeLinecap='round'
+      strokeLinejoin='round'
     >
-      <rect width="5" height="5" x="3" y="3" rx="1" />
-      <rect width="5" height="5" x="16" y="3" rx="1" />
-      <rect width="5" height="5" x="3" y="16" rx="1" />
-      <path d="M21 16h-3a2 2 0 0 0-2 2v3" />
-      <path d="M21 21v.01" />
-      <path d="M12 7v3a2 2 0 0 1-2 2H7" />
-      <path d="M3 12h.01" />
-      <path d="M12 3h.01" />
-      <path d="M12 16v.01" />
-      <path d="M16 12h1" />
-      <path d="M21 12v.01" />
-      <path d="M12 21v-1" />
+      <rect width='5' height='5' x='3' y='3' rx='1' />
+      <rect width='5' height='5' x='16' y='3' rx='1' />
+      <rect width='5' height='5' x='3' y='16' rx='1' />
+      <path d='M21 16h-3a2 2 0 0 0-2 2v3' />
+      <path d='M21 21v.01' />
+      <path d='M12 7v3a2 2 0 0 1-2 2H7' />
+      <path d='M3 12h.01' />
+      <path d='M12 3h.01' />
+      <path d='M12 16v.01' />
+      <path d='M16 12h1' />
+      <path d='M21 12v.01' />
+      <path d='M12 21v-1' />
     </svg>
   );
 }
 const CheckInPage = () => {
-  const [result, setResult] = useState("");
+  const [result, setResult] = useState('');
   const router = useRouter();
   const { ref } = useZxing({
     onDecodeResult(res) {
-      setResult(new URL(res.toString()).pathname.split("/").pop());
+      setResult(new URL(res.toString()).pathname.split('/').pop());
     },
   });
   useEffect(() => {
@@ -51,31 +51,31 @@ const CheckInPage = () => {
     }
   }, [router, result]);
   return (
-    <div className="mx-auto h-full">
-      <div className="flex h-full flex-col items-center gap-6">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold">Badminton Court Check-In</h1>
-          <p className="text-muted-foreground">
+    <div className='mx-auto h-full'>
+      <div className='flex h-full flex-col items-center gap-6'>
+        <div className='text-center'>
+          <h1 className='text-2xl font-bold'>badminton Court Check-In</h1>
+          <p className='text-muted-foreground'>
             Scan QR codes to check in and view court availability.
           </p>
         </div>
-        <Card className="w-full flex-1 p-2">
-          <CardContent className="flex h-full flex-col items-center gap-6">
-            <div className="flex h-full flex-col items-center gap-2">
-              <QrCodeIcon className="size-16" />
-              <p className="text-muted-foreground">
+        <Card className='w-full flex-1 p-2'>
+          <CardContent className='flex h-full flex-col items-center gap-6'>
+            <div className='flex h-full flex-col items-center gap-2'>
+              <QrCodeIcon className='size-16' />
+              <p className='text-muted-foreground'>
                 Hold your camera up to the QR code on your receipt to check in.
               </p>
-              <video ref={ref} className="size-80 rounded-md" />
+              <video ref={ref} className='size-80 rounded-md' />
               <p>
                 <span>{result}</span>
               </p>
             </div>
-            <div className="w-full max-w-[300px]">
+            <div className='w-full max-w-[300px]'>
               <Input
-                type="text"
-                placeholder="Scan QR Code"
-                className="pl-12"
+                type='text'
+                placeholder='Scan QR Code'
+                className='pl-12'
                 readOnly
                 value={result}
               />

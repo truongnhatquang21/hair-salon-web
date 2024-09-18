@@ -27,10 +27,10 @@
     "save": "Save"
   },
   "Contact": {
-    "meta_title": "Contact Us - Bookminton",
-    "meta_description": "Learn more about Bookminton, the innovative badminton court scheduling platform.",
+    "meta_title": "Contact Us - pickleball",
+    "meta_description": "Learn more about pickleball, the innovative pickleball court scheduling platform.",
     "title": "Contact Us",
-    "description": "Feel free to reach out to us with any questions, feedback, or inquiries. Our team is here to assist you with booking assistance, technical support, or any other queries related to our badminton court scheduling platform. Contact us today to experience seamless court reservations and exceptional customer service.",
+    "description": "Feel free to reach out to us with any questions, feedback, or inquiries. Our team is here to assist you with booking assistance, technical support, or any other queries related to our pickleball court scheduling platform. Contact us today to experience seamless court reservations and exceptional customer service.",
     "contact_information_title": "Contact Information",
     "address": "Lô E2a-7, Đường D1, Đ. D1, Long Thạnh Mỹ, Thành Phố Thủ Đức, Hồ Chí Minh, Vietnam",
     "address_title": "Address",
@@ -57,23 +57,23 @@
   "About": {
     "about_paragraph": "Welcome to our About page! We are a team of passionate individuals dedicated to creating amazing software.",
     "translation_powered_by": "Translation powered by",
-    "meta_title": "About Us - Bookminton",
-    "meta_description": "Learn more about Bookminton, the innovative badminton court scheduling platform.",
+    "meta_title": "About Us - pickleball",
+    "meta_description": "Learn more about pickleball, the innovative pickleball court scheduling platform.",
     "title": "About Us",
-    "description": "Welcome to Bookminton, your ultimate solution for booking badminton courts with ease and efficiency. Our platform is designed to cater to the needs of both badminton enthusiasts and court managers, streamlining the reservation process and enhancing the overall experience.",
+    "description": "Welcome to pickleball, your ultimate solution for booking pickleball courts with ease and efficiency. Our platform is designed to cater to the needs of both pickleball enthusiasts and court managers, streamlining the reservation process and enhancing the overall experience.",
     "section1_title": "Customer Satisfaction",
     "section1_content": "Your convenience and satisfaction are our top priorities, ensuring every booking is effortless and enjoyable, tailored just for you.",
     "section2_title": "Efficiency",
-    "section2_content": "We strive to make the booking process quick, efficient, and hassle free, saving you time for what matters playing badminton.",
+    "section2_content": "We strive to make the booking process quick, efficient, and hassle free, saving you time for what matters playing pickleball.",
     "section3_title": "Community Engagement",
-    "section3_content": "We actively support and foster a vibrant badminton community, ensuring inclusive participation and enjoyment for all.",
+    "section3_content": "We actively support and foster a vibrant pickleball community, ensuring inclusive participation and enjoyment for all.",
     "section4_title": "Transparency",
     "section4_content": " We maintain transparency in our operations, ensuring clear communication and trust with our users and stakeholders.",
     "section5_title": "What Makes Us Different",
-    "section5_content": "Bookminton stands out by addressing the specific needs of both players and court owners. Our platform offers real-time booking updates, a user-friendly interface, and exclusive discounts, ensuring a seamless experience for all stakeholders.",
+    "section5_content": "pickleball stands out by addressing the specific needs of both players and court owners. Our platform offers real-time booking updates, a user-friendly interface, and exclusive discounts, ensuring a seamless experience for all stakeholders.",
     "section10_sub_title": "Our service",
     "section10_title": "What we do",
-    "section10_content_1": "We provide a online booking system allowing players to reserve badminton courts easily from any device, anytime. Our platform ensures convenience and efficiency in managing court reservations, enhancing the experience for both players and manager.",
+    "section10_content_1": "We provide a online booking system allowing players to reserve pickleball courts easily from any device, anytime. Our platform ensures convenience and efficiency in managing court reservations, enhancing the experience for both players and manager.",
     "section10_content_heading_1": "Online Court Booking",
     "section10_content_2": "Our platform offers real-time court availability, enabling players to easily find and book courts at preferred times and locations. We prioritize convenience and efficiency, ensuring a seamless booking experience tailored to your needs.",
     "section10_content_heading_2": "Real-Time Availability",
@@ -138,9 +138,9 @@
     "sign_up_form_button": "Sign up today",
     "sign_up_form_title": "Sign up to our newsletter"
   },
-  "PopularBadminton": {
-    "title": "Popular Badminton Places",
-    "description": "Popular badminton places",
+  "Popularbadminton": {
+    "title": "Popular pickleball Places",
+    "description": "Popular pickleball places",
     "loading": "Loading...",
     "error": "Error: {error}"
   },
@@ -151,15 +151,15 @@
     "error": "Error: {error}"
   },
   "HeroSection": {
-    "title": "Sharpen your reflexes, play badminton.",
-    "description": " Become a badminton beast! Transform your game with personalized coaching, drills, and top-notch gear.",
+    "title": "Sharpen your reflexes, play pickleball.",
+    "description": " Become a pickleball beast! Transform your game with personalized coaching, drills, and top-notch gear.",
     "loading": "Loading...",
     "error": "Error: {error}",
     "search_button": "Search"
   },
   "SearchAllBranch": {
-    "title": "Sharpen your reflexes, play badminton.",
-    "description": " Become a badminton beast! Transform your game with personalized coaching, drills, and top-notch gear.",
+    "title": "Sharpen your reflexes, play pickleball.",
+    "description": " Become a pickleball beast! Transform your game with personalized coaching, drills, and top-notch gear.",
     "loading": "Loading...",
     "error": "Error: {error}",
     "search_button": "Search",

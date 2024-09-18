@@ -1,12 +1,12 @@
 /* eslint-disable consistent-return */
 // import { defaultLocale, localePrefix, locales } from "./messages/config";
-import { type NextRequest, NextResponse } from "next/server";
-import createMiddleware from "next-intl/middleware";
+import { type NextRequest, NextResponse } from 'next/server';
+import createMiddleware from 'next-intl/middleware';
 
-import { auth } from "./auth";
-import { RoleEnum } from "./types";
+import { auth } from './auth';
+import { RoleEnum } from './types';
 // import { authOptions } from "./app/api/auth/[...nextauth]/route";
-import { AppConfig } from "./utils/AppConfig";
+import { AppConfig } from './utils/AppConfig';
 
 const intlMiddleware = createMiddleware({
   locales: AppConfig.locales,
@@ -22,123 +22,123 @@ const intlMiddleware = createMiddleware({
 // };
 
 const publicPages = [
-  "/401",
-  "/404",
-  "/",
-  "/sign-in",
-  "/sign-up",
-  "/forgot-password",
-  "/reset-password",
-  "/unauthorized",
-  "/contact",
-  "/about",
-  "/help",
-  "/privacy-policy",
-  "/terms-of-service",
-  "/cookie-policy",
-  "/end-user-license-agreement",
-  "/subscriptions",
-  "/tracking",
-  "/search",
-  "/checkIn",
-  "/court-detail/[slug]",
+  '/401',
+  '/404',
+  '/',
+  '/sign-in',
+  '/sign-up',
+  '/forgot-password',
+  '/reset-password',
+  '/unauthorized',
+  '/contact',
+  '/about',
+  '/help',
+  '/privacy-policy',
+  '/terms-of-service',
+  '/cookie-policy',
+  '/end-user-license-agreement',
+  '/subscriptions',
+  '/tracking',
+  '/search',
+  '/checkIn',
+  '/court-detail/[slug]',
 ];
 const commonAuthPages = [
-  "/subscriptions/order/[slug]",
-  "/branch/[slug]",
-  "/booking",
-  "/subscriptions/order/[slug]/checkout",
+  '/subscriptions/order/[slug]',
+  '/branch/[slug]',
+  '/booking',
+  '/subscriptions/order/[slug]/checkout',
 ];
 const customerPages = [
   ...commonAuthPages,
-  "/me/account",
-  "/me/schedule",
-  "/me/receipts",
-  "/me/booking",
-  "/me/history",
+  '/me/account',
+  '/me/schedule',
+  '/me/receipts',
+  '/me/booking',
+  '/me/history',
 ];
 const adminPages = [
   ...commonAuthPages,
-  "/dashboard/transactions",
-  "/dashboard",
-  "/dashboard/operators",
-  "/dashboard/managers",
-  "/dashboard/customers",
-  "/dashboard/requestedBranch",
-  "/dashboard/requestedBranch/[branchId]",
-  "/dashboard/subscriptions",
-  "/dashboard/account",
+  '/dashboard/transactions',
+  '/dashboard',
+  '/dashboard/operators',
+  '/dashboard/managers',
+  '/dashboard/customers',
+  '/dashboard/requestedBranch',
+  '/dashboard/requestedBranch/[branchId]',
+  '/dashboard/subscriptions',
+  '/dashboard/account',
 ];
 const operatorPages = [
   ...commonAuthPages,
   // "/dashboard/transactions",
-  "/dashboard",
-  "/dashboard/managers",
-  "/dashboard/customers",
-  "/dashboard/requestedBranch",
-  "/dashboard/requestedBranch/[branchId]",
-  "/dashboard/subscriptions",
-  "/dashboard/account",
+  '/dashboard',
+  '/dashboard/managers',
+  '/dashboard/customers',
+  '/dashboard/requestedBranch',
+  '/dashboard/requestedBranch/[branchId]',
+  '/dashboard/subscriptions',
+  '/dashboard/account',
 ];
 
 const managerPages = [
   ...commonAuthPages,
-  "/dashboard/check-in",
-  "/dashboard",
-  "/dashboard/branches",
-  "/dashboard/branches/[branchId]",
-  "/dashboard/branches/create",
-  "/dashboard/history/tracking-subscription",
-  "/dashboard/courts",
-  "/dashboard/staffs",
-  "/dashboard/reports",
-  "/dashboard/account",
-  "/dashboard/schedule",
+  '/dashboard/check-in',
+  '/dashboard',
+  '/dashboard/branches',
+  '/dashboard/branches/[branchId]',
+  '/dashboard/branches/create',
+  '/dashboard/history/tracking-subscription',
+  '/dashboard/courts',
+  '/dashboard/staffs',
+  '/dashboard/reports',
+  '/dashboard/account',
+  '/dashboard/schedule',
 ];
 const staffPages = [
   ...commonAuthPages,
-  "/dashboard/check-in",
-  "/dashboard",
-  "/dashboard/courts",
-  "/dashboard/reports",
-  "/dashboard/account",
-  "/dashboard/schedule",
+  '/dashboard/check-in',
+  '/dashboard',
+  '/dashboard/courts',
+  '/dashboard/reports',
+  '/dashboard/account',
+  '/dashboard/schedule',
 ];
 const authMiddleware = auth((req) => {
   const session = req.auth;
   const role = session?.user?.role;
-  console.log("role", role, req.nextUrl.pathname);
-  console.log(managerPages.includes(req.nextUrl.pathname), "ODOSF");
+  console.log('role', role, req.nextUrl.pathname);
+  console.log(managerPages.includes(req.nextUrl.pathname), 'ODOSF');
   if (true) {
     if (adminPages.includes(req.nextUrl.pathname)) {
       if (role === RoleEnum.ADMIN) {
         return intlMiddleware(req);
       }
-      if (!role) return NextResponse.redirect(new URL("/401", req.nextUrl));
+      if (!role) return NextResponse.redirect(new URL('/401', req.nextUrl));
     }
     if (operatorPages.includes(req.nextUrl.pathname)) {
       if (role === RoleEnum.OPERATOR) {
         return intlMiddleware(req);
       }
-      if (!role) return NextResponse.redirect(new URL("/401", req.nextUrl));
+      if (!role) return NextResponse.redirect(new URL('/401', req.nextUrl));
     }
     if (managerPages.includes(req.nextUrl.pathname)) {
       if (role === RoleEnum.MANAGER) {
         return intlMiddleware(req);
       }
-      if (!role) return NextResponse.redirect(new URL("/401", req.nextUrl));
+      if (!role) return NextResponse.redirect(new URL('/401', req.nextUrl));
     }
     if (staffPages.includes(req.nextUrl.pathname)) {
       if (role === RoleEnum.STAFF) {
         return intlMiddleware(req);
       }
-      if (!role) return NextResponse.redirect(new URL("/401", req.nextUrl));
+      if (!role) return NextResponse.redirect(new URL('/401', req.nextUrl));
     }
     if (customerPages.includes(req.nextUrl.pathname)) {
       if (role === RoleEnum.CUSTOMER) {
         return intlMiddleware(req);
       }
-      if (!role) return NextResponse.redirect(new URL("/401", req.nextUrl));
+      if (!role) return NextResponse.redirect(new URL('/401', req.nextUrl));
     }
   }
   const regex = {
@@ -171,46 +171,46 @@ const authMiddleware = auth((req) => {
         return intlMiddleware(req);
       }
 
-      return NextResponse.redirect(new URL("/401", req.nextUrl));
+      return NextResponse.redirect(new URL('/401', req.nextUrl));
     }
     case regex.branches.regex.test(pathname): {
       if (regex.branches.role.includes(role)) {
         return intlMiddleware(req);
       }
-      return NextResponse.redirect(new URL("/401", req.nextUrl));
+      return NextResponse.redirect(new URL('/401', req.nextUrl));
     }
     case regex.subscriptionOrder.regex.test(pathname): {
       if (regex.subscriptionOrder.role.includes(role)) {
         return intlMiddleware(req);
       }
-      return NextResponse.redirect(new URL("/401", req.nextUrl));
+      return NextResponse.redirect(new URL('/401', req.nextUrl));
     }
     case regex.subscriptionCheckout.regex.test(pathname): {
       if (regex.subscriptionCheckout.role.includes(role)) {
         return intlMiddleware(req);
       }
-      return NextResponse.redirect(new URL("/401", req.nextUrl));
+      return NextResponse.redirect(new URL('/401', req.nextUrl));
     }
     case regex.checkIn.regex.test(pathname): {
       if (regex.checkIn.role.includes(role)) {
         return intlMiddleware(req);
       }
-      return NextResponse.redirect(new URL("/401", req.nextUrl));
+      return NextResponse.redirect(new URL('/401', req.nextUrl));
     }
     default: {
-      console.log("not found in auth pages");
+      console.log('not found in auth pages');
 
-      return NextResponse.redirect(new URL("/404", req.nextUrl));
+      return NextResponse.redirect(new URL('/404', req.nextUrl));
     }
   }
 });
 export default function middleware(req: NextRequest) {
   const publicPathnameRegex = RegExp(
-    `^(/(${["en", "fr"].join("|")}))?(${publicPages.flatMap((p) => (p === "/" ? ["", "/"] : p)).join("|")})/?$`,
-    "i"
+    `^(/(${['en', 'fr'].join('|')}))?(${publicPages.flatMap((p) => (p === '/' ? ['', '/'] : p)).join('|')})/?$`,
+    'i'
   );
   const isPublicPage = publicPathnameRegex.test(req.nextUrl.pathname);
-  console.log(req.nextUrl.pathname, "req.nextUrl.pathname");
+  console.log(req.nextUrl.pathname, 'req.nextUrl.pathname');
 
   if (isPublicPage) {
     return intlMiddleware(req);
@@ -238,7 +238,7 @@ export default function middleware(req: NextRequest) {
     }
     default: {
       {
-        console.log("not found in public pages");
+        console.log('not found in public pages');
 
         return (authMiddleware as any)(req);
       }
@@ -247,5 +247,5 @@ export default function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
+  matcher: ['/((?!.+\\.[\\w]+$|_next).*)', '/', '/(api|trpc)(.*)'],
 };

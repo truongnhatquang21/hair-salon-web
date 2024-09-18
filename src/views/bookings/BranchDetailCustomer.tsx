@@ -1,54 +1,54 @@
 /* eslint-disable no-underscore-dangle */
 
-"use client";
+'use client';
 
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { format } from "date-fns";
-import { Info, UsersIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { format } from 'date-fns';
+import { Info, UsersIcon } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useMemo, useState } from 'react';
 
-import { getProfileAPI } from "@/apiCallers/auth";
-import { getBranchByIdAPI2 } from "@/apiCallers/Branches";
-import { getCourtAvailable } from "@/apiCallers/courts";
-import BranchDetailOverview from "@/components/branchs/BranchDetailOverview";
-import { CourtCarousel } from "@/components/CourtDetail/CourtCarousel";
-import CalendarDaily from "@/components/Custom/DailyCalendar";
-import CustomTag from "@/components/CustomTag";
-import { EmptyComponent } from "@/components/Empty";
-import { Icons } from "@/components/icons";
-import { Loading } from "@/components/loading";
-import { TimeSlot } from "@/components/TimeSlot";
-import { Button } from "@/components/ui/button";
+import { getProfileAPI } from '@/apiCallers/auth';
+import { getBranchByIdAPI2 } from '@/apiCallers/Branches';
+import { getCourtAvailable } from '@/apiCallers/courts';
+import BranchDetailOverview from '@/components/branchs/BranchDetailOverview';
+import { CourtCarousel } from '@/components/CourtDetail/CourtCarousel';
+import CalendarDaily from '@/components/Custom/DailyCalendar';
+import CustomTag from '@/components/CustomTag';
+import { EmptyComponent } from '@/components/Empty';
+import { Icons } from '@/components/icons';
+import { Loading } from '@/components/loading';
+import { TimeSlot } from '@/components/TimeSlot';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardTitle,
-} from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+} from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { useToast } from "@/components/ui/use-toast";
-import type { ICourt } from "@/interfaces/court.interface";
-import type { ISlot } from "@/interfaces/slot.interface";
-import { useBookingStore } from "@/stores/bookingStore";
-import { RoleEnum } from "@/types";
+} from '@/components/ui/tooltip';
+import { useToast } from '@/components/ui/use-toast';
+import type { ICourt } from '@/interfaces/court.interface';
+import type { ISlot } from '@/interfaces/slot.interface';
+import { useBookingStore } from '@/stores/bookingStore';
+import { RoleEnum } from '@/types';
 import {
   calculateTotalPrice,
   calculateTotalPricePerCourt,
   getThu,
-} from "@/utils/Helpers";
+} from '@/utils/Helpers';
 
-import FlexibleBooking from "./FlexibleBooking";
+import FlexibleBooking from './FlexibleBooking';
 
 const BranchDetailCustomer = ({ slug }: { slug: string }) => {
   const { data: profileData, isLoading: isLoadingProfile } = useQuery({
-    queryKey: ["myProfile"],
+    queryKey: ['myProfile'],
     queryFn: async () => getProfileAPI(),
   });
   const router = useRouter();
@@ -73,9 +73,9 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
   };
   console.log(selectedCourts);
   const [selectedCourt, setSelectedCourt] = useState<ICourt | null>(null);
-  const [activeTab, setActiveTab] = useState("single_schedule");
+  const [activeTab, setActiveTab] = useState('single_schedule');
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["brachDetail"],
+    queryKey: ['brachDetail'],
     queryFn: async () => getBranchByIdAPI2(slug),
   });
 
@@ -103,8 +103,8 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
         //   });
         // }
         toast({
-          variant: "destructive",
-          title: "Uh oh! Something went wrong.",
+          variant: 'destructive',
+          title: 'Uh oh! Something went wrong.',
           description: dataRes.message || dataRes.statusText,
         });
         throw new Error(dataRes.message || dataRes.statusText);
@@ -123,28 +123,28 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
   const handleBooking = async () => {
     if (selectedCourt !== null || selectedCourts.length !== 0) {
       console.log(activeTab);
-      if (activeTab === "competition_schedule") {
+      if (activeTab === 'competition_schedule') {
         console.log({
           arrayCourt: selectedCourts,
           booking: {
             type: activeTab,
-            paymentType: "haft",
-            paymentMethod: "vnpay",
+            paymentType: 'haft',
+            paymentMethod: 'vnpay',
             totalPrice: calculateTotalPricePerCourt(
               selectedSlots,
               selectedCourts
             ),
             totalHour: selectedSlots.length,
-            startDate: format(selectDay.toString(), "yyyy-MM-dd"),
-            endDate: format(selectDay.toString(), "yyyy-MM-dd"),
+            startDate: format(selectDay.toString(), 'yyyy-MM-dd'),
+            endDate: format(selectDay.toString(), 'yyyy-MM-dd'),
             court: selectedCourts,
           },
           schedule: {
-            type: "booking",
+            type: 'booking',
             slots: selectedSlots.map((el) => el._id),
             startTime: startSlot.startTime,
             endTime: endSlot ? endSlot.endTime : startSlot.endTime,
-            date: format(selectDay.toString(), "yyyy-MM-dd"),
+            date: format(selectDay.toString(), 'yyyy-MM-dd'),
             court: selectedCourts,
           },
         });
@@ -152,53 +152,53 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
           booking: {
             arrayCourt: selectedCourts,
             type: activeTab,
-            paymentType: "haft",
-            paymentMethod: "vnpay",
+            paymentType: 'haft',
+            paymentMethod: 'vnpay',
             totalPrice: calculateTotalPricePerCourt(
               selectedSlots,
               selectedCourts
             ),
             totalHour: selectedSlots.length,
-            startDate: format(selectDay.toString(), "yyyy-MM-dd"),
-            endDate: format(selectDay.toString(), "yyyy-MM-dd"),
+            startDate: format(selectDay.toString(), 'yyyy-MM-dd'),
+            endDate: format(selectDay.toString(), 'yyyy-MM-dd'),
             court: selectedCourts,
           },
           schedule: {
-            type: "booking",
+            type: 'booking',
             slots: selectedSlots.map((el) => el._id),
             startTime: startSlot.startTime,
             endTime: endSlot ? endSlot.endTime : startSlot.endTime,
-            date: format(selectDay.toString(), "yyyy-MM-dd"),
+            date: format(selectDay.toString(), 'yyyy-MM-dd'),
             court: selectedCourts,
           },
         });
-        router.push("/booking");
+        router.push('/booking');
       }
       if (
-        activeTab === "single_schedule" ||
-        activeTab === "permanent_schedule"
+        activeTab === 'single_schedule' ||
+        activeTab === 'permanent_schedule'
       ) {
         setBooking({
           booking: {
             type: activeTab,
-            paymentType: "haft",
-            paymentMethod: "vnpay",
+            paymentType: 'haft',
+            paymentMethod: 'vnpay',
             totalPrice: calculateTotalPrice(selectedSlots, selectedCourt.price),
             totalHour: selectedSlots.length,
-            startDate: format(selectDay.toString(), "yyyy-MM-dd"),
-            endDate: format(selectDay.toString(), "yyyy-MM-dd"),
+            startDate: format(selectDay.toString(), 'yyyy-MM-dd'),
+            endDate: format(selectDay.toString(), 'yyyy-MM-dd'),
             court: selectedCourt,
           },
           schedule: {
-            type: "booking",
+            type: 'booking',
             slots: selectedSlots.map((el) => el._id),
             startTime: startSlot.startTime,
             endTime: endSlot ? endSlot.endTime : startSlot.endTime,
-            date: format(selectDay.toString(), "yyyy-MM-dd"),
+            date: format(selectDay.toString(), 'yyyy-MM-dd'),
             court: selectedCourt,
           },
         });
-        router.push("/booking");
+        router.push('/booking');
       }
     }
   };
@@ -214,28 +214,28 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
       getCourtAvalableMutatue({
         branch: slug,
         slots: selectedSlots.map((el) => el._id),
-        date: format(selectDay?.toString(), "yyyy-MM-dd"),
+        date: format(selectDay?.toString(), 'yyyy-MM-dd'),
       });
     }
   }, [getCourtAvalableMutatue, selectDay, selectedSlots, slug]);
 
   if (isLoading) {
     return (
-      <div className="flex min-h-[calc(100vh_-_56px)]  items-center justify-center p-5">
+      <div className='flex min-h-[calc(100vh_-_56px)]  items-center justify-center p-5'>
         <Loading />
       </div>
     );
   }
 
   if (isError || !data?.data) {
-    router.push("/");
+    router.push('/');
     return <div>Uh oh! Something went wrong.</div>;
   }
   // console.log(profileData);
   return (
-    <div className="min-h-[calc(100vh_-_56px)] w-full">
-      <div className="flex  items-center justify-center rounded-xl">
-        <div className=" flex max-w-5xl items-center justify-center rounded-xl">
+    <div className='min-h-[calc(100vh_-_56px)] w-full'>
+      <div className='flex  items-center justify-center rounded-xl'>
+        <div className=' flex max-w-5xl items-center justify-center rounded-xl'>
           {data?.data?.images && data?.data?.images.length > 0 && (
             <CourtCarousel
               court_images={data?.data?.images}
@@ -244,24 +244,24 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
           )}
         </div>
       </div>
-      <div className="mt-8">
-        <Tabs defaultValue="overview">
-          <TabsList className="flex border-b border-gray-200 dark:border-gray-800">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
+      <div className='mt-8'>
+        <Tabs defaultValue='overview'>
+          <TabsList className='flex border-b border-gray-200 dark:border-gray-800'>
+            <TabsTrigger value='overview'>Overview</TabsTrigger>
             {profileData.data &&
               profileData?.data?.role === RoleEnum.CUSTOMER && (
-                <TabsTrigger value="schedules">Schedules</TabsTrigger>
+                <TabsTrigger value='schedules'>Schedules</TabsTrigger>
               )}
 
             {/* <TabsTrigger value="map">Map</TabsTrigger> */}
           </TabsList>
-          <TabsContent value="overview" className="py-4">
+          <TabsContent value='overview' className='py-4'>
             <BranchDetailOverview data={data} />
           </TabsContent>
-          <TabsContent value="schedules" className="py-4">
+          <TabsContent value='schedules' className='py-4'>
             <div>
               <Tabs
-                defaultValue="single_schedule"
+                defaultValue='single_schedule'
                 value={activeTab}
                 onValueChange={(value) => {
                   setSelectedSlots([]);
@@ -270,39 +270,39 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
                   setActiveTab(value);
                 }}
               >
-                <div className="flex items-center justify-end gap-4">
+                <div className='flex items-center justify-end gap-4'>
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <Info size={18} className="cursor-pointer" />
+                        <Info size={18} className='cursor-pointer' />
                       </TooltipTrigger>
                       <TooltipContent>
                         <p>permanent là gì</p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
-                  <TabsList className="flex w-fit  border-b border-gray-200 dark:border-gray-800">
-                    <TabsTrigger value="single_schedule">Single</TabsTrigger>
-                    <TabsTrigger value="permanent_schedule">
+                  <TabsList className='flex w-fit  border-b border-gray-200 dark:border-gray-800'>
+                    <TabsTrigger value='single_schedule'>Single</TabsTrigger>
+                    <TabsTrigger value='permanent_schedule'>
                       Permanent
                     </TabsTrigger>
-                    <TabsTrigger value="flexible_schedule">
+                    <TabsTrigger value='flexible_schedule'>
                       Flexible
                     </TabsTrigger>
-                    <TabsTrigger value="competition_schedule">
+                    <TabsTrigger value='competition_schedule'>
                       Competition
                     </TabsTrigger>
                   </TabsList>
                 </div>
-                <TabsContent value="permanent_schedule" className="py-4">
-                  <Card className="p-5">
+                <TabsContent value='permanent_schedule' className='py-4'>
+                  <Card className='p-5'>
                     <CardTitle>Permanent Booking</CardTitle>
                     <CardDescription>
                       Secure your court for a recurring schedule. Great for
                       regular players.
                     </CardDescription>
-                    <CardContent className="mt-5">
-                      {" "}
+                    <CardContent className='mt-5'>
+                      {' '}
                       <CalendarDaily
                         setSelectedCourts={setSelectedCourts}
                         setSelectedSlots={setSelectedSlots}
@@ -321,80 +321,80 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
                         setStartSlot={setStartSlot}
                       />
                       {selectedSlots.length !== 0 && (
-                        <div className="mx-auto mt-6 max-w-2xl">
-                          <h3 className="mb-2 text-lg font-bold">
-                            Select Badminton Court
+                        <div className='mx-auto mt-6 max-w-2xl'>
+                          <h3 className='mb-2 text-lg font-bold'>
+                            Select badminton Court
                           </h3>
                           {CourtData?.data?.length === 0 ? (
                             <EmptyComponent
-                              title="No Court Available"
+                              title='No Court Available'
                               // description="You haven't made any bookings yet. Start booking now to manage your reservations."
-                              className="w-full"
+                              className='w-full'
                             />
                           ) : (
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className='grid grid-cols-2 gap-4'>
                               {CourtData?.data?.map((value: ICourt) => (
                                 <Card
                                   key={value._id}
                                   className={`cursor-pointer ${
                                     selectedCourt !== null &&
                                     selectedCourt._id === value._id
-                                      ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                                      : "hover:bg-muted"
+                                      ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                                      : 'hover:bg-muted'
                                   }`}
                                   onClick={() => handleCourtSelection(value)}
                                 >
-                                  <CardContent className="grid gap-4 overflow-hidden p-5">
-                                    <div className="flex items-center gap-4">
+                                  <CardContent className='grid gap-4 overflow-hidden p-5'>
+                                    <div className='flex items-center gap-4'>
                                       <div
                                         className={`cursor-pointer rounded-lg object-cover p-2 ${
                                           selectedCourt !== null &&
                                           selectedCourt._id === value._id
-                                            ? " bg-slate-500 stroke-white "
-                                            : " border-white text-white "
+                                            ? ' bg-slate-500 stroke-white '
+                                            : ' border-white text-white '
                                         }`}
                                       >
-                                        <Icons.BadmintonCourt className="rounded-lg object-cover" />
+                                        <Icons.badmintonCourt className='rounded-lg object-cover' />
                                       </div>
                                       <div>
-                                        <h3 className="font-semibold">
+                                        <h3 className='font-semibold'>
                                           {value.name}
                                         </h3>
                                         <span
                                           className={`line-clamp-3 text-sm ${
                                             selectedCourt !== null &&
                                             selectedCourt._id === value._id
-                                              ? " text-slate-300 dark:text-slate-200 "
-                                              : "text-gray-500 dark:text-gray-400"
+                                              ? ' text-slate-300 dark:text-slate-200 '
+                                              : 'text-gray-500 dark:text-gray-400'
                                           }`}
                                         >
                                           {value.description}
                                         </span>
                                       </div>
                                     </div>
-                                    <div className="flex items-center justify-between">
-                                      <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                                    <div className='flex items-center justify-between'>
+                                      <div className='flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400'>
                                         <CustomTag status={value.status} />
                                       </div>
                                       <div
                                         className={`flex items-center gap-2 text-sm ${
                                           selectedCourt !== null &&
                                           selectedCourt._id === value._id
-                                            ? " text-slate-300 dark:text-slate-200 "
-                                            : "text-gray-500 dark:text-gray-400"
+                                            ? ' text-slate-300 dark:text-slate-200 '
+                                            : 'text-gray-500 dark:text-gray-400'
                                         }`}
                                       >
-                                        <UsersIcon className="size-4" />
+                                        <UsersIcon className='size-4' />
                                         <span>type: {value.type}</span>
                                       </div>
                                     </div>
-                                    <div className="flex items-center justify-between">
+                                    <div className='flex items-center justify-between'>
                                       <div
                                         className={`flex items-center gap-2 text-sm ${
                                           selectedCourt !== null &&
                                           selectedCourt._id === value._id
-                                            ? " text-slate-300 dark:text-slate-200 "
-                                            : "text-gray-500 dark:text-gray-400"
+                                            ? ' text-slate-300 dark:text-slate-200 '
+                                            : 'text-gray-500 dark:text-gray-400'
                                         }`}
                                       >
                                         {/* <DollarSignIcon className="size-4" /> */}
@@ -410,10 +410,10 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
                             </div>
                           )}
 
-                          <div className="mt-6 flex justify-end">
+                          <div className='mt-6 flex justify-end'>
                             <Button
-                              variant="default"
-                              className="rounded-md px-6 py-2"
+                              variant='default'
+                              className='rounded-md px-6 py-2'
                               disabled={selectedCourt == null}
                               onClick={handleBooking}
                             >
@@ -426,14 +426,14 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
                     </CardContent>
                   </Card>
                 </TabsContent>
-                <TabsContent value="flexible_schedule" className="py-4">
-                  <Card className="p-5">
+                <TabsContent value='flexible_schedule' className='py-4'>
+                  <Card className='p-5'>
                     <CardTitle>Flexible Booking</CardTitle>
                     <CardDescription>
                       Book a court with the option to reschedule. Great for busy
                       schedules.
                     </CardDescription>
-                    <CardContent className="mt-5">
+                    <CardContent className='mt-5'>
                       <FlexibleBooking
                         setSelectedCourts={setSelectedCourts}
                         courts={data.data.courts}
@@ -452,14 +452,14 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
                     </CardContent>
                   </Card>
                 </TabsContent>
-                <TabsContent value="single_schedule" className="py-4">
-                  <Card className="p-5">
+                <TabsContent value='single_schedule' className='py-4'>
+                  <Card className='p-5'>
                     <CardTitle>Booking single</CardTitle>
                     <CardDescription>
                       Book a court for a one-time session. Flexible for casual
                       players.
                     </CardDescription>
-                    <CardContent className="mt-5">
+                    <CardContent className='mt-5'>
                       <CalendarDaily
                         setSelectedCourts={setSelectedCourts}
                         setSelectedSlots={setSelectedSlots}
@@ -479,19 +479,19 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
                       />
 
                       {selectedSlots.length !== 0 && (
-                        <div className="mx-auto mt-6 max-w-2xl">
-                          <h3 className="mb-2 text-lg font-bold">
-                            Select Badminton Court
+                        <div className='mx-auto mt-6 max-w-2xl'>
+                          <h3 className='mb-2 text-lg font-bold'>
+                            Select badminton Court
                           </h3>
 
                           {CourtData?.data?.length === 0 ? (
                             <EmptyComponent
-                              title="No Court Available"
+                              title='No Court Available'
                               // description="You haven't made any bookings yet. Start booking now to manage your reservations."
-                              className="w-full"
+                              className='w-full'
                             />
                           ) : (
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className='grid grid-cols-2 gap-4'>
                               {isCourtPending ? (
                                 <Loading />
                               ) : (
@@ -501,62 +501,62 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
                                     className={`cursor-pointer ${
                                       selectedCourt !== null &&
                                       selectedCourt._id === value._id
-                                        ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                                        : "hover:bg-muted"
+                                        ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                                        : 'hover:bg-muted'
                                     }`}
                                     onClick={() => handleCourtSelection(value)}
                                   >
-                                    <CardContent className="grid gap-4 overflow-hidden p-5">
-                                      <div className="flex items-center gap-4">
+                                    <CardContent className='grid gap-4 overflow-hidden p-5'>
+                                      <div className='flex items-center gap-4'>
                                         <div
                                           className={`cursor-pointer rounded-lg object-cover p-2 ${
                                             selectedCourt !== null &&
                                             selectedCourt._id === value._id
-                                              ? " bg-slate-500 stroke-white "
-                                              : " border-white text-white "
+                                              ? ' bg-slate-500 stroke-white '
+                                              : ' border-white text-white '
                                           }`}
                                         >
-                                          <Icons.BadmintonCourt className="rounded-lg object-cover" />
+                                          <Icons.badmintonCourt className='rounded-lg object-cover' />
                                         </div>
                                         <div>
-                                          <h3 className="font-semibold">
+                                          <h3 className='font-semibold'>
                                             {value.name}
                                           </h3>
                                           <span
                                             className={`line-clamp-3 text-sm ${
                                               selectedCourt !== null &&
                                               selectedCourt._id === value._id
-                                                ? " text-slate-300 dark:text-slate-200 "
-                                                : "text-gray-500 dark:text-gray-400"
+                                                ? ' text-slate-300 dark:text-slate-200 '
+                                                : 'text-gray-500 dark:text-gray-400'
                                             }`}
                                           >
                                             {value.description}
                                           </span>
                                         </div>
                                       </div>
-                                      <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                                      <div className='flex items-center justify-between'>
+                                        <div className='flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400'>
                                           <CustomTag status={value.status} />
                                         </div>
                                         <div
                                           className={`flex items-center gap-2 text-sm ${
                                             selectedCourt !== null &&
                                             selectedCourt._id === value._id
-                                              ? " text-slate-300 dark:text-slate-200 "
-                                              : "text-gray-500 dark:text-gray-400"
+                                              ? ' text-slate-300 dark:text-slate-200 '
+                                              : 'text-gray-500 dark:text-gray-400'
                                           }`}
                                         >
-                                          <UsersIcon className="size-4" />
+                                          <UsersIcon className='size-4' />
                                           <span>type: {value.type}</span>
                                         </div>
                                       </div>
-                                      <div className="flex items-center justify-between">
+                                      <div className='flex items-center justify-between'>
                                         <div
                                           className={`flex items-center gap-2 text-sm ${
                                             selectedCourt !== null &&
                                             selectedCourt._id === value._id
-                                              ? " text-slate-300 dark:text-slate-200 "
-                                              : "text-gray-500 dark:text-gray-400"
+                                              ? ' text-slate-300 dark:text-slate-200 '
+                                              : 'text-gray-500 dark:text-gray-400'
                                           }`}
                                         >
                                           {/* <DollarSignIcon className="size-4" /> */}
@@ -573,10 +573,10 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
                             </div>
                           )}
 
-                          <div className="mt-6 flex justify-end">
+                          <div className='mt-6 flex justify-end'>
                             <Button
-                              variant="default"
-                              className="rounded-md px-6 py-2"
+                              variant='default'
+                              className='rounded-md px-6 py-2'
                               disabled={selectedCourt == null}
                               onClick={handleBooking}
                             >
@@ -589,14 +589,14 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
                     </CardContent>
                   </Card>
                 </TabsContent>
-                <TabsContent value="competition_schedule" className="py-4">
-                  <Card className="p-5">
+                <TabsContent value='competition_schedule' className='py-4'>
+                  <Card className='p-5'>
                     <CardTitle>Booking For Competition</CardTitle>
                     <CardDescription>
                       Book a court for a one-time session. Flexible for casual
                       players.
                     </CardDescription>
-                    <CardContent className="mt-5">
+                    <CardContent className='mt-5'>
                       <CalendarDaily
                         setSelectedCourts={setSelectedCourts}
                         setSelectedSlots={setSelectedSlots}
@@ -616,81 +616,81 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
                       />
 
                       {selectedSlots.length !== 0 && (
-                        <div className="mx-auto mt-6 max-w-2xl">
-                          <h3 className="mb-2 text-lg font-bold">
-                            Select Badminton Court
+                        <div className='mx-auto mt-6 max-w-2xl'>
+                          <h3 className='mb-2 text-lg font-bold'>
+                            Select badminton Court
                           </h3>
 
                           {CourtData?.data?.length === 0 ? (
                             <EmptyComponent
-                              title="No Court Available"
+                              title='No Court Available'
                               // description="You haven't made any bookings yet. Start booking now to manage your reservations."
-                              className="w-full"
+                              className='w-full'
                             />
                           ) : (
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className='grid grid-cols-2 gap-4'>
                               {CourtData?.data?.map((value: ICourt) => (
                                 <Card
                                   key={value._id}
                                   className={`cursor-pointer ${
                                     selectedCourts.length !== 0 &&
                                     selectedCourts.includes(value)
-                                      ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                                      : "hover:bg-muted"
+                                      ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                                      : 'hover:bg-muted'
                                   }`}
                                   onClick={() => handleCheckboxChange(value)}
                                 >
-                                  <CardContent className="grid gap-4 overflow-hidden p-5">
-                                    <div className="flex items-center gap-4">
+                                  <CardContent className='grid gap-4 overflow-hidden p-5'>
+                                    <div className='flex items-center gap-4'>
                                       <div
                                         className={`cursor-pointer rounded-lg object-cover p-2 ${
                                           selectedCourts.length !== 0 &&
                                           selectedCourts.includes(value)
-                                            ? " bg-slate-500 stroke-white "
-                                            : " border-white text-white "
+                                            ? ' bg-slate-500 stroke-white '
+                                            : ' border-white text-white '
                                         }`}
                                       >
-                                        <Icons.BadmintonCourt className="rounded-lg object-cover" />
+                                        <Icons.badmintonCourt className='rounded-lg object-cover' />
                                       </div>
                                       <div>
-                                        <h3 className="font-semibold">
+                                        <h3 className='font-semibold'>
                                           {value.name}
                                         </h3>
                                         <span
                                           className={`line-clamp-3 text-sm ${
                                             selectedCourts.length !== 0 &&
                                             selectedCourts.includes(value)
-                                              ? " text-slate-300 dark:text-slate-200 "
-                                              : "text-gray-500 dark:text-gray-400"
+                                              ? ' text-slate-300 dark:text-slate-200 '
+                                              : 'text-gray-500 dark:text-gray-400'
                                           }`}
                                         >
                                           {value.description}
                                         </span>
                                       </div>
                                     </div>
-                                    <div className="flex items-center justify-between">
-                                      <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                                    <div className='flex items-center justify-between'>
+                                      <div className='flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400'>
                                         <CustomTag status={value.status} />
                                       </div>
                                       <div
                                         className={`flex items-center gap-2 text-sm ${
                                           selectedCourts.length !== 0 &&
                                           selectedCourts.includes(value)
-                                            ? " text-slate-300 dark:text-slate-200 "
-                                            : "text-gray-500 dark:text-gray-400"
+                                            ? ' text-slate-300 dark:text-slate-200 '
+                                            : 'text-gray-500 dark:text-gray-400'
                                         }`}
                                       >
-                                        <UsersIcon className="size-4" />
+                                        <UsersIcon className='size-4' />
                                         <span>type: {value.type}</span>
                                       </div>
                                     </div>
-                                    <div className="flex items-center justify-between">
+                                    <div className='flex items-center justify-between'>
                                       <div
                                         className={`flex items-center gap-2 text-sm ${
                                           selectedCourts.length !== 0 &&
                                           selectedCourts.includes(value)
-                                            ? " text-slate-300 dark:text-slate-200 "
-                                            : "text-gray-500 dark:text-gray-400"
+                                            ? ' text-slate-300 dark:text-slate-200 '
+                                            : 'text-gray-500 dark:text-gray-400'
                                         }`}
                                       >
                                         {/* <DollarSignIcon className="size-4" /> */}
@@ -706,10 +706,10 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
                             </div>
                           )}
 
-                          <div className="mt-6 flex justify-end">
+                          <div className='mt-6 flex justify-end'>
                             <Button
-                              variant="default"
-                              className="rounded-md px-6 py-2"
+                              variant='default'
+                              className='rounded-md px-6 py-2'
                               disabled={selectedCourts.length === 0}
                               onClick={handleBooking}
                             >

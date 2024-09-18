@@ -1,10 +1,10 @@
-import { ChevronRight } from "lucide-react";
-import React, { useEffect } from "react";
-import { IconRight } from "react-day-picker";
+import { ChevronRight } from 'lucide-react';
+import React, { useEffect } from 'react';
+import { IconRight } from 'react-day-picker';
 
-import { Button } from "@/components/ui/button";
-import type { Steppers } from "@/hooks/useStepper";
-import { useBranchStepStore } from "@/stores/createBranchStore";
+import { Button } from '@/components/ui/button';
+import type { Steppers } from '@/hooks/useStepper';
+import { useBranchStepStore } from '@/stores/createBranchStore';
 
 // import bg from "@/public/assets/images/bg1.avif";
 
@@ -29,7 +29,7 @@ const BranchCreation = ({ stepIndex, goBackfn, goNextFn, steppers }: Props) => {
   }, []);
 
   return (
-    <div className="relative flex size-full flex-col items-center justify-center backdrop-blur-3xl ">
+    <div className='relative flex size-full flex-col items-center justify-center backdrop-blur-3xl '>
       {/* <div className="absolute inset-0 -z-20 flex size-full items-center justify-center">
         <Image
           alt="bg"
@@ -38,8 +38,8 @@ const BranchCreation = ({ stepIndex, goBackfn, goNextFn, steppers }: Props) => {
         />
       </div> */}
 
-      <div className="flex w-full flex-1 items-start">
-        <div className="flex w-full items-center gap-4 ">
+      <div className='flex w-full flex-1 items-start'>
+        <div className='flex w-full items-center gap-4 '>
           {/* <Button
             className="mr-auto flex select-none items-center justify-center gap-2 px-4"
             disabled={stepIndex === 0}
@@ -51,7 +51,7 @@ const BranchCreation = ({ stepIndex, goBackfn, goNextFn, steppers }: Props) => {
             Back
           </Button> */}
 
-          <span className="flex flex-1 items-center justify-center text-xl font-semibold">
+          <span className='flex flex-1 items-center justify-center text-xl font-semibold'>
             Step-{stepIndex}
             <IconRight /> Welcome to create your new badminton branch.
           </span>
@@ -61,7 +61,7 @@ const BranchCreation = ({ stepIndex, goBackfn, goNextFn, steppers }: Props) => {
         onClick={() => {
           goNextFn();
         }}
-        className="flex w-full select-none items-center justify-center gap-2 px-4"
+        className='flex w-full select-none items-center justify-center gap-2 px-4'
         disabled={stepIndex === steppers.length}
       >
         Next <ChevronRight />

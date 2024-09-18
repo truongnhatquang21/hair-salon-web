@@ -1,9 +1,9 @@
-import type { Metadata } from "next";
+import type { Metadata } from 'next';
 
-import AdminPanelLayout from "@/components/admin-panel/admin-panel-layout";
+import AdminPanelLayout from '@/components/admin-panel/admin-panel-layout';
 
 export const metadata: Metadata = {
-  title: "Bookminton",
+  title: 'Pickleball',
 };
 export default function DemoLayout({
   children,

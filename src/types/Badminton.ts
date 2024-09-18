@@ -1,4 +1,4 @@
-type IBadminton = {
+type Ibadminton = {
   _id: string;
   name: string;
   phone?: string;
@@ -16,4 +16,4 @@ type IBadminton = {
   __v?: number;
 };
 
-export default IBadminton;
+export default Ibadminton;

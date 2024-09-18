@@ -1,20 +1,20 @@
-import "@/styles/global.css";
+import '@/styles/global.css';
 
-import { GeistMono } from "geist/font/mono";
-import { GeistSans } from "geist/font/sans";
-import type { Metadata } from "next";
-import Head from "next/head";
-import { notFound } from "next/navigation";
-import { NextIntlClientProvider, useMessages } from "next-intl";
-import NextTopLoader from "nextjs-toploader";
+import { GeistMono } from 'geist/font/mono';
+import { GeistSans } from 'geist/font/sans';
+import type { Metadata } from 'next';
+import Head from 'next/head';
+import { notFound } from 'next/navigation';
+import { NextIntlClientProvider, useMessages } from 'next-intl';
+import NextTopLoader from 'nextjs-toploader';
 
-import { Toaster } from "@/components/ui/toaster";
-import Providers from "@/Contexts/TanstackProvider";
-import { ThemeProvider } from "@/Contexts/theme-provider";
-import { AppConfig } from "@/utils/AppConfig";
+import { Toaster } from '@/components/ui/toaster';
+import Providers from '@/Contexts/TanstackProvider';
+import { ThemeProvider } from '@/Contexts/theme-provider';
+import { AppConfig } from '@/utils/AppConfig';
 
 export const metadata: Metadata = {
-  title: "Bookminton",
+  title: 'badminton',
 };
 export default function RootLayout(props: {
   children: React.ReactNode;
@@ -33,17 +33,17 @@ export default function RootLayout(props: {
       className={`${GeistSans.variable} ${GeistMono.variable}`}
     >
       <Head>
-        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel='icon' href='' sizes='any' />
       </Head>
       <body>
-        <NextTopLoader color="gray" showSpinner={false} height={2} />
+        <NextTopLoader color='gray' showSpinner={false} height={2} />
         <NextIntlClientProvider
           locale={props.params.locale}
           messages={messages}
         >
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <ThemeProvider attribute='class' defaultTheme='system' enableSystem>
             <Providers>
-              <div className="mx-auto  ">{props.children}</div>
+              <div className='mx-auto  '>{props.children}</div>
             </Providers>
           </ThemeProvider>
         </NextIntlClientProvider>

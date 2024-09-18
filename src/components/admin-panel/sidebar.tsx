@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import Link from "next/link";
+import Image from 'next/image';
+import Link from 'next/link';
 
-import { Menu } from "@/components/admin-panel/menu";
-import { SidebarToggle } from "@/components/admin-panel/sidebar-toggle";
-import { Button } from "@/components/ui/button";
-import { useSidebarToggle } from "@/hooks/use-sidebar-toggle";
-import { useStore } from "@/hooks/use-store";
-import { cn } from "@/lib/utils";
-import logo from "@/public/assets/images/logo.png";
+import { Menu } from '@/components/admin-panel/menu';
+import { SidebarToggle } from '@/components/admin-panel/sidebar-toggle';
+import { Button } from '@/components/ui/button';
+import { useSidebarToggle } from '@/hooks/use-sidebar-toggle';
+import { useStore } from '@/hooks/use-store';
+import { cn } from '@/lib/utils';
+import logo from '@/public/assets/images/pickball.png';
 
 export const ClientWrapper = ({ children }: { children: React.ReactNode }) => {
-  return <div className="flex-1">{children};</div>;
+  return <div className='flex-1'>{children};</div>;
 };
 export function Sidebar() {
   const sidebar = useStore(useSidebarToggle, (state) => state);
@@ -22,47 +22,36 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        "fixed border-r-2 flex flex-col shadow-md top-0 left-0 z-20 h-screen -translate-x-full lg:translate-x-0 transition-[width] ease-in-out duration-300",
-        sidebar?.isOpen === false ? "w-[90px]" : "w-72"
+        'fixed border-r-2 flex flex-col shadow-md top-0 left-0 z-20 h-screen -translate-x-full lg:translate-x-0 transition-[width] ease-in-out duration-300',
+        sidebar?.isOpen === false ? 'w-[90px]' : 'w-72'
       )}
     >
       <SidebarToggle isOpen={sidebar?.isOpen} setIsOpen={sidebar?.setIsOpen} />
-      <div className="relative flex h-full flex-col overflow-y-auto px-3 py-4 shadow-md dark:shadow-zinc-800">
+      <div className='relative flex h-full flex-col overflow-y-auto px-3 py-4 shadow-md dark:shadow-zinc-800'>
         <Button
           className={cn(
-            "transition-transform ease-in-out duration-300 mb-1",
-            sidebar?.isOpen === false ? "translate-x-1" : "translate-x-0"
+            'transition-transform ease-in-out duration-300 mb-1',
+            sidebar?.isOpen === false ? 'translate-x-1' : 'translate-x-0'
           )}
-          variant="link"
+          variant='link'
           asChild
         >
-          <Link href="/" className="flex items-center gap-2 hover:no-underline">
+          <Link href='/' className='flex items-center gap-1 hover:no-underline'>
             <h1
               className={cn(
-                "font-bold text-lg whitespace-nowrap transition-[transform,opacity,display] ease-in-out duration-300",
+                'font-bold text-lg whitespace-nowrap transition-[transform,opacity,display] ease-in-out duration-300',
                 sidebar?.isOpen === false
-                  ? "-translate-x-96 opacity-0 hidden"
-                  : "translate-x-0 opacity-100"
+                  ? '-translate-x-96 opacity-0 hidden'
+                  : 'translate-x-0 opacity-100'
               )}
             >
-              Bookm
+              Pickle
             </h1>
             <Image
               src={logo}
-              alt="logo"
-              className="-mx-[20px] h-14 w-auto  rotate-180 object-contain "
+              alt='logo'
+              className='h-6 w-auto  rotate-180 object-contain '
             />
-
-            <h1
-              className={cn(
-                "font-bold text-lg whitespace-nowrap transition-[transform,opacity,display] ease-in-out duration-300",
-                sidebar?.isOpen === false
-                  ? "-translate-x-96 opacity-0 hidden"
-                  : "translate-x-0 opacity-100"
-              )}
-            >
-              nton
-            </h1>
           </Link>
         </Button>
 

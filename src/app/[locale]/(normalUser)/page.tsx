@@ -1,9 +1,9 @@
-import type { Metadata } from "next";
+import type { Metadata } from 'next';
 
-import HeroSection from "@/components/Home/HeroSection";
-import NewsletterSignUp from "@/components/Home/NewsLetterSignUp";
-import PopularBadmintonPlaces from "@/components/Home/PopularBadmintonPlaces";
-import TopArticles from "@/components/Home/TopArticles";
+import HeroSection from '@/components/Home/HeroSection';
+import NewsletterSignUp from '@/components/Home/NewsLetterSignUp';
+import PopularbadmintonPlaces from '@/components/Home/PopularbadmintonPlaces';
+import TopArticles from '@/components/Home/TopArticles';
 
 // export async function generateMetadata(props: { params: { locale: string } }) {
 //   const t = await getTranslations({
@@ -18,13 +18,13 @@ import TopArticles from "@/components/Home/TopArticles";
 // }
 
 export const metadata: Metadata = {
-  title: "Bookminton",
+  title: 'Pickleball',
 };
 export default function Index() {
   return (
     <div>
       <HeroSection />
-      <PopularBadmintonPlaces />
+      <PopularbadmintonPlaces />
       <TopArticles />
       <NewsletterSignUp />
     </div>
