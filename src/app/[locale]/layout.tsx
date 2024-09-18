@@ -33,7 +33,7 @@ export default function RootLayout(props: {
       className={`${GeistSans.variable} ${GeistMono.variable}`}
     >
       <Head>
-        <link rel='icon' href='' sizes='any' />
+        <link rel='icon' href='/' sizes='any' />
       </Head>
       <body>
         <NextTopLoader color='gray' showSpinner={false} height={2} />

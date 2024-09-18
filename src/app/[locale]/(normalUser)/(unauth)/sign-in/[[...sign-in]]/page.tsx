@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 
 import { UserAuthForm } from '@/components/AuthForm';
-import banner from '@/public/assets/images/banner.jpeg';
+import banner from '@/public/assets/images/banner.jpg';
 
 export const dynamic = 'force-dynamic';
 export async function generateMetadata(props: { params: { locale: string } }) {
@@ -33,15 +33,6 @@ export default function AuthenticationPage() {
           <Image src={logo} alt="badminton" width={40} />
           badminton
         </div> */}
-        <div className='relative z-20 mt-auto'>
-          <blockquote className='space-y-2'>
-            <span className='text-lg'>
-              “I love the game of badminton. It is a game of skill, subtlety,
-              and precision.”
-            </span>
-            <footer className='text-sm'>badminton teams</footer>
-          </blockquote>
-        </div>
       </div>
       <div className='lg:p-8'>
         <div className='mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]'>
