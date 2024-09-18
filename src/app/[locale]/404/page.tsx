@@ -15,7 +15,7 @@ export default function Component() {
         </h1>
         <p className='mt-4 text-muted-foreground'>
           It looks like the page you're looking for doesn't exist on the
-          badminton platform. Please check the URL or contact the platform
+          Pickleball platform. Please check the URL or contact the platform
           administrators if you believe this is an error.
         </p>
         <div className='mt-6'>
@@ -24,7 +24,7 @@ export default function Component() {
             className='inline-flex items-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2'
             prefetch={false}
           >
-            Go to badminton Homepage
+            Go to Pickleball Homepage
           </Link>
         </div>
       </div>
