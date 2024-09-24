@@ -1,8 +1,8 @@
-"use server";
+'use server';
 
-import type { OrderSchemaType } from "@/views/Subscription/checkout/CheckoutSubcription";
+import type { OrderSchemaType } from '@/views/Subscription/checkout/CheckoutSubcription';
 
-import { fetcher } from ".";
+import { fetcher } from '.';
 
 export type PurchasedOrderType = {
   totalPrice: number;
@@ -19,13 +19,15 @@ export type PurchasedOrderType = {
   updatedAt: string;
 };
 
-export const buySubscriptionAPI = async (data: OrderSchemaType) => {
-  return fetcher<PurchasedOrderType>("package-purchase/buy-package-full", {
-    method: "POST",
+export const buySubscriptionAPI = async (
+  data: OrderSchemaType & { orderCode: string }
+) => {
+  return fetcher<PurchasedOrderType>('package-purchase/buy-package-full', {
+    method: 'POST',
     body: JSON.stringify(data),
   });
 };
 
 export const getMyPurchaseAPI = async () => {
-  return fetcher<PurchasedOrderType>("package-purchase/get-my-purchases");
+  return fetcher<PurchasedOrderType>('package-purchase/get-my-purchases');
 };

@@ -11,6 +11,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { getProfileAPI } from '@/apiCallers/auth';
 import { getBranchByIdAPI2 } from '@/apiCallers/Branches';
 import { getCourtAvailable } from '@/apiCallers/courts';
+import { formatToVND } from '@/app/[locale]/(normalUser)/(auth)/subscriptions/helper';
 import BranchDetailOverview from '@/components/branchs/BranchDetailOverview';
 import { CourtCarousel } from '@/components/CourtDetail/CourtCarousel';
 import CalendarDaily from '@/components/Custom/DailyCalendar';
@@ -78,6 +79,7 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
     queryKey: ['brachDetail'],
     queryFn: async () => getBranchByIdAPI2(slug),
   });
+  console.log(data, 'DASf');
 
   const {
     mutateAsync: getCourtAvalableMutatue,
@@ -210,7 +212,7 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
   }, [data?.data?.slots, selectDay]);
 
   useEffect(() => {
-    if (selectedSlots.length !== 0) {
+    if (selectDay && selectedSlots.length !== 0) {
       getCourtAvalableMutatue({
         branch: slug,
         slots: selectedSlots.map((el) => el._id),
@@ -399,8 +401,7 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
                                       >
                                         {/* <DollarSignIcon className="size-4" /> */}
                                         <span>
-                                          {(value.price / 100).toFixed(3)}
-                                          VND/slot
+                                          {formatToVND(value.price)}/slot
                                         </span>
                                       </div>
                                     </div>
@@ -561,8 +562,7 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
                                         >
                                           {/* <DollarSignIcon className="size-4" /> */}
                                           <span>
-                                            {(value.price / 100).toFixed(3)}
-                                            VND/slot
+                                            {formatToVND(value.price)}/slot
                                           </span>
                                         </div>
                                       </div>
@@ -695,8 +695,7 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
                                       >
                                         {/* <DollarSignIcon className="size-4" /> */}
                                         <span>
-                                          {(value.price / 100).toFixed(3)}
-                                          VND/slot
+                                          {formatToVND(value.price)}/slot
                                         </span>
                                       </div>
                                     </div>

@@ -1,20 +1,20 @@
 // eslint-disable-next-line
-import { auth } from "@/auth";
-import Footer from "@/components/Footer";
-import { MainNav } from "@/components/MainNav";
-import type { NavItem } from "@/types/nav";
-import type { Session } from "next-auth";
+import { auth } from '@/auth';
+import Footer from '@/components/Footer';
+import { MainNav } from '@/components/MainNav';
+import type { NavItem } from '@/types/nav';
+import type { Session } from 'next-auth';
 
 function Component() {
   return (
-    <div className="flex min-h-dvh flex-col items-center justify-center bg-background px-4 py-12 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-md text-center">
-        <div className="mx-auto size-12 text-primary" />
-        <h1 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+    <div className='flex min-h-dvh flex-col items-center justify-center bg-background px-4 py-12 sm:px-6 lg:px-8'>
+      <div className='mx-auto max-w-md text-center'>
+        <div className='mx-auto size-12 text-primary' />
+        <h1 className='mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl'>
           This platform only supports devices with a screen size of 768px or
           larger.
         </h1>
-        <p className="mt-4 text-muted-foreground">
+        <p className='mt-4 text-muted-foreground'>
           We apologize for the inconvenience, but our platform is currently
           optimized for larger screens. Please try accessing this page from a
           device with a screen size of 768px or larger.
@@ -37,31 +37,31 @@ export default async function Layout(props: { children: React.ReactNode }) {
   // const t = useTranslations("RootLayout");
   const NavItems: NavItem[] = [
     {
-      title: "Home",
-      href: "/",
+      title: 'Home',
+      href: '/',
     },
     {
-      title: "About",
-      href: "/about",
+      title: 'About',
+      href: '/about',
     },
     {
-      title: "Contact",
-      href: "/contact",
+      title: 'Contact',
+      href: '/contact',
     },
 
     {
-      title: "Subscriptions",
-      href: "/subscriptions",
+      title: 'Subscriptions',
+      href: '/subscriptions',
     },
   ];
   return (
     <>
-      <div className="mx-auto hidden min-h-screen w-full max-w-[1350px] flex-col border-x border-dashed md:flex ">
+      <div className='mx-auto hidden min-h-screen w-full max-w-[1350px] flex-col border-x border-dashed md:flex '>
         <MainNav items={NavItems} session={session as Session} />
-        <div className="p-2 py-4">{props.children}</div>
+        <div className='p-2 py-4'>{props.children}</div>
         <Footer />
       </div>
-      <div className="hidden h-screen w-screen max-md:block">
+      <div className='hidden h-screen w-screen max-md:block'>
         <Component />
       </div>
     </>

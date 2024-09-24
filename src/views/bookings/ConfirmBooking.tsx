@@ -5,10 +5,9 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { Eye, Plus, UsersIcon } from 'lucide-react';
-import Image from 'next/image';
+import { UsersIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -17,11 +16,13 @@ import {
   postBookingCompetition,
   postBookingFlexible,
 } from '@/apiCallers/customerBooking';
-import { addCardAPI, getCardListAPI } from '@/apiCallers/payment';
+import { getCardListAPI } from '@/apiCallers/payment';
+import { getPaymentBookingInfor } from '@/apiCallers/paymentOS';
+import { formatToVND } from '@/app/[locale]/(normalUser)/(auth)/subscriptions/helper';
 import CustomTag from '@/components/CustomTag';
 import { Icons } from '@/components/icons';
 import { Loading } from '@/components/loading';
-import SpinnerIcon from '@/components/SpinnerIcon';
+import PayOs from '@/components/payment/PayOS';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,26 +32,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import AutoForm, { AutoFormSubmit } from '@/components/ui/auto-form';
-import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import {
   Select,
   SelectContent,
@@ -63,8 +46,6 @@ import {
 import { useToast } from '@/components/ui/use-toast';
 import type { IBooking } from '@/interfaces/booking.interface';
 import type { ISchedule } from '@/interfaces/schedule.interface';
-import cardimg from '@/public/assets/images/cardbank.png';
-import vnpay from '@/public/assets/images/vnpay.png';
 import { useBookingStore } from '@/stores/bookingStore';
 
 import { getDayOfPermanent } from '../../apiCallers/schedule/index';
@@ -94,7 +75,8 @@ const bookingTransactionSchema = z.object({
     .string({
       required_error: 'Please select a payment method',
     })
-    .min(1, 'Please select a payment method'),
+    .min(1, 'Please select a payment method')
+    .default('1234567'),
   // packageId: z.string(),
 });
 export type OrderSchemaType = z.infer<typeof bookingTransactionSchema>;
@@ -151,62 +133,6 @@ const ConfirmBooking = () => {
         // });
       },
     });
-
-  const { mutateAsync: triggerAddCard, isPending } = useMutation({
-    mutationFn: async (data: CardSchemaType) => {
-      return addCardAPI(data);
-    },
-    onSuccess: (data) => {
-      if (data.ok && !data.ok) {
-        // if (data.error) {
-        //   const errs = data.error as { [key: string]: { message: string } };
-        //   Object.entries(errs).forEach(([key, value]) => {
-        //     setError(key as keyof PackageCourtSchemaType, {
-        //       type: "manual",
-        //       message: value.message,
-        //     });
-        //   });
-        // }
-        toast({
-          variant: 'destructive',
-          title: 'Uh oh! Something went wrong.',
-          description: data.message || data.statusText,
-        });
-        throw new Error(data.message || data.statusText);
-      }
-      if (data.message) {
-        return toast({
-          variant: 'default',
-          className: 'bg-green-600 text-white',
-          title: 'Message from system',
-          description: data.message,
-        });
-      }
-      return toast({
-        variant: 'default',
-        title: 'Submitted successfully',
-        description: 'You can do something else now',
-      });
-    },
-  });
-  const onAddCardSubmit = async (value: CardSchemaType) => {
-    if (new Date(value.expDate) < new Date()) {
-      return toast({
-        variant: 'destructive',
-        title: 'Uh oh! Something went wrong.',
-        description: 'Card is expired',
-      });
-    }
-    try {
-      await triggerAddCard(value);
-      setIsDialogOpen(false);
-      queryClient.invalidateQueries({
-        queryKey: ['cardList'],
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   const { bookingData } = useBookingStore((state) => {
     return {
@@ -304,15 +230,7 @@ const ConfirmBooking = () => {
   });
 
   const handleBooking = async () => {
-    const paymentId = getValues('payment');
-    if (!paymentId) {
-      return toast({
-        variant: 'destructive',
-        title: 'Uh oh! Something went wrong.',
-        description: 'Please choose Payment Method',
-      });
-    }
-
+    const paymentId = getValues('payment') || '123123' || '1211324';
     if (
       bookingData?.booking?.type === 'single_schedule' &&
       bookingData.schedule &&
@@ -340,7 +258,7 @@ const ConfirmBooking = () => {
 
         transaction: {
           amount: bookingData.booking.totalPrice,
-          payment: getValues('payment'),
+          payment: getValues('payment') || '123123',
         },
       });
 
@@ -369,7 +287,7 @@ const ConfirmBooking = () => {
             paymentType === 'full'
               ? bookingData.booking.totalPrice
               : bookingData.booking.totalPrice / 2,
-          payment: getValues('payment'),
+          payment: getValues('payment') || '123123',
         },
       });
     } else if (
@@ -403,7 +321,7 @@ const ConfirmBooking = () => {
 
         transaction: {
           amount: bookingData.booking.totalPrice,
-          payment: getValues('payment'),
+          payment: getValues('payment') || '123123',
         },
       });
 
@@ -437,7 +355,7 @@ const ConfirmBooking = () => {
               ? bookingData.booking.totalPrice * dayOfPermanent?.data.length
               : (bookingData.booking.totalPrice * dayOfPermanent?.data.length) /
                 2,
-          payment: getValues('payment'),
+          payment: getValues('payment') || '123123',
         },
       });
     } else if (
@@ -460,7 +378,7 @@ const ConfirmBooking = () => {
         },
         transaction: {
           amount: bookingData.booking.totalPrice,
-          payment: getValues('payment'),
+          payment: getValues('payment') || '123123',
         },
       });
     } else if (
@@ -492,7 +410,7 @@ const ConfirmBooking = () => {
             paymentType === 'full'
               ? bookingData.booking.totalPrice
               : bookingData.booking.totalPrice / 2,
-          payment: getValues('payment'),
+          payment: getValues('payment') || '123123',
         },
       });
       await bookingCompetitionMutatue({
@@ -518,11 +436,29 @@ const ConfirmBooking = () => {
             paymentType === 'full'
               ? bookingData.booking.totalPrice
               : bookingData.booking.totalPrice / 2,
-          payment: getValues('payment'),
+          payment: getValues('payment') || '123123',
         },
       });
     }
   };
+
+  const totalAmount = useMemo(() => {
+    if (bookingData?.booking)
+      if (
+        bookingData.booking?.type === 'permanent_schedule' &&
+        dayOfPermanent?.data
+      ) {
+        return paymentType === 'full'
+          ? bookingData.booking.totalPrice * dayOfPermanent?.data?.length
+          : (bookingData.booking.totalPrice * dayOfPermanent?.data?.length) / 2;
+      }
+
+    return paymentType === 'full'
+      ? bookingData.booking.totalPrice
+      : bookingData.booking.totalPrice / 2;
+    return undefined;
+  }, [paymentType, dayOfPermanent?.data]);
+
   console.log(bookingData);
   const getEndDate = () => {
     if (
@@ -553,12 +489,38 @@ const ConfirmBooking = () => {
       router.back();
     }
   }, [bookingData.booking, router]);
+
+  const { data: PayOSInfor, isFetching: isGettingPayInfor } = useQuery({
+    queryKey: ['bookingPayOSLink', totalAmount],
+    queryFn: async () => {
+      if (totalAmount) {
+        return getPaymentBookingInfor({
+          amount: totalAmount,
+          description: 'Booking PickleBall Court',
+          courtId:
+            bookingData.booking.court._id ||
+            bookingData.booking.arrayCourt[0]._id,
+        });
+      }
+      return null;
+    },
+    enabled: !!totalAmount,
+  });
+
+  const [triggerValue, setTriggerValue] = useState(false);
+
+  useEffect(() => {
+    if (triggerValue) {
+      handleBooking();
+    }
+  }, [triggerValue]);
+
   return (
     <div className='w-full space-y-8'>
       <div className='text-center'>
         <h1 className='text-4xl font-bold'>Confirm Booking</h1>
         <p className='text-lg text-muted-foreground'>
-          Review your badminton court booking details.
+          Review your pickleball court booking details.
         </p>
       </div>
       <div
@@ -713,11 +675,7 @@ const ConfirmBooking = () => {
                     `}
                               >
                                 {/* <DollarSignIcon className="size-4" /> */}
-                                <span>
-                                  {' '}
-                                  {(court.price / 100).toFixed(3)}
-                                  VND/slot
-                                </span>
+                                <span> {formatToVND(court.price)}</span>
                               </div>
                               {/* <Button variant="outline" size="sm">
                         Book Now
@@ -791,10 +749,7 @@ const ConfirmBooking = () => {
                           {/* <DollarSignIcon className="size-4" /> */}
                           <span>
                             {' '}
-                            {(bookingData?.booking?.court.price / 100).toFixed(
-                              3
-                            )}
-                            VND/slot
+                            {formatToVND(bookingData.booking?.court.price)}
                           </span>
                         </div>
                         {/* <Button variant="outline" size="sm">
@@ -814,10 +769,11 @@ const ConfirmBooking = () => {
                 </Label>
                 <div id='total-price' className='mt-2 text-2xl font-bold'>
                   {bookingData.booking?.type === 'permanent_schedule'
-                    ? bookingData?.booking?.totalPrice *
-                      dayOfPermanent?.data?.length
-                    : bookingData?.booking?.totalPrice}
-                  VND
+                    ? formatToVND(
+                        bookingData?.booking?.totalPrice *
+                          dayOfPermanent?.data?.length
+                      )
+                    : formatToVND(bookingData?.booking?.totalPrice)}
                 </div>
               </div>
               <div>
@@ -841,15 +797,18 @@ const ConfirmBooking = () => {
                 <div id='total-price' className='mt-2 text-2xl font-bold'>
                   {paymentType === 'full'
                     ? bookingData.booking?.type === 'permanent_schedule'
-                      ? bookingData?.booking?.totalPrice *
-                        dayOfPermanent?.data?.length
-                      : bookingData?.booking?.totalPrice
+                      ? formatToVND(
+                          bookingData?.booking?.totalPrice *
+                            dayOfPermanent?.data?.length
+                        )
+                      : formatToVND(bookingData?.booking?.totalPrice)
                     : bookingData.booking?.type === 'permanent_schedule'
-                      ? (bookingData?.booking?.totalPrice *
-                          dayOfPermanent?.data?.length) /
-                        2
-                      : bookingData?.booking?.totalPrice / 2}
-                  VND
+                      ? formatToVND(
+                          (bookingData?.booking?.totalPrice *
+                            dayOfPermanent?.data?.length) /
+                            2
+                        )
+                      : formatToVND(bookingData?.booking?.totalPrice / 2)}
                 </div>
               </div>
               <div className=''>
@@ -883,236 +842,25 @@ const ConfirmBooking = () => {
               </div>
             </div>
 
-            <div className='flex w-full flex-col gap-2 rounded-md border-2 border-dashed p-2'>
-              <span className='flex items-center  justify-between border-b py-2 font-semibold'>
-                Payment method
-                {payment === 'bank' && (
-                  <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                    <DialogTrigger asChild>
-                      <Button
-                        className='flex items-center gap-1'
-                        variant='secondary'
-                      >
-                        <Plus />
-                        Add new card
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className='flex max-h-[50%] flex-col overflow-auto sm:max-w-xl'>
-                      <DialogHeader>
-                        <DialogTitle>Add new card</DialogTitle>
-                        <DialogDescription>
-                          Fill out the form below to add a new court
-                        </DialogDescription>
-                      </DialogHeader>
-                      <div className='relative flex-1 gap-4 overflow-auto p-2'>
-                        <AutoForm
-                          formSchema={cardSchema}
-                          onSubmit={onAddCardSubmit}
-                        >
-                          <AutoFormSubmit className='w-full'>
-                            <DialogFooter className='w-full'>
-                              <Button
-                                className='w-full'
-                                type='submit'
-                                disabled={isPending}
-                              >
-                                {isPending ? <SpinnerIcon /> : 'Save'}
-                              </Button>
-                            </DialogFooter>
-                          </AutoFormSubmit>
-                        </AutoForm>
-                      </div>
-                    </DialogContent>
-                  </Dialog>
-                )}
-                <Select
-                  value={payment}
-                  onValueChange={(value) => {
-                    setPayment(value as 'bank' | 'tranfer');
+            <div className='flex w-full flex-col items-center gap-2 rounded-md border-2 border-dashed p-2'>
+              {isGettingPayInfor ||
+              bookingCompetitionMutating ||
+              bookingMutating ||
+              bookingMutatingFlexible ? (
+                <Loading />
+              ) : PayOSInfor?.data ? (
+                <PayOs
+                  url={PayOSInfor?.data?.url}
+                  orderCode={PayOSInfor?.data?.orderCode}
+                  successTriggerFn={() => {
+                    setTriggerValue(true);
                   }}
-                >
-                  <SelectTrigger className='w-[180px]'>
-                    <SelectValue placeholder='Select a payment method' />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>Payment method</SelectLabel>
-                      <SelectItem value='bank'>Bank</SelectItem>
-                      <SelectItem value='tranfer' disabled>
-                        Tranfer money
-                      </SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </span>
-
-              {payment === 'bank' ? (
-                <div className='flex max-h-[600px] w-full flex-col gap-2 overflow-auto p-2'>
-                  {isCardListLoading ? (
-                    <div className='flex size-full justify-center p-2'>
-                      <Loading />
-                    </div>
-                  ) : cardList?.data?.length ? (
-                    <RadioGroup
-                      onValueChange={(value) => {
-                        setValue('payment', value);
-                      }}
-                    >
-                      {cardList?.data.map((card) => (
-                        <div
-                          className='flex items-center space-x-2'
-                          key={card._id}
-                        >
-                          <RadioGroupItem value={card._id} id={card._id} />
-                          <Label
-                            htmlFor={card._id}
-                            className='flex w-full items-center gap-2'
-                          >
-                            <div className='flex w-full items-center gap-2  rounded-md border-2 p-2'>
-                              <Image
-                                src={cardimg}
-                                alt='img'
-                                className='size-20 rounded-md border object-contain p-1 shadow-md'
-                              />
-                              <div className='flex flex-col'>
-                                <span className='text-xl font-bold capitalize'>
-                                  {card.accountBank}
-                                </span>
-                                <span className='text-base font-semibold capitalize'>
-                                  {card.accountName}
-                                </span>
-                                <span className='text-sm'>
-                                  {card.accountNumber.slice(0, 4)} **** ****{' '}
-                                </span>
-                                <span className='text-sm'>
-                                  {format(new Date(card.expDate), 'MM/yyyy')}
-                                </span>
-                              </div>
-                              <Dialog>
-                                <DialogTrigger asChild>
-                                  <Eye className='ml-auto cursor-pointer' />
-                                </DialogTrigger>
-                                <DialogContent className='flex max-h-[50%] flex-col overflow-auto sm:max-w-xl'>
-                                  <DialogHeader>
-                                    <DialogTitle>
-                                      <span>{card.accountBank}</span>
-                                      <span className='text-sm font-normal'>
-                                        / {card.accountNumber}
-                                      </span>
-                                      <span />
-                                    </DialogTitle>
-                                    <DialogDescription>
-                                      View card details
-                                    </DialogDescription>
-                                  </DialogHeader>
-                                  <div className='relative flex-1 gap-4 overflow-auto p-2'>
-                                    <AutoForm
-                                      formSchema={cardSchema}
-                                      values={{
-                                        accountNumber: card.accountNumber,
-                                        accountName: card.accountName,
-                                        accountBank: card.accountBank,
-                                        expDate: card.expDate,
-                                      }}
-                                      fieldConfig={{
-                                        accountNumber: {
-                                          inputProps: {
-                                            readOnly: true,
-                                            placeholder: '--',
-                                            type: 'number',
-                                          },
-                                        },
-                                        accountName: {
-                                          inputProps: {
-                                            readOnly: true,
-                                            placeholder: '--',
-                                          },
-                                        },
-                                        accountBank: {
-                                          inputProps: {
-                                            readOnly: true,
-                                            placeholder: '--',
-                                          },
-                                        },
-                                        expDate: {
-                                          inputProps: {
-                                            readOnly: true,
-                                            placeholder: '--',
-                                          },
-                                        },
-                                      }}
-                                    />
-                                  </div>
-                                </DialogContent>
-                              </Dialog>
-                            </div>
-                          </Label>
-                        </div>
-                      ))}
-                    </RadioGroup>
-                  ) : (
-                    <div className='flex w-full justify-center text-sm'>
-                      No card found
-                    </div>
-                  )}
-                </div>
+                />
               ) : (
-                <div className='flex w-full flex-col gap-2'>
-                  <RadioGroup defaultValue='option-one'>
-                    <div className='flex items-center space-x-2'>
-                      <RadioGroupItem value='option-two' id='option-two' />
-                      <Label
-                        htmlFor='option-two'
-                        className='flex w-full items-center gap-2'
-                      >
-                        <div className='flex w-full items-center gap-2  rounded-md border-2 p-2'>
-                          <Image
-                            src={vnpay}
-                            alt='img'
-                            className='size-20 rounded-md border object-contain p-1 shadow-md'
-                          />
-                          <div className='flex flex-col'>
-                            <span className='text-xl font-semibold'>VNPay</span>
-                            <span className='text-sm'>badminton</span>
-                          </div>
-                        </div>
-                      </Label>
-                    </div>
-                    <div className='flex items-center space-x-2'>
-                      <RadioGroupItem value='option-one' id='option-one' />
-                      <Label
-                        htmlFor='option-one'
-                        className='flex w-full items-center gap-2'
-                      >
-                        <div className='flex w-full items-center gap-2  rounded-md border-2 p-2'>
-                          <Image
-                            src={vnpay}
-                            alt='img'
-                            className='size-20 rounded-md border object-contain p-1 shadow-md'
-                          />
-                          <div className='flex flex-col'>
-                            <span className='text-xl font-semibold'>VNpay</span>
-                            <span className='text-sm'>badminton</span>
-                          </div>
-                        </div>
-                      </Label>
-                    </div>
-                  </RadioGroup>
-                </div>
+                "Can't get payment information"
               )}
             </div>
           </CardContent>
-          <CardFooter className='rounded-b-lg bg-primary px-6 py-4 text-primary-foreground'>
-            <Button
-              onClick={handleBooking}
-              className='w-full rounded-md bg-primary-foreground px-4 py-2 font-medium text-primary shadow-sm transition-colors hover:bg-slate-300'
-            >
-              {(bookingMutating ||
-                bookingMutatingFlexible ||
-                bookingCompetitionMutating) && <SpinnerIcon />}
-              Confirm Booking
-            </Button>
-          </CardFooter>
         </Card>
       </div>
       <AlertDialog open={open}>

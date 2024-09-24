@@ -1,6 +1,6 @@
-import React from "react";
+import React from 'react';
 
-import CheckoutSubcription from "@/views/Subscription/checkout/CheckoutSubcription";
+import CheckoutSubcription from '@/views/Subscription/checkout/CheckoutSubcription';
 
 type Props = {};
 

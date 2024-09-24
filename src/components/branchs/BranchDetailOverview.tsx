@@ -2,10 +2,11 @@
 
 'use client';
 
-import { Clock, DollarSignIcon, MapPin, UsersIcon } from 'lucide-react';
+import { Clock, MapPin, UsersIcon } from 'lucide-react';
 import Link from 'next/link';
 import type { FC } from 'react';
 
+import { formatToVND } from '@/app/[locale]/(normalUser)/(auth)/subscriptions/helper';
 import type { IBranch } from '@/interfaces/branch.interface';
 import type { ICourt } from '@/interfaces/court.interface';
 import { CourtStatusEnum } from '@/types';
@@ -251,8 +252,7 @@ const BranchDetailOverview: FC<BranchDetailOverviewProps> = ({ data }) => {
                           </div>
                           <div className='flex items-center justify-between'>
                             <div className='flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400'>
-                              <DollarSignIcon className='size-4' />
-                              <span>{court.price}/hr</span>
+                              <span>{formatToVND(court.price)}/hr</span>
                             </div>
                             {/* <Button variant="outline" size="sm">
                           Book Now

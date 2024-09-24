@@ -1,12 +1,9 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { format } from 'date-fns';
-import { BanknoteIcon, Eye, Plus } from 'lucide-react';
-import Image from 'next/image';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useRouter, useSearchParams } from 'next/navigation';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
@@ -15,53 +12,21 @@ import {
   buySubscriptionAPI,
   type PurchasedOrderType,
 } from '@/apiCallers/package';
-import { addCardAPI, getCardListAPI } from '@/apiCallers/payment';
+import { getPaymentSubscriptionInfor } from '@/apiCallers/paymentOS';
 import { formatToVND } from '@/app/[locale]/(normalUser)/(auth)/subscriptions/helper';
 import { PricingCard } from '@/app/[locale]/(normalUser)/(auth)/subscriptions/page';
 import { Loading } from '@/components/loading';
-import SpinnerIcon from '@/components/SpinnerIcon';
+import PayOs from '@/components/payment/PayOS';
 import { subscriptionFormSchema } from '@/components/Subscription/SubcriptionForm';
-import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
-import AutoForm, { AutoFormSubmit } from '@/components/ui/auto-form';
-import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { AlertDialog, AlertDialogContent } from '@/components/ui/alert-dialog';
+import AutoForm from '@/components/ui/auto-form';
 import { useToast } from '@/components/ui/use-toast';
-import cardimg from '@/public/assets/images/cardbank.png';
-import vnpay from '@/public/assets/images/vnpay.png';
 import { PackageEnum } from '@/views/AdminSubscriptions/helper';
 
 import PaymentSuccesss from './PaymentSuccess';
 
 export const cardSchema = z.object({
-  accountNumber: z.string().min(16).max(16),
+  accountNumber: z.string().min(5).max(16),
   accountName: z.string(),
   accountBank: z.string(),
   expDate: z.coerce.date(),
@@ -83,7 +48,6 @@ type Props = {
 };
 
 const CheckoutSubcription = ({ subsId }: Props) => {
-  const [payment, setPayment] = useState<'bank' | 'tranfer'>('bank');
   const { data: subscription, isLoading } = useQuery({
     queryKey: ['subscription', subsId],
     queryFn: async () => getSubscriptionByIdAPI(subsId),
@@ -105,87 +69,8 @@ const CheckoutSubcription = ({ subsId }: Props) => {
   }, [totalCourt, subsId, subscription?.data?.type, router]);
 
   const { toast } = useToast();
-  const { mutateAsync: triggerAddCard, isPending } = useMutation({
-    mutationFn: async (data: CardSchemaType) => {
-      return addCardAPI(data);
-    },
-    onSuccess: (data) => {
-      console.log(data);
 
-      if (data.ok && !data.ok) {
-        // if (data.error) {
-        //   const errs = data.error as { [key: string]: { message: string } };
-        //   Object.entries(errs).forEach(([key, value]) => {
-        //     setError(key as keyof PackageCourtSchemaType, {
-        //       type: "manual",
-        //       message: value.message,
-        //     });
-        //   });
-        // }
-        toast({
-          variant: 'destructive',
-          title: 'Uh oh! Something went wrong.',
-          description: data.message || data.statusText,
-        });
-        throw new Error(data.message || data.statusText);
-      }
-      if (data.message) {
-        return toast({
-          variant: 'default',
-          className: 'bg-green-600 text-white',
-          title: 'Message from system',
-          description: data.message,
-        });
-      }
-      return toast({
-        variant: 'default',
-        title: 'Submitted successfully',
-        description: 'You can do something else now',
-      });
-    },
-  });
-
-  const { data: cardList, isLoading: isCardListLoading } = useQuery({
-    queryKey: ['cardList'],
-    queryFn: async () => getCardListAPI(),
-  });
-
-  const availableCard = useMemo(() => {
-    if (cardList?.data) {
-      return cardList.data.filter(
-        (card) => new Date(card.expDate) > new Date()
-      );
-    }
-    return [];
-  }, [cardList?.data]);
-  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
-  const queryClient = useQueryClient();
-  const onAddCardSubmit = async (value: CardSchemaType) => {
-    if (new Date(value.expDate) < new Date()) {
-      return toast({
-        variant: 'destructive',
-        title: 'Uh oh! Something went wrong.',
-        description: 'Card is expired',
-      });
-    }
-    try {
-      await triggerAddCard(value);
-      setIsDialogOpen(false);
-      queryClient.invalidateQueries({
-        queryKey: ['cardList'],
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const {
-    trigger,
-    setValue,
-    getValues,
-
-    formState: { isLoading: isOrderSubmitting, errors },
-  } = useForm<OrderSchemaType>({
+  const { setValue, getValues } = useForm<OrderSchemaType>({
     resolver: zodResolver(orderSchema),
     defaultValues: {
       totalCourt,
@@ -199,7 +84,11 @@ const CheckoutSubcription = ({ subsId }: Props) => {
     isPending: isTriggeringOrder,
     data: purchasedData,
   } = useMutation({
-    mutationFn: async (data: OrderSchemaType) => {
+    mutationFn: async (
+      data: OrderSchemaType & {
+        orderCode: string;
+      }
+    ) => {
       return buySubscriptionAPI(data);
     },
     onSuccess: (data) => {
@@ -236,19 +125,13 @@ const CheckoutSubcription = ({ subsId }: Props) => {
     },
   });
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+
   const onSubmitOrder = async () => {
     try {
-      const isValid = await trigger();
-      if (!isValid) {
-        return toast({
-          variant: 'destructive',
-          title: 'Uh oh! Something went wrong.',
-          description:
-            errors?.paymentId?.message || 'Please select a payment method',
-        });
-      }
-
-      await triggerOrder(getValues());
+      await triggerOrder({
+        ...getValues(),
+        orderCode: paymentInfor?.data?.orderCode,
+      });
       setIsConfirmDialogOpen(false);
     } catch (error) {
       toast({
@@ -259,11 +142,25 @@ const CheckoutSubcription = ({ subsId }: Props) => {
     }
   };
 
+  const { data: paymentInfor, isLoading: isGettingPaymentInfor } = useQuery({
+    queryKey: ['subscriptionPaymentInfor', subsId],
+    queryFn: async () => {
+      return getPaymentSubscriptionInfor({
+        packageId: subsId,
+        totalCourt,
+        description: 'Payment for subscription',
+      });
+    },
+  });
+
+  const [triggerValue, setTriggerValue] = useState(false);
+
   useEffect(() => {
-    if (!getValues('paymentId') && availableCard?.length) {
-      setValue('paymentId', availableCard[0]._id);
+    if (triggerValue) {
+      onSubmitOrder();
     }
-  }, [availableCard, getValues, setValue]);
+  }, [triggerValue]);
+
   return (
     <>
       <div className='size-full'>
@@ -344,315 +241,21 @@ const CheckoutSubcription = ({ subsId }: Props) => {
                   </h3>
                 )}
               </div>
-              <div className='flex w-full flex-col gap-2 rounded-md border-2 border-dashed p-2'>
-                <span className='flex items-center  justify-between border-b py-2 font-semibold'>
-                  Payment method
-                  {payment === 'bank' && (
-                    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                      <DialogTrigger asChild>
-                        <Button
-                          className='flex items-center gap-1'
-                          variant='secondary'
-                        >
-                          <Plus />
-                          Add new card
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className='flex max-h-[50%] flex-col overflow-auto sm:max-w-xl'>
-                        <DialogHeader>
-                          <DialogTitle>Add new card</DialogTitle>
-                          <DialogDescription>
-                            Fill out the form below to add a new court
-                          </DialogDescription>
-                        </DialogHeader>
-                        <div className='relative flex-1 gap-4 overflow-auto p-2'>
-                          <AutoForm
-                            formSchema={cardSchema}
-                            fieldConfig={{
-                              expDate: {
-                                inputProps: {
-                                  disabledFromPast: true,
-                                },
-                              },
-                            }}
-                            onSubmit={onAddCardSubmit}
-                          >
-                            <AutoFormSubmit className='w-full'>
-                              <DialogFooter className='w-full'>
-                                <Button
-                                  className='w-full'
-                                  type='submit'
-                                  disabled={isPending}
-                                >
-                                  {isPending ? <SpinnerIcon /> : 'Save'}
-                                </Button>
-                              </DialogFooter>
-                            </AutoFormSubmit>
-                          </AutoForm>
-                        </div>
-                      </DialogContent>
-                    </Dialog>
-                  )}
-                  <Select
-                    value={payment}
-                    onValueChange={(value) => {
-                      setPayment(value as 'bank' | 'tranfer');
+              <div className='flex w-full flex-col items-center gap-2 rounded-md border-2 border-dashed p-2'>
+                {isGettingPaymentInfor || isTriggeringOrder ? (
+                  <Loading />
+                ) : paymentInfor?.data ? (
+                  <PayOs
+                    url={paymentInfor?.data?.url}
+                    orderCode={paymentInfor?.data?.orderCode}
+                    successTriggerFn={() => {
+                      setTriggerValue(true);
                     }}
-                  >
-                    <SelectTrigger className='w-[180px]'>
-                      <SelectValue placeholder='Select a payment method' />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectLabel>Payment method</SelectLabel>
-                        <SelectItem value='bank'>Bank</SelectItem>
-                        <SelectItem value='tranfer' disabled>
-                          Tranfer money
-                        </SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                </span>
-
-                {payment === 'bank' ? (
-                  <div className='flex max-h-[600px] w-full flex-col gap-2 overflow-auto p-2'>
-                    {isCardListLoading ? (
-                      <div className='flex size-full justify-center p-2'>
-                        <Loading />
-                      </div>
-                    ) : availableCard?.length ? (
-                      <RadioGroup
-                        onValueChange={(value) => {
-                          setValue('paymentId', value);
-                        }}
-                      >
-                        {availableCard?.map((card) => (
-                          <div
-                            className='flex items-center space-x-2'
-                            key={card._id}
-                          >
-                            <RadioGroupItem value={card._id} id={card._id} />
-                            <Label
-                              htmlFor={card._id}
-                              className='flex w-full items-center gap-2'
-                            >
-                              <div className='flex w-full items-center gap-2  rounded-md border-2 p-2'>
-                                <Image
-                                  src={cardimg}
-                                  alt='img'
-                                  className='size-20 rounded-md border object-contain p-1 shadow-md'
-                                />
-                                <div className='flex flex-col'>
-                                  <span className='text-xl font-bold capitalize'>
-                                    {card.accountBank}
-                                  </span>
-                                  <span className='text-base font-semibold capitalize'>
-                                    {card.accountName}
-                                  </span>
-                                  <span className='text-sm'>
-                                    {card.accountNumber.slice(0, 4)} **** ****{' '}
-                                  </span>
-                                  <span className='text-sm'>
-                                    {format(new Date(card.expDate), 'MM/yyyy')}
-                                  </span>
-                                </div>
-                                <Dialog>
-                                  <DialogTrigger asChild>
-                                    <Eye className='ml-auto cursor-pointer' />
-                                  </DialogTrigger>
-                                  <DialogContent className='flex max-h-[50%] flex-col overflow-auto sm:max-w-xl'>
-                                    <DialogHeader>
-                                      <DialogTitle>
-                                        <span>{card.accountBank}</span>
-                                        <span className='text-sm font-normal'>
-                                          / {card.accountNumber}
-                                        </span>
-                                        <span />
-                                      </DialogTitle>
-                                      <DialogDescription>
-                                        View card details
-                                      </DialogDescription>
-                                    </DialogHeader>
-                                    <div className='relative flex-1 gap-4 overflow-auto p-2'>
-                                      <AutoForm
-                                        formSchema={cardSchema}
-                                        values={{
-                                          accountNumber: card.accountNumber,
-                                          accountName: card.accountName,
-                                          accountBank: card.accountBank,
-                                          expDate: card.expDate,
-                                        }}
-                                        fieldConfig={{
-                                          accountNumber: {
-                                            inputProps: {
-                                              readOnly: true,
-                                              placeholder: '--',
-                                            },
-                                          },
-                                          accountName: {
-                                            inputProps: {
-                                              readOnly: true,
-                                              placeholder: '--',
-                                            },
-                                          },
-                                          accountBank: {
-                                            inputProps: {
-                                              readOnly: true,
-                                              placeholder: '--',
-                                            },
-                                          },
-                                          expDate: {
-                                            inputProps: {
-                                              readOnly: true,
-                                              placeholder: '--',
-                                              disabled: true,
-                                            },
-                                          },
-                                        }}
-                                      />
-                                    </div>
-                                  </DialogContent>
-                                </Dialog>
-                              </div>
-                            </Label>
-                          </div>
-                        ))}
-
-                        {/* <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="option-one" id="option-one" />
-                      <Label
-                        htmlFor="option-one"
-                        className="flex w-full items-center gap-2"
-                      >
-                        <div className="flex w-full items-center gap-2  rounded-md border-2 p-2">
-                          <Image
-                            src={cardimg}
-                            alt="img"
-                            className="size-20 rounded-md border object-contain p-1 shadow-md"
-                          />
-                          <div className="flex flex-col">
-                            <span className="text-xl font-semibold">
-                              VCB - Vietcombank
-                            </span>
-                            <span className="text-sm">Trương Nhật Quang</span>
-                          </div>
-                          <Dialog>
-                            <DialogTrigger asChild>
-                              <Eye className="ml-auto cursor-pointer" />
-                            </DialogTrigger>
-                            <DialogContent className="flex max-h-[50%] flex-col overflow-auto sm:max-w-xl">
-                              <DialogHeader>
-                                <DialogTitle>Add new card</DialogTitle>
-                                <DialogDescription>
-                                  Fill out the form below to add a new court
-                                </DialogDescription>
-                              </DialogHeader>
-                              <div className="relative flex-1 gap-4 overflow-auto p-2">
-                                <AutoForm formSchema={cardSchema} />
-                              </div>
-                              <DialogFooter className="w-full">
-                                <Button className="w-full" type="submit">
-                                  Save changes
-                                </Button>
-                              </DialogFooter>
-                            </DialogContent>
-                          </Dialog>
-                        </div>
-                      </Label>
-                    </div> */}
-                      </RadioGroup>
-                    ) : (
-                      <div className='flex w-full justify-center text-sm'>
-                        No card found
-                      </div>
-                    )}
-                  </div>
+                  />
                 ) : (
-                  <div className='flex w-full flex-col gap-2'>
-                    <RadioGroup defaultValue='option-one'>
-                      <div className='flex items-center space-x-2'>
-                        <RadioGroupItem value='option-two' id='option-two' />
-                        <Label
-                          htmlFor='option-two'
-                          className='flex w-full items-center gap-2'
-                        >
-                          <div className='flex w-full items-center gap-2  rounded-md border-2 p-2'>
-                            <Image
-                              src={vnpay}
-                              alt='img'
-                              className='size-20 rounded-md border object-contain p-1 shadow-md'
-                            />
-                            <div className='flex flex-col'>
-                              <span className='text-xl font-semibold'>
-                                VNPay
-                              </span>
-                              <span className='text-sm'>badminton</span>
-                            </div>
-                          </div>
-                        </Label>
-                      </div>
-                      <div className='flex items-center space-x-2'>
-                        <RadioGroupItem value='option-one' id='option-one' />
-                        <Label
-                          htmlFor='option-one'
-                          className='flex w-full items-center gap-2'
-                        >
-                          <div className='flex w-full items-center gap-2  rounded-md border-2 p-2'>
-                            <Image
-                              src={vnpay}
-                              alt='img'
-                              className='size-20 rounded-md border object-contain p-1 shadow-md'
-                            />
-                            <div className='flex flex-col'>
-                              <span className='text-xl font-semibold'>
-                                VNpay
-                              </span>
-                              <span className='text-sm'>badminton</span>
-                            </div>
-                          </div>
-                        </Label>
-                      </div>
-                    </RadioGroup>
-                  </div>
+                  "Can't get payment information"
                 )}
               </div>
-              <AlertDialog
-                open={isConfirmDialogOpen}
-                onOpenChange={setIsConfirmDialogOpen}
-              >
-                <AlertDialogTrigger asChild>
-                  <Button
-                    className='flex w-full items-center gap-2'
-                    type='button'
-                  >
-                    <BanknoteIcon />
-                    Checkout
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>
-                      Are you absolutely sure?
-                    </AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Please review your subscription details before proceeding
-                      to checkout.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-
-                    <Button
-                      onClick={onSubmitOrder}
-                      disabled={isOrderSubmitting}
-                      className='flex w-20 justify-center'
-                      type='submit'
-                    >
-                      {isTriggeringOrder ? <SpinnerIcon /> : 'Confirm'}
-                    </Button>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
             </div>
           </div>
         ) : (

@@ -40,7 +40,7 @@
         "prettier/prettier": [
           "error",
           {
-            "singleQuote": false,
+            "singleQuote": true,
             "endOfLine": "auto",
             "trailingComma": "es5"
           }
@@ -71,7 +71,8 @@
         "unused-imports/no-unused-vars": [
           "error",
           { "argsIgnorePattern": "^_" }
-        ]
+        ],
+        "eslint-plugin-import/no-extraneous-dependencies": "off"
       }
     },
     // Configuration for testing

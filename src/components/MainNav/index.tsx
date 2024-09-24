@@ -34,7 +34,7 @@ interface MainNavProps {
 export function MainNav({ items, session }: MainNavProps) {
   const pathname = usePathname();
   const { data: profileData, isLoading: isProfileLoading } = useQuery({
-    queryKey: ['myProfile'],
+    queryKey: ['myProfile', session?.user.role],
     queryFn: async () => getProfileAPI(),
   });
   const router = useRouter();
@@ -44,6 +44,7 @@ export function MainNav({ items, session }: MainNavProps) {
   //     router.push("/sign-in");
   //   }
   // }, [profileData?.data]);
+
   return (
     <div className=' flex items-center gap-6 rounded-md  border-b  px-4 shadow-sm backdrop-blur-md md:gap-10'>
       <Link
@@ -135,7 +136,7 @@ export function MainNav({ items, session }: MainNavProps) {
                   </Button>
                 </DropdownMenuItem>
               )}
-              {session.user.role !== RoleEnum.CUSTOMER && (
+              {session?.user.role !== RoleEnum.CUSTOMER && (
                 <DropdownMenuItem asChild>
                   <Button variant='default' asChild>
                     <Link href='/dashboard'>Dashboard</Link>

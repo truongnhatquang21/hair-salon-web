@@ -7,6 +7,7 @@ import { type Dispatch, type SetStateAction } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
+import { formatToVND } from '@/app/[locale]/(normalUser)/(auth)/subscriptions/helper';
 import CalendarDaily from '@/components/Custom/DailyCalendar';
 import CustomTag from '@/components/CustomTag';
 import { EmptyComponent } from '@/components/Empty';
@@ -67,6 +68,8 @@ const FlexibleBooking = ({
   setSelectedCourts,
 }: CalendarDailyProps) => {
   console.log('selectDay', selectDay);
+  console.log(courts, 'PDSPF');
+
   const { toast } = useToast();
   const router = useRouter();
   const { setBooking } = useBookingStore((state) => {
@@ -158,7 +161,9 @@ const FlexibleBooking = ({
             ) : (
               <div className='grid grid-cols-2 gap-4'>
                 {courts?.map((value: ICourt) => {
-                  if (value.type === 'inuse') {
+                  console.log(value, 'PDSPF');
+
+                  if (value.status === 'Inuse') {
                     return (
                       <Card
                         key={value._id}
@@ -222,10 +227,7 @@ const FlexibleBooking = ({
                               }`}
                             >
                               {/* <DollarSignIcon className="size-4" /> */}
-                              <span>
-                                {(value.price / 100).toFixed(3)}
-                                VND/slot
-                              </span>
+                              <span>{formatToVND(value.price)} / slot</span>
                             </div>
                           </div>
                         </CardContent>

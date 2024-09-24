@@ -53,7 +53,7 @@ const BranchCreation = ({ stepIndex, goBackfn, goNextFn, steppers }: Props) => {
 
           <span className='flex flex-1 items-center justify-center text-xl font-semibold'>
             Step-{stepIndex}
-            <IconRight /> Welcome to create your new badminton branch.
+            <IconRight /> Welcome to create your new pickleball branch.
           </span>
         </div>
       </div>
