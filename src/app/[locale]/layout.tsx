@@ -35,6 +35,10 @@ export default function RootLayout(props: {
     >
       <Head>
         <link rel='icon' href='/' sizes='any' />
+        <meta
+          http-equiv='Content-Security-Policy'
+          content='upgrade-insecure-requests'
+        />
       </Head>
       <body>
         <NextTopLoader color='gray' showSpinner={false} height={2} />
