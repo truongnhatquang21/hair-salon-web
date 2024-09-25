@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 
 import HeroSection from '@/components/Home/HeroSection';
 import NewsletterSignUp from '@/components/Home/NewsLetterSignUp';
-import PopularbadmintonPlaces from '@/components/Home/PopularbadmintonPlaces';
+import PopularbadmintonPlaces from '@/components/Home/PopularBadmintonPlaces';
 import TopArticles from '@/components/Home/TopArticles';
 
 // export async function generateMetadata(props: { params: { locale: string } }) {
