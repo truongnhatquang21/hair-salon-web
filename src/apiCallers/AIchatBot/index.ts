@@ -41,6 +41,5 @@ export const getAIAnswer = async (question: string) => {
     },
     URL
   );
-  console.log('res', res);
   return res;
 };
