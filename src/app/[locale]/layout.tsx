@@ -8,6 +8,7 @@ import { notFound } from 'next/navigation';
 import { NextIntlClientProvider, useMessages } from 'next-intl';
 import NextTopLoader from 'nextjs-toploader';
 
+import ChatSupport from '@/components/chat-support';
 import { Toaster } from '@/components/ui/toaster';
 import Providers from '@/Contexts/TanstackProvider';
 import { ThemeProvider } from '@/Contexts/theme-provider';
@@ -44,6 +45,8 @@ export default function RootLayout(props: {
           <ThemeProvider attribute='class' defaultTheme='system' enableSystem>
             <Providers>
               <div className='mx-auto  '>{props.children}</div>
+
+              <ChatSupport />
             </Providers>
           </ThemeProvider>
         </NextIntlClientProvider>

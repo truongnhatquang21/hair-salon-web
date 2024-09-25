@@ -1,5 +1,5 @@
-import { auth } from "@/auth";
-import { responseMapping } from "@/lib/error";
+import { auth } from '@/auth';
+import { responseMapping } from '@/lib/error';
 
 export default class ApiClient<T> {
   private baseUrl: string;
@@ -17,7 +17,7 @@ export default class ApiClient<T> {
     const response = await fetch(`${this.baseUrl}${url}`, {
       method,
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
         ...headers,
       },
 
@@ -33,7 +33,7 @@ export default class ApiClient<T> {
 
   // CRUD methods with basic type annotations
   async get<U>(url: string, headers?: { [key: string]: string }): Promise<U> {
-    return this.fetch<U>(url, "GET", undefined, headers);
+    return this.fetch<U>(url, 'GET', undefined, headers);
   }
 
   async post<U>(
@@ -41,7 +41,7 @@ export default class ApiClient<T> {
     data: T,
     headers?: { [key: string]: string }
   ): Promise<U> {
-    return this.fetch<U>(url, "POST", data, headers);
+    return this.fetch<U>(url, 'POST', data, headers);
   }
 
   async put<U>(
@@ -49,34 +49,41 @@ export default class ApiClient<T> {
     data: T,
     headers?: { [key: string]: string }
   ): Promise<U> {
-    return this.fetch<U>(url, "PUT", data, headers);
+    return this.fetch<U>(url, 'PUT', data, headers);
   }
 
   async delete(
     url: string,
     headers?: { [key: string]: string }
   ): Promise<void> {
-    return this.fetch<void>(url, "DELETE", undefined, headers);
+    return this.fetch<void>(url, 'DELETE', undefined, headers);
   }
 }
 
-export const fetcher = async <T>(url: string, options?: RequestInit) => {
+export const fetcher = async <T>(
+  url: string,
+  options?: RequestInit,
+  baseUrl?: string
+) => {
   const session = await auth();
   const accessToken = session?.accessToken;
 
-  const res = await fetch(process.env.SERVER_URL + url, {
+  const res = await fetch((baseUrl || process.env.SERVER_URL) + url, {
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
       Authorization: `Bearer ${accessToken}`,
     },
-    cache: "no-cache",
+    cache: 'no-cache',
 
     ...options,
   });
 
   const result = await res.json();
-  console.log("result", result);
-  console.log("Response OK", res);
+  if (baseUrl) {
+    return result;
+  }
+  console.log('result', result);
+  console.log('Response OK', res);
   const transformedResult = responseMapping<T>(result);
   transformedResult.status = res.status;
   transformedResult.ok = res.ok;

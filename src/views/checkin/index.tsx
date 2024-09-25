@@ -54,7 +54,7 @@ const CheckInPage = () => {
     <div className='mx-auto h-full'>
       <div className='flex h-full flex-col items-center gap-6'>
         <div className='text-center'>
-          <h1 className='text-2xl font-bold'>badminton Court Check-In</h1>
+          <h1 className='text-2xl font-bold'> Court Check-In</h1>
           <p className='text-muted-foreground'>
             Scan QR codes to check in and view court availability.
           </p>

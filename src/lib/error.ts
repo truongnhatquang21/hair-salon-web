@@ -15,7 +15,7 @@ export const responseMapping = <T>(response: any): ResponseType<T> => {
   if (response.error) {
     const errorMap: { [key: string]: { message: string } } = {};
     response.error.forEach((error: { message: string; path: string[] }) => {
-      if (typeof error.path[1] === "string") {
+      if (typeof error.path[1] === 'string') {
         const index = error.path[1] as string;
         errorMap[index] = { message: error.message };
       }
