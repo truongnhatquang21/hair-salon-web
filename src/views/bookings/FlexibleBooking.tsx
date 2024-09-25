@@ -150,7 +150,7 @@ const FlexibleBooking = ({
 
         {selectDay && (
           <div className='mx-auto mt-6 max-w-2xl'>
-            <h3 className='mb-2 text-lg font-bold'>Select badminton Court</h3>
+            <h3 className='mb-2 text-lg font-bold'>Select Court</h3>
 
             {courts?.length === 0 ? (
               <EmptyComponent

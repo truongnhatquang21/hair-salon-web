@@ -15,7 +15,7 @@ export const TimeSlot = ({
   setSelectedSlots,
   selectedSlots,
   selectDay,
-  title = 'Book a badminton Court',
+  title = 'Book a Court',
 }: {
   timeSlotData: ISlot[];
   setStartSlot: Dispatch<SetStateAction<null>>;

@@ -325,7 +325,7 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
                       {selectedSlots.length !== 0 && (
                         <div className='mx-auto mt-6 max-w-2xl'>
                           <h3 className='mb-2 text-lg font-bold'>
-                            Select badminton Court
+                            Select Court
                           </h3>
                           {CourtData?.data?.length === 0 ? (
                             <EmptyComponent
@@ -482,7 +482,7 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
                       {selectedSlots.length !== 0 && (
                         <div className='mx-auto mt-6 max-w-2xl'>
                           <h3 className='mb-2 text-lg font-bold'>
-                            Select badminton Court
+                            Select Court
                           </h3>
 
                           {CourtData?.data?.length === 0 ? (
@@ -618,7 +618,7 @@ const BranchDetailCustomer = ({ slug }: { slug: string }) => {
                       {selectedSlots.length !== 0 && (
                         <div className='mx-auto mt-6 max-w-2xl'>
                           <h3 className='mb-2 text-lg font-bold'>
-                            Select badminton Court
+                            Select Court
                           </h3>
 
                           {CourtData?.data?.length === 0 ? (
