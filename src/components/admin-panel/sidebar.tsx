@@ -37,20 +37,10 @@ export function Sidebar() {
           asChild
         >
           <Link href='/' className='flex items-center gap-1 hover:no-underline'>
-            <h1
-              className={cn(
-                'font-bold text-lg whitespace-nowrap transition-[transform,opacity,display] ease-in-out duration-300',
-                sidebar?.isOpen === false
-                  ? '-translate-x-96 opacity-0 hidden'
-                  : 'translate-x-0 opacity-100'
-              )}
-            >
-              Pickle
-            </h1>
             <Image
               src={logo}
               alt='logo'
-              className='h-6 w-auto  rotate-180 object-contain '
+              className='h-28 w-auto  object-contain '
             />
           </Link>
         </Button>

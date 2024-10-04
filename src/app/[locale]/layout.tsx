@@ -15,7 +15,7 @@ import { ThemeProvider } from '@/Contexts/theme-provider';
 import { AppConfig } from '@/utils/AppConfig';
 
 export const metadata: Metadata = {
-  title: 'Pickleball',
+  title: 'PicklePlay',
 };
 export default function RootLayout(props: {
   children: React.ReactNode;

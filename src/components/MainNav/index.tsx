@@ -49,14 +49,9 @@ export function MainNav({ items, session }: MainNavProps) {
     <div className=' flex items-center gap-6 rounded-md  border-b  px-4 shadow-sm backdrop-blur-md md:gap-10'>
       <Link
         href='/'
-        className='flex items-center gap-0  border-foreground pr-4 font-sans text-xl font-extrabold lg:border-r-2  '
+        className='flex items-center gap-0  border-foreground py-2 pr-4 font-sans text-xl font-extrabold '
       >
-        <span className='relative mr-1 inline-block  uppercase '>Pickle</span>
-        <Image
-          src={logo}
-          alt='logo'
-          className='h-6 w-auto  rotate-180 object-contain '
-        />
+        <Image src={logo} alt='logo' className='h-28 w-auto  object-contain ' />
       </Link>
       {items?.length ? (
         <nav className='flex gap-2 py-6 md:gap-10'>

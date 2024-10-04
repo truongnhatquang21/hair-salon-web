@@ -18,7 +18,7 @@ import TopArticles from '@/components/Home/TopArticles';
 // }
 
 export const metadata: Metadata = {
-  title: 'Pickleball',
+  title: 'PicklePlay',
 };
 export default function Index() {
   return (

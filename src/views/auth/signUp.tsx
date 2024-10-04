@@ -6,7 +6,7 @@ import React from 'react';
 
 import { UserAuthForm } from '@/components/AuthForm';
 import SignUpRoleSelect from '@/components/SignUpRoleSelect';
-import banner from '@/public/assets/images/resbg.webp';
+import banner from '@/public/assets/images/bgRegister.png';
 import { RoleEnum } from '@/types';
 
 const SignUp = () => {

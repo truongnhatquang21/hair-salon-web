@@ -17,18 +17,15 @@ const Footer = () => {
               href='/'
               className='flex items-center gap-0  border-foreground pr-4 font-sans text-xl font-extrabold lg:border-r-2  '
             >
-              <span className='relative mr-1 inline-block  uppercase '>
-                Pickle
-              </span>
               <Image
                 src={logo}
                 alt='logo'
-                className='h-6 w-auto  rotate-180 object-contain '
+                className='h-20 w-auto  object-contain '
               />
             </Link>
             <p className='text-left text-sm leading-6 text-gray-600' />
             Never leave the court feeling like you didn't get in a good game.
-            Book your pickle ball court today!
+            Book your pickleball court today!
             <div className='flex items-center space-x-6'>
               <Link href='?#' className='text-gray-400 hover:text-gray-500'>
                 <span className='sr-only'>Facebook</span>
@@ -282,7 +279,7 @@ const Footer = () => {
         </div>
         <div className='justify-centermt-16 flex border-t border-gray-900/10 pt-8 sm:mt-20 lg:mt-24'>
           <span className='mx-auto text-xs leading-5 text-gray-500'>
-            &copy; 2024 PickleBall , Inc. All rights reserved.
+            &copy; 2024 PicklePlay , Inc. All rights reserved.
           </span>
         </div>
       </div>

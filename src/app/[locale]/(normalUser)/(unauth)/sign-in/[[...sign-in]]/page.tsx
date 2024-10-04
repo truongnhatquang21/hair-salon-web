@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 
 import { UserAuthForm } from '@/components/AuthForm';
-import banner from '@/public/assets/images/loginbg.webp';
+import banner from '@/public/assets/images/bgLogin.png';
 
 export const dynamic = 'force-dynamic';
 export async function generateMetadata(props: { params: { locale: string } }) {
