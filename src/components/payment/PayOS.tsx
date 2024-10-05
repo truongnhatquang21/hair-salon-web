@@ -16,7 +16,8 @@ const PayOs = ({ url, orderCode, successTriggerFn }: Props) => {
     'success' | 'failed' | undefined
   >(undefined);
   const payOSConfig: PayOSConfig = {
-    RETURN_URL: 'http://localhost:3000', // required
+    RETURN_URL:
+      process.env.NEXT_PUBLIC_PAYOS_RETURN_URL || 'http://localhost:3000', // required
     ELEMENT_ID, // required
     CHECKOUT_URL: url ?? '', // required
     embedded: true, // Nếu dùng giao diện nhúng
