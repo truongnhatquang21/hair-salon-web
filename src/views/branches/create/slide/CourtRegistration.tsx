@@ -202,13 +202,13 @@ const CourRegistration = ({
       ]);
       toast({
         title: 'Success',
-        description: 'Courts has been generated',
+        description: 'Services has been generated',
         className: 'bg-green-600 text-white',
       });
     } else {
       toast({
         title: 'Infor',
-        description: 'you has no court to generate',
+        description: 'you has no service to generate',
       });
     }
     setIsGenerateCourtDialogOpen(false);
@@ -262,14 +262,14 @@ const CourRegistration = ({
           Step-{stepIndex}
           <IconRight />{' '}
           <h1 className='text-center text-2xl font-bold uppercase'>
-            Court Registration
+            Services Registration
           </h1>
         </span>
       </div>
 
       <div className='flex items-center gap-4 text-sm'>
         <span className='text-3xl text-destructive'>*</span>
-        You must fill out courts registration form to create a branch.
+        You must fill out services registration form to create a branch.
         <div className='flex  items-center justify-end gap-2'>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
@@ -280,14 +280,14 @@ const CourRegistration = ({
                   form?.watch('courts').length >= steps[1]?.data.amount
                 }
               >
-                <BadgePlus /> Add Court
+                <BadgePlus /> Add service
               </Button>
             </DialogTrigger>
             <DialogContent className='flex h-3/5 w-[600px] flex-col overflow-auto sm:max-w-xl'>
               <DialogHeader>
-                <DialogTitle>Add new court</DialogTitle>
+                <DialogTitle>Add new service</DialogTitle>
                 <DialogDescription>
-                  Fill out the form below to add a new court
+                  Fill out the form below to add a new service
                 </DialogDescription>
               </DialogHeader>
               <div className='relative w-full flex-1 gap-4 overflow-auto p-2'>
@@ -317,7 +317,7 @@ const CourRegistration = ({
                   <DialogFooter className='w-full'>
                     <AutoFormSubmit className='w-full'>
                       <Button className='w-full' type='submit'>
-                        Save Court
+                        Save service
                       </Button>
                     </AutoFormSubmit>
                   </DialogFooter>
@@ -331,7 +331,7 @@ const CourRegistration = ({
           >
             <AlertDialogTrigger>
               <Button variant='outline' className='flex items-center gap-2 '>
-                <ZapIcon /> Fast generate courts
+                <ZapIcon /> Fast generate service
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
@@ -352,7 +352,7 @@ const CourRegistration = ({
                     }}
                     className='flex items-center gap-2'
                   >
-                    <ZapIcon /> Generate court
+                    <ZapIcon /> Generate service
                   </Button>
                 )}
               </AlertDialogFooter>
@@ -406,17 +406,17 @@ const CourRegistration = ({
                   </div>
                 }
                 defaultValue={item}
-                description='Fill out the form below to update court'
-                title='Update court'
+                description='Fill out the form below to update the service'
+                title='Update service'
                 key={item.name}
               />
             );
           })
         ) : (
           <div className='col-span-4 flex flex-col items-center justify-center gap-4'>
-            <span className='text-2xl font-semibold'>No court added</span>{' '}
+            <span className='text-2xl font-semibold'>No service added</span>{' '}
             <span className='text-sm text-gray-500'>
-              Please add court to continue
+              Please add service to continue
             </span>
           </div>
         )}

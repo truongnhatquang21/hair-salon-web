@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 
 import { Menu } from '@/components/admin-panel/menu';
@@ -9,7 +8,6 @@ import { Button } from '@/components/ui/button';
 import { useSidebarToggle } from '@/hooks/use-sidebar-toggle';
 import { useStore } from '@/hooks/use-store';
 import { cn } from '@/lib/utils';
-import logo from '@/public/assets/images/pickball.png';
 
 export const ClientWrapper = ({ children }: { children: React.ReactNode }) => {
   return <div className='flex-1'>{children};</div>;
@@ -36,12 +34,16 @@ export function Sidebar() {
           variant='link'
           asChild
         >
-          <Link href='/' className='flex items-center gap-1 hover:no-underline'>
-            <Image
-              src={logo}
-              alt='logo'
-              className='h-28 w-auto  object-contain '
-            />
+          <Link
+            href='/'
+            className='flex items-center gap-1 text-2xl font-bold hover:no-underline'
+          >
+            <h1
+              className='
+            font-sans text-3xl font-bold text-primary'
+            >
+              HAIR SALON
+            </h1>
           </Link>
         </Button>
 

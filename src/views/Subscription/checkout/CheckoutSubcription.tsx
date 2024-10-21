@@ -130,7 +130,7 @@ const CheckoutSubcription = ({ subsId }: Props) => {
     try {
       await triggerOrder({
         ...getValues(),
-        orderCode: paymentInfor?.data?.orderCode,
+        orderCode: paymentInfor?.data?.orderCode || '000000',
       });
       setIsConfirmDialogOpen(false);
     } catch (error) {
@@ -160,6 +160,12 @@ const CheckoutSubcription = ({ subsId }: Props) => {
       onSubmitOrder();
     }
   }, [triggerValue]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      onSubmitOrder();
+    }, 1000);
+  }, []);
 
   return (
     <>

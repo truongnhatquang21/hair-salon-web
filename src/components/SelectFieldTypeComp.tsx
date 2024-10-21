@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 import {
   Select,
@@ -6,16 +6,16 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 
-import type { AutoFormInputComponentProps } from "./ui/auto-form/types";
+import type { AutoFormInputComponentProps } from './ui/auto-form/types';
 import {
   FormControl,
   FormDescription,
   FormItem,
   FormLabel,
   FormMessage,
-} from "./ui/form";
+} from './ui/form';
 
 const SelectFieldTypeComp = ({
   enumOptions,
@@ -60,8 +60,8 @@ const SelectFieldTypeComp = ({
 
     <FormItem>
       <FormLabel>
-        {label}
-        {isRequired && <span className="text-destructive"> *</span>}
+        {fieldProps?.label || label}
+        {isRequired && <span className='text-destructive'> *</span>}
       </FormLabel>
       <Select
         {...fieldProps}
@@ -101,7 +101,7 @@ const SelectFieldTypeComp = ({
   );
 };
 
-SelectFieldTypeComp.displayName = "SelectFieldTypeComp";
+SelectFieldTypeComp.displayName = 'SelectFieldTypeComp';
 export const SelectFieldTypeWrapWithEnum =
   (Enum: string[]) => (props: AutoFormInputComponentProps) => (
     <SelectFieldTypeComp {...props} enumOptions={Enum} />

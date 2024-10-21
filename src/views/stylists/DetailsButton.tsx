@@ -1,12 +1,13 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { DialogClose } from '@radix-ui/react-dialog';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { PlusCircleIcon } from 'lucide-react';
 import React, { useEffect } from 'react';
 import type { SubmitHandler } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
 
-import { postCourtAPI, updateCourtAPI } from '@/apiCallers/courts';
+import { getProfileAPI } from '@/apiCallers/auth';
+import { updateCourtAPI } from '@/apiCallers/courts';
+import { postCreateStylistAPI } from '@/apiCallers/stylelist';
 import { SelectFieldTypeWrapWithEnum } from '@/components/SelectFieldTypeComp';
 import SpinnerIcon from '@/components/SpinnerIcon';
 import AutoForm, { AutoFormSubmit } from '@/components/ui/auto-form';
@@ -14,6 +15,7 @@ import { DependencyType } from '@/components/ui/auto-form/types';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -22,63 +24,63 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { useToast } from '@/components/ui/use-toast';
-import { cn } from '@/lib/utils';
 import { useBranchStore } from '@/stores/branchStore';
-import { CourtStatusEnum } from '@/types';
+import { RoleEnum, UserStatusEnum } from '@/types';
 
-import { BranchStatusEnum } from '../branches/helper';
-import { FileUploadFileTypeWithAccept } from '../branches/ImagesUpload';
-import {
-  type CourtSchemaType,
-  type CourtSchemaTypeWithId,
-  type CourtSchemaTypeWithId,
-  createCourtObject,
-} from './helper';
+import type { CourtSchemaType, CourtSchemaTypeWithId } from '../courts/helper';
+import { createManagerSchema } from '../manger/helper';
+import type {
+  CreateStaffSchemaType,
+  CreateStaffSchemaType,
+  CreateStaffSchemaTypeWithId,
+} from './help';
+import { createStaffSchema } from './help';
 
 type Props = {
   ButtonTrigger?: React.ReactNode;
   isEdit?: boolean;
-  defaultValues?: CourtSchemaTypeWithId;
+  defaultValues?: CreateStaffSchemaTypeWithId;
   openDialog?: boolean;
   setOpenDialog?: (value: boolean) => void;
   isView?: boolean;
 };
-const CreateCourtButton = ({
-  isView,
+const DetailButton = ({
   ButtonTrigger,
   isEdit,
   defaultValues,
   openDialog,
   setOpenDialog,
+  isView,
 }: Props) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const form = useForm<CourtSchemaType>({
+  const form = useForm<CreateStaffSchemaType>({
     defaultValues: defaultValues || {
-      name: '',
-      price: 0,
-      description: '',
-      status: CourtStatusEnum.INUSE,
-      type: '',
-      images: [],
+      role: RoleEnum.STYLIST,
+      status: UserStatusEnum.ACTIVE,
     },
-    resolver: zodResolver(createCourtObject),
+    resolver: zodResolver(createManagerSchema),
     shouldFocusError: true,
     mode: 'onChange',
   });
   const { setError } = form;
 
-  const { mutateAsync: createCourtTrigger, isPending: createMutating } =
+  const { mutateAsync: createStaffTrigger, isPending: createMutating } =
     useMutation({
-      mutationFn: async (data: CourtSchemaTypeWithId) => {
-        return postCourtAPI(data);
+      mutationFn: async (
+        data: CreateStaffSchemaTypeWithId & {
+          branch: string;
+          manager: string;
+        }
+      ) => {
+        return postCreateStylistAPI(data);
       },
       onSuccess: (data) => {
         if (!data.ok) {
           if (data.error) {
             const errs = data.error as { [key: string]: { message: string } };
             Object.entries(errs).forEach(([key, value]) => {
-              setError(key as keyof CourtSchemaType, {
+              setError(key as keyof CreateStaffSchemaType, {
                 type: 'manual',
                 message: value.message,
               });
@@ -141,7 +143,7 @@ const CreateCourtButton = ({
             variant: 'default',
             className: 'bg-green-600 text-white',
             title: 'Message from system',
-            description: "You've updated this service",
+            description: data.message,
           });
         }
 
@@ -154,9 +156,22 @@ const CreateCourtButton = ({
     });
 
   const selectedBranch = useBranchStore((state) => state.branch);
+  const { data: profileData } = useQuery({
+    queryKey: ['myProfile'],
+    queryFn: async () => getProfileAPI(),
+  });
+
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
-  const onSubmit: SubmitHandler<CourtSchemaType> = async (values) => {
-    console.log('values', values);
+  const onSubmit: SubmitHandler<CreateStaffSchemaType> = async (values) => {
+    const isValidate = await form.trigger();
+    if (!isValidate) {
+      toast({
+        variant: 'destructive',
+        title: 'Uh oh! Something went wrong.',
+        description: 'Please check the form again',
+      });
+      return;
+    }
 
     try {
       if (isEdit) {
@@ -170,18 +185,18 @@ const CreateCourtButton = ({
         const prepareData = {
           ...values,
           branch: selectedBranch?._id,
+          manager: profileData?.data?._id as string,
         };
-        await createCourtTrigger(prepareData);
+        console.log('prepareData', prepareData);
+
+        await createStaffTrigger(prepareData);
       }
       queryClient.invalidateQueries({
-        queryKey: ['myCourtList', (selectedBranch?._id as string) || ''],
+        queryKey: ['stylelistList'],
       });
-      queryClient.invalidateQueries({
-        queryKey: ['courts'],
-      });
+      form.reset();
       setOpenDialog && setOpenDialog(false);
       setIsDialogOpen(false);
-      form.reset();
     } catch (e) {
       console.log(e);
     }
@@ -192,12 +207,14 @@ const CreateCourtButton = ({
   //     form.setValue("duration", 1);
   //   }
   // }, [typePackage]);
-  const viewOnly = selectedBranch?.status === BranchStatusEnum.DENIED || isView;
+  const isReadOnly = isView;
   useEffect(() => {
     if (!isDialogOpen) {
-      if (isEdit || viewOnly) form.reset();
+      if (isEdit || isView) {
+        form.reset();
+      }
     }
-  }, [isDialogOpen, isEdit, form, viewOnly]);
+  }, [isDialogOpen, isEdit, form, isView]);
   return (
     <Dialog
       open={openDialog || isDialogOpen}
@@ -214,39 +231,20 @@ const CreateCourtButton = ({
       <DialogContent className=' flex h-3/5 flex-col  sm:max-w-[600px]'>
         <DialogHeader>
           <DialogTitle>
-            {viewOnly
-              ? 'View this service'
+            {isView
+              ? 'View Details'
               : isEdit
-                ? 'Update this service'
-                : 'Add new service'}
+                ? 'Update this stylist details.'
+                : 'Add new stylist details.'}
           </DialogTitle>
           <DialogDescription>
-            <div
-              className={cn(
-                'w-full text-white p-2 rounded-md shadow-md',
-                selectedBranch?.status === BranchStatusEnum.PENDING &&
-                  'bg-yellow-500',
-                selectedBranch?.status === BranchStatusEnum.INACTIVE &&
-                  'bg-blue-500',
-                selectedBranch?.status === BranchStatusEnum.ACTIVE &&
-                  'bg-green-500',
-                selectedBranch?.status === BranchStatusEnum.DENIED &&
-                  'bg-red-500'
-              )}
-            >
-              <h3 className='text-lg font-semibold'>
-                Instructions of <b>{selectedBranch?.status}</b> branch
-              </h3>
-              <p className='text-sm'>
-                {selectedBranch?.status === BranchStatusEnum.PENDING &&
-                  'This branch is pending for approval. You can create or update service but it will not be visible to public'}
-                {selectedBranch?.status === BranchStatusEnum.INACTIVE &&
-                  'This branch is inactive. You can create or update service but it will not be visible to public'}
-                {selectedBranch?.status === BranchStatusEnum.ACTIVE &&
-                  'This branch is active. You can create or update service and it will be visible to public'}
-                {selectedBranch?.status === BranchStatusEnum.DENIED &&
-                  "This branch is denied. You can't create or update service and it will not be visible to public"}
-              </p>
+            <div className='w-full rounded-md bg-yellow-500 p-2 text-white shadow-md'>
+              <b>Warning:</b>
+              {isView
+                ? " You are viewing this stylist details. You can't edit this. Please ask the owner to edit."
+                : isEdit
+                  ? ' You are updating this stylist details.'
+                  : " You are adding new stylist details. Please fill in the form below. After that, click the submit button to save. You can't edit this after submit. If you want to edit, please ask the owner to edit."}
             </div>
           </DialogDescription>
         </DialogHeader>
@@ -254,105 +252,122 @@ const CreateCourtButton = ({
           <AutoForm
             controlForm={form}
             values={defaultValues || form.getValues()}
-            onSubmit={onSubmit}
-            formSchema={createCourtObject}
+            // onSubmit={onSubmit}
+            formSchema={createStaffSchema}
             dependencies={[
               {
-                sourceField: 'type',
+                sourceField: 'role',
                 targetField: 'status',
                 type: DependencyType.HIDES,
-                when: () => !isEdit,
+                when: () => !isEdit && !isView,
               },
-
               {
-                sourceField: 'type',
-                targetField: 'status',
-                type: DependencyType.DISABLES,
-                when: () =>
-                  !!isEdit && defaultValues?.status === CourtStatusEnum.PENDING,
+                sourceField: 'role',
+                targetField: 'password',
+                type: DependencyType.HIDES,
+                when: () => !!isEdit || !!isView,
               },
             ]}
             fieldConfig={{
-              name: {
+              username: {
                 inputProps: {
-                  placeholder: 'Service name',
-                  required: true,
-                  readOnly: viewOnly,
+                  readOnly: isReadOnly,
+                  placeholder: 'stylist123',
                 },
               },
-              price: {
+              email: {
                 inputProps: {
-                  placeholder: 'Price of service',
-                  required: true,
-                  readOnly: viewOnly,
+                  readOnly: isReadOnly,
+                  placeholder: 'stylist@gmail.com',
                 },
               },
-
-              description: {
-                inputProps: {
-                  readOnly: viewOnly,
-                  placeholder:
-                    "Type description of service, e.g. 'Standard service'",
-                },
-                fieldType: 'textarea',
-              },
-
-              images: {
-                inputProps: {
-                  value: defaultValues?.images || [],
-                },
-                fieldType: FileUploadFileTypeWithAccept({
-                  accept: {
-                    'image/*': ['.jpeg', '.png', `.jpg`],
-                  },
-                  readOnly: viewOnly,
-                }),
-              },
-
               status: {
-                description: "Status of service, e.g. 'In use'",
                 inputProps: {
-                  placeholder: 'Select status of service',
-                  value: form.watch('status'),
-                  defaultValue: defaultValues?.status || form.watch('status'),
+                  disabled: isReadOnly,
+                  readOnly: isReadOnly,
+                  placeholder: 'Select status',
                 },
-                fieldType: SelectFieldTypeWrapWithEnum(
-                  Object.values(CourtStatusEnum)?.filter((item) =>
-                    defaultValues?.status === CourtStatusEnum.PENDING
-                      ? item === CourtStatusEnum.PENDING
-                      : item !== CourtStatusEnum.PENDING
-                  )
-                ),
               },
-              type: {
+              role: {
                 inputProps: {
-                  readOnly: viewOnly,
-                  placeholder: 'Type of service',
-                  value: form.watch('type'),
+                  disabled: true,
+                  defaultValue: RoleEnum.STYLIST,
+                  value: defaultValues?.role || form.getValues().role,
+                },
+                fieldType: SelectFieldTypeWrapWithEnum(Object.values(RoleEnum)),
+              },
+              dob: {
+                inputProps: {
+                  readOnly: isReadOnly,
+                  disabled: isReadOnly,
+                  disabledFromNow: true,
+                  placeholder: 'Select date of birth',
+                },
+              },
+              firstName: {
+                inputProps: {
+                  readOnly: isReadOnly,
+                  placeholder: 'Stylist first name',
+                },
+              },
+              lastName: {
+                inputProps: {
+                  readOnly: isReadOnly,
+                  placeholder: 'Stylist last name',
+                },
+              },
+              phone: {
+                inputProps: {
+                  readOnly: isReadOnly,
+                  placeholder: '0123456789',
+                },
+              },
+              gender: {
+                inputProps: {
+                  disabled: isReadOnly,
+                  readOnly: isReadOnly,
+                  placeholder: 'Select gender',
+                },
+              },
+              password: {
+                inputProps: {
+                  // disabled: isReadOnly,
+                  readOnly: isReadOnly,
+                  placeholder: 'Password',
+                  type: 'password',
                 },
               },
             }}
           >
             <DialogFooter className='w-full'>
-              {viewOnly ? (
-                <DialogClose className='w-full'>
-                  <Button className='w-full' type='button'>
-                    Close
-                  </Button>
-                </DialogClose>
-              ) : (
+              {!isView ? (
                 <AutoFormSubmit
                   className='w-full'
                   disabled={createMutating || editMutating}
                 >
                   <Button
                     type='submit'
+                    onClick={() => {
+                      onSubmit(form.getValues());
+                    }}
                     className='flex w-full items-center gap-2'
                   >
                     {(createMutating || editMutating) && <SpinnerIcon />}
-                    {isEdit ? 'Update service' : 'Create service'}
+                    {isEdit ? 'Update stylist' : 'Create stylist'}
                   </Button>
                 </AutoFormSubmit>
+              ) : (
+                <DialogClose className='flex w-full items-center justify-center'>
+                  <Button
+                    className='w-full'
+                    type='button'
+                    onClick={() => {
+                      form.reset();
+                    }}
+                  >
+                    <span className='sr-only'>Close</span>Close
+                  </Button>
+                </DialogClose>
               )}
             </DialogFooter>
           </AutoForm>
@@ -362,4 +377,4 @@ const CreateCourtButton = ({
   );
 };
 
-export default CreateCourtButton;
+export default DetailButton;

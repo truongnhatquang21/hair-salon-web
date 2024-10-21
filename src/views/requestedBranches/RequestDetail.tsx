@@ -243,7 +243,7 @@ const RequestDetail = ({ branchId }: Props) => {
                 <div className='mt-10 flex w-full flex-col gap-4'>
                   <div className='flex w-full flex-col gap-2 rounded-md border-2 border-dashed p-2'>
                     <span className='border-b font-semibold '>
-                      Court availability
+                      Service availability
                     </span>
                     <AutoForm
                       formSchema={amountFormSchema}
@@ -252,6 +252,7 @@ const RequestDetail = ({ branchId }: Props) => {
                       }}
                       fieldConfig={{
                         amount: {
+                          label: 'Amount of services',
                           inputProps: {
                             disabled: true,
                             value: branch?.courts.length,
@@ -373,7 +374,7 @@ const RequestDetail = ({ branchId }: Props) => {
                   </div>
                   <div className='flex w-full flex-col gap-2 rounded-md border-2 border-dashed p-2'>
                     <span className='border-b font-semibold'>
-                      Courts registration
+                      Service registration
                     </span>
                     <div className='grid w-full grid-cols-4 gap-10 overflow-auto'>
                       {branch?.courts &&

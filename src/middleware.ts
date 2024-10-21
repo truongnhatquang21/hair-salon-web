@@ -89,8 +89,9 @@ const managerPages = [
   '/dashboard/branches/[branchId]',
   '/dashboard/branches/create',
   '/dashboard/history/tracking-subscription',
-  '/dashboard/courts',
+  '/dashboard/services',
   '/dashboard/staffs',
+  '/dashboard/stylists',
   '/dashboard/reports',
   '/dashboard/account',
   '/dashboard/schedule',
@@ -99,7 +100,16 @@ const staffPages = [
   ...commonAuthPages,
   '/dashboard/check-in',
   '/dashboard',
-  '/dashboard/courts',
+  '/dashboard/services',
+  '/dashboard/reports',
+  '/dashboard/account',
+  '/dashboard/schedule',
+];
+const stylistPages = [
+  ...commonAuthPages,
+  '/dashboard/check-in',
+  '/dashboard',
+  '/dashboard/services',
   '/dashboard/reports',
   '/dashboard/account',
   '/dashboard/schedule',
@@ -134,6 +144,12 @@ const authMiddleware = auth((req) => {
       }
       if (!role) return NextResponse.redirect(new URL('/401', req.nextUrl));
     }
+    if (stylistPages.includes(req.nextUrl.pathname)) {
+      if (role === RoleEnum.STYLIST) {
+        return intlMiddleware(req);
+      }
+      if (!role) return NextResponse.redirect(new URL('/401', req.nextUrl));
+    }
     if (customerPages.includes(req.nextUrl.pathname)) {
       if (role === RoleEnum.CUSTOMER) {
         return intlMiddleware(req);
@@ -159,7 +175,7 @@ const authMiddleware = auth((req) => {
       regex: /^\/subscriptions\/order\/([^/]+)\/checkout$/,
     },
     checkIn: {
-      role: [RoleEnum.STAFF, RoleEnum.MANAGER],
+      role: [RoleEnum.STAFF, RoleEnum.MANAGER, RoleEnum.STYLIST],
       regex: /^\/dashboard\/check-in\/[a-zA-Z0-9]+$/,
     },
   };

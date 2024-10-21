@@ -1,7 +1,7 @@
-import Link from "next/link";
+import Link from 'next/link';
 
-import { ContentLayout } from "@/components/admin-panel/content-layout";
-import PlaceholderContent from "@/components/placeholder-content";
+import { ContentLayout } from '@/components/admin-panel/content-layout';
+import PlaceholderContent from '@/components/placeholder-content';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -9,27 +9,27 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
+} from '@/components/ui/breadcrumb';
 
 export default function layout({ children }: { children: React.ReactNode }) {
   return (
-    <ContentLayout title="Branches">
+    <ContentLayout title='Branches'>
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <Link href="/">Home</Link>
+              <Link href='/'>Home</Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
-              <Link href="/dashboard">Dashboard</Link>
+              <Link href='/dashboard'>Dashboard</Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbPage>Courts</BreadcrumbPage>
+            <BreadcrumbPage>Stylists</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>

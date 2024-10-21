@@ -375,16 +375,19 @@ const Confirmation = ({ goBackfn, goNextFn, steppers, stepIndex }: Props) => {
       <div className='relative flex w-full items-center border-t  pr-2'>
         <div className='mt-10 flex w-full flex-col gap-4'>
           <div className='flex w-full flex-col gap-2 rounded-md border-2 border-dashed p-2'>
-            <span className='border-b font-semibold '>Court availability</span>
+            <span className='border-b font-semibold '>
+              Service availability
+            </span>
             <AutoForm
               values={steps[1]?.data}
               formSchema={amountFormSchema}
               fieldConfig={{
                 amount: {
+                  label: 'Amount of services',
                   inputProps: {
                     disabled: true,
                     defaultValue: 1,
-                    placeholder: 'Amount of court',
+                    placeholder: 'Amount of services',
                   },
                 },
               }}
@@ -477,7 +480,7 @@ const Confirmation = ({ goBackfn, goNextFn, steppers, stepIndex }: Props) => {
             </div>
           </div>
           <div className='flex w-full flex-col gap-2 rounded-md border-2 border-dashed p-2'>
-            <span className='border-b font-semibold'>Courts registration</span>
+            <span className='border-b font-semibold'>Service registration</span>
             <div className='grid w-full grid-cols-4 gap-10 overflow-auto'>
               {steps[5]?.data?.courts.map((item: CourtType) => (
                 <CourtDialog

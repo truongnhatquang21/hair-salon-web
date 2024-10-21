@@ -1,6 +1,6 @@
-import { LayoutGrid, Settings } from "lucide-react";
+import { LayoutGrid, Settings } from 'lucide-react';
 
-import { RoleEnum } from "@/types";
+import { RoleEnum } from '@/types';
 
 type Submenu = {
   href: string;
@@ -26,12 +26,12 @@ export function getMenuList(pathname: string, role: RoleEnum): Group[] {
     case RoleEnum.ADMIN:
       return [
         {
-          groupLabel: "",
+          groupLabel: '',
           menus: [
             {
-              href: "/dashboard",
-              label: "Dashboard",
-              active: pathname.includes("/dashboard"),
+              href: '/dashboard',
+              label: 'Dashboard',
+              active: pathname.includes('/dashboard'),
               icon: LayoutGrid,
               submenus: [],
             },
@@ -39,26 +39,26 @@ export function getMenuList(pathname: string, role: RoleEnum): Group[] {
         },
         // admin
         {
-          groupLabel: "Account management",
+          groupLabel: 'Account management',
           menus: [
             {
-              href: "/dashboard/operators",
-              label: "Operators",
-              active: pathname.includes("/dashboard/operators"),
+              href: '/dashboard/operators',
+              label: 'Operators',
+              active: pathname.includes('/dashboard/operators'),
               icon: LayoutGrid,
               submenus: [],
             },
             {
-              href: "/dashboard/managers",
-              label: "Managers",
-              active: pathname.includes("/dashboard/managers"),
+              href: '/dashboard/managers',
+              label: 'Managers',
+              active: pathname.includes('/dashboard/managers'),
               icon: LayoutGrid,
               submenus: [],
             },
             {
-              href: "/dashboard/customers",
-              label: "Customers",
-              active: pathname.includes("/dashboard/customers"),
+              href: '/dashboard/customers',
+              label: 'Customers',
+              active: pathname.includes('/dashboard/customers'),
               icon: LayoutGrid,
               submenus: [],
             },
@@ -66,24 +66,24 @@ export function getMenuList(pathname: string, role: RoleEnum): Group[] {
         },
 
         {
-          groupLabel: "Requested branches",
+          groupLabel: 'Requested branches',
           menus: [
             {
-              href: "/dashboard/requestedBranch",
-              label: "Requested branches",
-              active: pathname.includes("/dashboard/requestedBranch"),
+              href: '/dashboard/requestedBranch',
+              label: 'Requested branches',
+              active: pathname.includes('/dashboard/requestedBranch'),
               icon: LayoutGrid,
               submenus: [],
             },
           ],
         },
         {
-          groupLabel: "Subscriptions Management",
+          groupLabel: 'Subscriptions Management',
           menus: [
             {
-              href: "/dashboard/subscriptions",
-              label: "Subscriptions",
-              active: pathname.includes("/dashboard/subscriptions"),
+              href: '/dashboard/subscriptions',
+              label: 'Subscriptions',
+              active: pathname.includes('/dashboard/subscriptions'),
               icon: LayoutGrid,
               submenus: [],
             },
@@ -99,24 +99,24 @@ export function getMenuList(pathname: string, role: RoleEnum): Group[] {
           ],
         },
         {
-          groupLabel: "Transactions",
+          groupLabel: 'Transactions',
           menus: [
             {
-              href: "/dashboard/transactions",
-              label: "Transactions",
-              active: pathname.includes("/dashboard/transactions"),
+              href: '/dashboard/transactions',
+              label: 'Transactions',
+              active: pathname.includes('/dashboard/transactions'),
               icon: LayoutGrid,
               submenus: [],
             },
           ],
         },
         {
-          groupLabel: "Settings",
+          groupLabel: 'Settings',
           menus: [
             {
-              href: "/dashboard/account",
-              label: "Account",
-              active: pathname.includes("dashboard/account"),
+              href: '/dashboard/account',
+              label: 'Account',
+              active: pathname.includes('dashboard/account'),
               icon: Settings,
               submenus: [],
             },
@@ -126,12 +126,12 @@ export function getMenuList(pathname: string, role: RoleEnum): Group[] {
     case RoleEnum.MANAGER:
       return [
         {
-          groupLabel: "",
+          groupLabel: '',
           menus: [
             {
-              href: "/dashboard",
-              label: "Dashboard",
-              active: pathname.includes("/dashboard"),
+              href: '/dashboard',
+              label: 'Dashboard',
+              active: pathname.includes('/dashboard'),
               icon: LayoutGrid,
               submenus: [],
             },
@@ -139,12 +139,12 @@ export function getMenuList(pathname: string, role: RoleEnum): Group[] {
         },
         // manager
         {
-          groupLabel: "Branches management",
+          groupLabel: 'Branches management',
           menus: [
             {
-              href: "/dashboard/branches",
-              label: "Branches",
-              active: pathname.includes("/dashboard/branches"),
+              href: '/dashboard/branches',
+              label: 'Branches',
+              active: pathname.includes('/dashboard/branches'),
               icon: LayoutGrid,
               submenus: [],
             },
@@ -152,54 +152,61 @@ export function getMenuList(pathname: string, role: RoleEnum): Group[] {
         },
         // court manager
         {
-          groupLabel: "Branch management",
+          groupLabel: 'Branch management',
           menus: [
             {
-              href: "/dashboard/schedule",
-              label: "Schedule",
-              active: pathname.includes("/dashboard/schedule"),
+              href: '/dashboard/schedule',
+              label: 'Schedule',
+              active: pathname.includes('/dashboard/schedule'),
               icon: LayoutGrid,
               submenus: [],
             },
             {
-              href: "/dashboard/check-in",
-              label: "Check-in",
-              active: pathname.includes("/dashboard/check-in"),
+              href: '/dashboard/check-in',
+              label: 'Check-in',
+              active: pathname.includes('/dashboard/check-in'),
               icon: LayoutGrid,
               submenus: [],
             },
             {
-              href: "/dashboard/courts",
-              label: "Courts",
-              active: pathname.includes("/dashboard/courts"),
+              href: '/dashboard/services',
+              label: 'Services',
+              active: pathname.includes('/dashboard/services'),
               icon: LayoutGrid,
               submenus: [],
             },
             {
-              href: "/dashboard/staffs",
-              label: "Staffs",
-              active: pathname.includes("/dashboard/staffs"),
+              href: '/dashboard/staffs',
+              label: 'Staffs',
+              active: pathname.includes('/dashboard/staffs'),
+              icon: LayoutGrid,
+              submenus: [],
+            },
+            {
+              href: '/dashboard/stylists',
+              label: 'Stylists',
+              active: pathname.includes('/dashboard/stylists'),
               icon: LayoutGrid,
               submenus: [],
             },
 
             {
-              href: "/dashboard/reports",
-              label: "Reports",
-              active: pathname.includes("/dashboard/reports"),
+              href: '/dashboard/reports',
+              label: 'Reports',
+              active: pathname.includes('/dashboard/reports'),
               icon: LayoutGrid,
               submenus: [],
             },
           ],
         },
         {
-          groupLabel: "Subscriptions Management",
+          groupLabel: 'Subscriptions Management',
           menus: [
             {
-              href: "/dashboard/history/tracking-subscription",
-              label: "History",
+              href: '/dashboard/history/tracking-subscription',
+              label: 'History',
               active: pathname.includes(
-                "/dashboard/history/tracking-subscription"
+                '/dashboard/history/tracking-subscription'
               ),
               icon: LayoutGrid,
               submenus: [],
@@ -208,12 +215,12 @@ export function getMenuList(pathname: string, role: RoleEnum): Group[] {
         },
         // general
         {
-          groupLabel: "Settings",
+          groupLabel: 'Settings',
           menus: [
             {
-              href: "/dashboard/account",
-              label: "Account",
-              active: pathname.includes("dashboard/account"),
+              href: '/dashboard/account',
+              label: 'Account',
+              active: pathname.includes('dashboard/account'),
               icon: Settings,
               submenus: [],
             },
@@ -223,12 +230,12 @@ export function getMenuList(pathname: string, role: RoleEnum): Group[] {
     case RoleEnum.OPERATOR:
       return [
         {
-          groupLabel: "",
+          groupLabel: '',
           menus: [
             {
-              href: "/dashboard",
-              label: "Dashboard",
-              active: pathname.includes("/dashboard"),
+              href: '/dashboard',
+              label: 'Dashboard',
+              active: pathname.includes('/dashboard'),
               icon: LayoutGrid,
               submenus: [],
             },
@@ -236,19 +243,19 @@ export function getMenuList(pathname: string, role: RoleEnum): Group[] {
         },
         // admin
         {
-          groupLabel: "Account management",
+          groupLabel: 'Account management',
           menus: [
             {
-              href: "/dashboard/managers",
-              label: "Managers",
-              active: pathname.includes("/dashboard/managers"),
+              href: '/dashboard/managers',
+              label: 'Managers',
+              active: pathname.includes('/dashboard/managers'),
               icon: LayoutGrid,
               submenus: [],
             },
             {
-              href: "/dashboard/customers",
-              label: "Customers",
-              active: pathname.includes("/dashboard/customers"),
+              href: '/dashboard/customers',
+              label: 'Customers',
+              active: pathname.includes('/dashboard/customers'),
               icon: LayoutGrid,
               submenus: [],
             },
@@ -256,24 +263,24 @@ export function getMenuList(pathname: string, role: RoleEnum): Group[] {
         },
 
         {
-          groupLabel: "Requested branches",
+          groupLabel: 'Requested branches',
           menus: [
             {
-              href: "/dashboard/requestedBranch",
-              label: "Requested branches",
-              active: pathname.includes("/dashboard/requestedBranch"),
+              href: '/dashboard/requestedBranch',
+              label: 'Requested branches',
+              active: pathname.includes('/dashboard/requestedBranch'),
               icon: LayoutGrid,
               submenus: [],
             },
           ],
         },
         {
-          groupLabel: "Subscriptions Management",
+          groupLabel: 'Subscriptions Management',
           menus: [
             {
-              href: "/dashboard/subscriptions",
-              label: "Subscriptions",
-              active: pathname.includes("/dashboard/subscriptions"),
+              href: '/dashboard/subscriptions',
+              label: 'Subscriptions',
+              active: pathname.includes('/dashboard/subscriptions'),
               icon: LayoutGrid,
               submenus: [],
             },
@@ -301,27 +308,28 @@ export function getMenuList(pathname: string, role: RoleEnum): Group[] {
         //   ],
         // },
         {
-          groupLabel: "Settings",
+          groupLabel: 'Settings',
           menus: [
             {
-              href: "/dashboard/account",
-              label: "Account",
-              active: pathname.includes("dashboard/account"),
+              href: '/dashboard/account',
+              label: 'Account',
+              active: pathname.includes('dashboard/account'),
               icon: Settings,
               submenus: [],
             },
           ],
         },
       ];
+    case RoleEnum.STYLIST:
     case RoleEnum.STAFF:
       return [
         {
-          groupLabel: "",
+          groupLabel: '',
           menus: [
             {
-              href: "/dashboard",
-              label: "Dashboard",
-              active: pathname.includes("/dashboard"),
+              href: '/dashboard',
+              label: 'Dashboard',
+              active: pathname.includes('/dashboard'),
               icon: LayoutGrid,
               submenus: [],
             },
@@ -331,34 +339,34 @@ export function getMenuList(pathname: string, role: RoleEnum): Group[] {
 
         // court manager
         {
-          groupLabel: "Branch management",
+          groupLabel: 'Branch management',
           menus: [
             {
-              href: "/dashboard/schedule",
-              label: "Schedule",
-              active: pathname.includes("/dashboard/schedule"),
+              href: '/dashboard/schedule',
+              label: 'Schedule',
+              active: pathname.includes('/dashboard/schedule'),
               icon: LayoutGrid,
               submenus: [],
             },
             {
-              href: "/dashboard/check-in",
-              label: "Check in",
-              active: pathname.includes("/dashboard/check-in"),
+              href: '/dashboard/check-in',
+              label: 'Check in',
+              active: pathname.includes('/dashboard/check-in'),
               icon: LayoutGrid,
               submenus: [],
             },
             {
-              href: "/dashboard/courts",
-              label: "Courts",
-              active: pathname.includes("/dashboard/courts"),
+              href: '/dashboard/services',
+              label: 'Services',
+              active: pathname.includes('/dashboard/services'),
               icon: LayoutGrid,
               submenus: [],
             },
 
             {
-              href: "/dashboard/reports",
-              label: "Reports",
-              active: pathname.includes("/dashboard/reports"),
+              href: '/dashboard/reports',
+              label: 'Reports',
+              active: pathname.includes('/dashboard/reports'),
               icon: LayoutGrid,
               submenus: [],
             },
@@ -366,39 +374,40 @@ export function getMenuList(pathname: string, role: RoleEnum): Group[] {
         },
         // general
         {
-          groupLabel: "Settings",
+          groupLabel: 'Settings',
           menus: [
             {
-              href: "/dashboard/account",
-              label: "Account",
-              active: pathname.includes("dashboard/account"),
+              href: '/dashboard/account',
+              label: 'Account',
+              active: pathname.includes('dashboard/account'),
               icon: Settings,
               submenus: [],
             },
           ],
         },
       ];
+
     default:
       return [
         {
-          groupLabel: "",
+          groupLabel: '',
           menus: [
             {
-              href: "/dashboard",
-              label: "Dashboard",
-              active: pathname.includes("/dashboard"),
+              href: '/dashboard',
+              label: 'Dashboard',
+              active: pathname.includes('/dashboard'),
               icon: LayoutGrid,
               submenus: [],
             },
           ],
         },
         {
-          groupLabel: "Settings",
+          groupLabel: 'Settings',
           menus: [
             {
-              href: "/dashboard/account",
-              label: "Account",
-              active: pathname.includes("dashboard/account"),
+              href: '/dashboard/account',
+              label: 'Account',
+              active: pathname.includes('dashboard/account'),
               icon: Settings,
               submenus: [],
             },
