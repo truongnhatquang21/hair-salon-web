@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import AdminPanelLayout from '@/components/admin-panel/admin-panel-layout';
 
 export const metadata: Metadata = {
-  title: 'PicklePlay Management Panel',
+  title: 'Hair Salon Management',
 };
 export default function DemoLayout({
   children,
